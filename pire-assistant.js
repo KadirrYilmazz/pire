@@ -284,19 +284,32 @@
     return "";
   }
 
+  function requestAI(token,body){
+    return new Promise((resolve,reject)=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open("POST","/api/assistant",true);
+      xhr.setRequestHeader("content-type","application/json");
+      xhr.setRequestHeader("Authorization",`Bearer ${token}`);
+      xhr.timeout=30_000;
+      xhr.onload=()=>{
+        let payload={};
+        try{payload=JSON.parse(xhr.responseText||"{}")}catch(_){ }
+        if(xhr.status>=200&&xhr.status<300)resolve(payload);
+        else reject(new Error(payload.error||"AI yanıtı alınamadı."));
+      };
+      xhr.onerror=()=>reject(new Error("AI servisine bağlanılamadı."));
+      xhr.ontimeout=()=>reject(new Error("AI yanıtı zaman aşımına uğradı."));
+      xhr.send(JSON.stringify(body));
+    });
+  }
+
   async function askAI(query){
     const token=accessToken();
     if(!token){
       addMessage("Bu soru hazır rehberlerin dışında. Güvenli AI yanıtı için gerçek Pİ-RE/Supabase oturumuyla giriş yapmanız gerekiyor; yerel kurtarma oturumu AI erişimi vermez.");
       return;
     }
-    const response=await fetch("/api/assistant",{
-      method:"POST",
-      headers:{"content-type":"application/json",Authorization:`Bearer ${token}`},
-      body:JSON.stringify({question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||""})
-    });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||"AI yanıtı alınamadı.");
+    const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||""});
     addMessage(payload.answer||"Bu soru için yanıt üretilemedi.");
   }
 
