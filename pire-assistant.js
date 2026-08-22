@@ -136,32 +136,36 @@
     style.id=STYLE_ID;
     style.textContent=`
       #${ROOT_ID}{position:fixed;right:22px;bottom:22px;z-index:2147482000;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
-      .pire-guide-launcher{width:58px;height:58px;border:1px solid rgba(218,181,92,.58);border-radius:50%;background:linear-gradient(145deg,#dabb6e,#9f772c);color:#17130c;box-shadow:0 16px 38px rgba(0,0,0,.42),0 0 0 7px rgba(218,181,92,.08);font-size:24px;font-weight:900;cursor:pointer;transition:.25s ease}
+      .pire-guide-launcher{width:62px;height:62px;padding:5px;border:1px solid rgba(218,181,92,.68);border-radius:50%;background:#0d0e0d;box-shadow:0 16px 38px rgba(0,0,0,.42),0 0 0 7px rgba(218,181,92,.08);cursor:pointer;transition:.25s ease;overflow:hidden}
+      .pire-guide-launcher img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover}
       .pire-guide-launcher:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 0 10px rgba(218,181,92,.12)}
-      .pire-guide-panel{position:absolute;right:0;bottom:72px;width:min(390px,calc(100vw - 30px));max-height:min(650px,calc(100vh - 110px));display:none;grid-template-rows:auto minmax(150px,1fr) auto;background:rgba(15,16,15,.98);color:#eee9df;border:1px solid rgba(218,181,92,.3);border-radius:20px;box-shadow:0 28px 75px rgba(0,0,0,.58);overflow:hidden;backdrop-filter:blur(18px)}
+      .pire-guide-nudge{position:absolute;right:73px;bottom:10px;width:max-content;max-width:240px;padding:10px 13px;border:1px solid rgba(218,181,92,.38);border-radius:12px;background:rgba(15,16,15,.97);color:#eee9df;box-shadow:0 12px 30px rgba(0,0,0,.38);font-size:12px;font-weight:800;opacity:0;visibility:hidden;transform:translateX(8px);transition:.22s ease;pointer-events:none}
+      .pire-guide-nudge:after{content:"";position:absolute;right:-6px;top:50%;width:10px;height:10px;background:#111210;border-top:1px solid rgba(218,181,92,.38);border-right:1px solid rgba(218,181,92,.38);transform:translateY(-50%) rotate(45deg)}
+      #${ROOT_ID}:has(.pire-guide-launcher:hover) .pire-guide-nudge,#${ROOT_ID}:has(.pire-guide-launcher:focus-visible) .pire-guide-nudge{opacity:1;visibility:visible;transform:none}
+      .pire-guide-panel{position:absolute;right:0;bottom:76px;width:min(350px,calc(100vw - 30px));max-height:min(560px,calc(100vh - 115px));display:none;grid-template-rows:auto minmax(150px,1fr) auto;background:rgba(15,16,15,.98);color:#eee9df;border:1px solid rgba(218,181,92,.3);border-radius:18px;box-shadow:0 28px 75px rgba(0,0,0,.58);overflow:hidden;backdrop-filter:blur(18px)}
       .pire-guide-panel.open{display:grid;animation:pireGuideIn .24s ease-out}
       @keyframes pireGuideIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
       .pire-guide-head{display:flex;align-items:center;gap:11px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(100deg,rgba(218,181,92,.13),transparent)}
-      .pire-guide-mark{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#dabb6e;color:#17130c;font-weight:950}
-      .pire-guide-head div{display:grid;gap:2px;min-width:0}.pire-guide-head b{font-size:14px}.pire-guide-head small{color:#a9a296;font-size:10px}
+      .pire-guide-mark{display:grid;place-items:center;width:39px;height:39px;padding:3px;border-radius:12px;background:#0d0e0d;border:1px solid rgba(218,181,92,.4);overflow:hidden}.pire-guide-mark img{width:100%;height:100%;border-radius:9px;object-fit:cover}
+      .pire-guide-head div{display:grid;gap:2px;min-width:0}.pire-guide-head b{font-size:15px}.pire-guide-head small{color:#a9a296;font-size:11px}
       .pire-guide-close{margin-left:auto;border:0;background:transparent;color:#aaa39a;font-size:20px;cursor:pointer;padding:5px}
       .pire-guide-messages{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:11px}
-      .pire-guide-message{max-width:92%;padding:11px 13px;border-radius:14px;font-size:12px;line-height:1.55;white-space:pre-line}
+      .pire-guide-message{max-width:94%;padding:12px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;white-space:pre-line}
       .pire-guide-message.bot{align-self:flex-start;background:#20211f;border:1px solid rgba(218,181,92,.18);color:#eee9df;border-bottom-left-radius:4px}
       .pire-guide-message.user{align-self:flex-end;background:#b99343;color:#17130c;font-weight:700;border-bottom-right-radius:4px}
       .pire-guide-card{display:grid;gap:10px;padding:13px;border:1px solid rgba(218,181,92,.25);border-radius:14px;background:rgba(218,181,92,.06)}
-      .pire-guide-card b{font-size:12px;color:#dabb6e}.pire-guide-card ol{margin:0;padding-left:19px;display:grid;gap:7px;color:#ccc6bb;font-size:11px;line-height:1.45}
+      .pire-guide-card b{font-size:14px;color:#dabb6e}.pire-guide-card ol{margin:0;padding-left:20px;display:grid;gap:9px;color:#ccc6bb;font-size:12.5px;line-height:1.5}
       .pire-guide-card li.active{color:#fff;font-weight:800}
-      .pire-guide-controls{display:flex;gap:7px}.pire-guide-controls button{flex:1;border:1px solid rgba(218,181,92,.3);border-radius:9px;background:#24241f;color:#e8dfca;padding:8px 9px;font-size:10px;font-weight:800;cursor:pointer}.pire-guide-controls button.primary{background:#dabb6e;color:#17130c}
+      .pire-guide-controls{display:flex;gap:7px}.pire-guide-controls button{flex:1;border:1px solid rgba(218,181,92,.3);border-radius:9px;background:#24241f;color:#e8dfca;padding:10px 9px;font-size:12px;font-weight:800;cursor:pointer}.pire-guide-controls button.primary{background:#dabb6e;color:#17130c}
       .pire-guide-form{display:flex;gap:8px;padding:13px;border-top:1px solid rgba(255,255,255,.08);background:#121312}
-      .pire-guide-form input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#1c1d1b;color:#fff;outline:none;padding:11px 12px;font-size:12px}.pire-guide-form input:focus{border-color:#dabb6e}
+      .pire-guide-form input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#1c1d1b;color:#fff;outline:none;padding:12px;font-size:13px}.pire-guide-form input:focus{border-color:#dabb6e}
       .pire-guide-form button{border:0;border-radius:11px;background:#dabb6e;color:#17130c;padding:0 14px;font-weight:950;cursor:pointer}
       .${HIGHLIGHT_CLASS}{position:relative!important;z-index:2147482500!important;outline:3px solid #e4bf62!important;outline-offset:5px!important;box-shadow:0 0 0 10px rgba(228,191,98,.18),0 0 35px rgba(228,191,98,.8)!important;animation:pireGuideSignal 1.15s ease-in-out infinite!important}
       @keyframes pireGuideSignal{50%{outline-offset:10px;box-shadow:0 0 0 16px rgba(228,191,98,.06),0 0 44px rgba(228,191,98,.55)}}
       .pire-guide-tip{position:fixed;z-index:2147483000;max-width:260px;padding:9px 11px;border-radius:10px;background:#dabb6e;color:#17130c;font:800 11px/1.35 Inter,system-ui,sans-serif;box-shadow:0 12px 35px rgba(0,0,0,.45);pointer-events:none}
       html[data-theme="light"] .pire-guide-panel{background:rgba(255,253,248,.98);color:#231f18;border-color:rgba(143,101,20,.28)}
       html[data-theme="light"] .pire-guide-message.bot{background:#f2eee5;color:#29251e}html[data-theme="light"] .pire-guide-card ol{color:#5d564b}html[data-theme="light"] .pire-guide-form{background:#f7f3eb}html[data-theme="light"] .pire-guide-form input{background:#fff;color:#211d16;border-color:#d9d1c3}
-      @media(max-width:600px){#${ROOT_ID}{right:14px;bottom:14px}.pire-guide-panel{position:fixed;left:12px;right:12px;bottom:82px;width:auto;max-height:72vh}.pire-guide-launcher{width:52px;height:52px}}
+      @media(max-width:600px){#${ROOT_ID}{right:14px;bottom:14px}.pire-guide-panel{position:fixed;left:12px;right:12px;bottom:78px;width:auto;max-height:68vh}.pire-guide-launcher{width:55px;height:55px}.pire-guide-nudge{display:none}}
       @media(prefers-reduced-motion:reduce){.${HIGHLIGHT_CLASS},.pire-guide-panel.open{animation:none!important}}
     `;
     document.head.appendChild(style);
@@ -215,7 +219,12 @@
     const step=state.guide.steps[state.step];
     const target=findTarget(step.targets);
     document.querySelectorAll(".pire-guide-card li").forEach((li,index)=>li.classList.toggle("active",index===state.step));
-    if(!target){addMessage(`Bu adım için ekranda “${step.targets?.[0]||"ilgili alan"}” öğesini göremedim. Önce önceki adımı tamamlayın veya ilgili menüyü açın.`);return}
+    if(!target){
+      addMessage(`Bu adım için ekranda “${step.targets?.[0]||"ilgili alan"}” öğesini göremedim. Önce önceki adımı tamamlayın veya ilgili menüyü açın.`);
+      document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.add("open");
+      return;
+    }
+    document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.remove("open");
     target.scrollIntoView({behavior:"smooth",block:"center",inline:"center"});
     setTimeout(()=>{
       target.classList.add(HIGHLIGHT_CLASS);
@@ -234,6 +243,7 @@
     if(state.step>=state.guide.steps.length-1){
       document.querySelectorAll(".pire-guide-card li").forEach(li=>li.classList.remove("active"));
       addMessage("Rehber adımlarını tamamladınız. İşlemin kaydedildiğini ekrandaki başarı bildirimiyle kontrol edebilirsiniz.");
+      document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.add("open");
       return;
     }
     state.step+=1;
@@ -263,7 +273,7 @@
     if(document.getElementById(ROOT_ID))return;
     injectStyle();
     const root=document.createElement("div");root.id=ROOT_ID;root.hidden=true;
-    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark">π</span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber">?</button>`;
+    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark"><img src="/pire-logo-clean.png" alt=""></span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><span class="pire-guide-nudge" aria-hidden="true">Size nasıl yardımcı olabilirim?</span><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber"><img src="/pire-logo-clean.png" alt=""></button>`;
     document.body.appendChild(root);
     root.querySelector(".pire-guide-launcher").addEventListener("click",()=>root.querySelector(".pire-guide-panel").classList.toggle("open"));
     root.querySelector(".pire-guide-close").addEventListener("click",()=>{root.querySelector(".pire-guide-panel").classList.remove("open");removeHighlight()});
