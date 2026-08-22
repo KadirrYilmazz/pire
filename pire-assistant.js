@@ -4,9 +4,19 @@
   const STYLE_ID="pire-guide-style";
   const ROOT_ID="pire-guide-root";
   const HIGHLIGHT_CLASS="pire-guide-highlight";
-  const state={guide:null,step:0};
+  const state={guide:null,step:0,pending:false};
 
   const guides=[
+    {
+      id:"today-lessons",
+      match:/bug[uü]n(?:kü)?\s+(?:hangi\s+)?ders(?:ler)?(?:\s+var)?|bug[uü]n.*program/i,
+      title:"Bugünün derslerini görüntüleme",
+      roles:["Yönetici","Eğitmen","Öğrenci","Veli"],
+      steps:[
+        {text:"Üst menüden Genel Bakış bölümünü açın.",targets:["Genel Bakış","Ana Sayfa"]},
+        {text:"Bugünkü Dersler alanında saat, branş ve ders durumlarını inceleyin.",targets:["Bugünkü Dersler","Bugünün Dersleri"]}
+      ]
+    },
     {
       id:"invoice-expense",
       match:/fatura|elektrik|doğalgaz|internet|telefon|su fatur|kira|gider/i,
@@ -160,6 +170,7 @@
       .pire-guide-form{display:flex;gap:8px;padding:13px;border-top:1px solid rgba(255,255,255,.08);background:#121312}
       .pire-guide-form input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#1c1d1b;color:#fff;outline:none;padding:12px;font-size:13px}.pire-guide-form input:focus{border-color:#dabb6e}
       .pire-guide-form button{border:0;border-radius:11px;background:#dabb6e;color:#17130c;padding:0 14px;font-weight:950;cursor:pointer}
+      .pire-guide-form button:disabled,.pire-guide-form input:disabled{cursor:wait;opacity:.6}
       .${HIGHLIGHT_CLASS}{position:relative!important;z-index:2147482500!important;outline:3px solid #e4bf62!important;outline-offset:5px!important;box-shadow:0 0 0 10px rgba(228,191,98,.18),0 0 35px rgba(228,191,98,.8)!important;animation:pireGuideSignal 1.15s ease-in-out infinite!important}
       @keyframes pireGuideSignal{50%{outline-offset:10px;box-shadow:0 0 0 16px rgba(228,191,98,.06),0 0 44px rgba(228,191,98,.55)}}
       .pire-guide-tip{position:fixed;z-index:2147483000;max-width:260px;padding:9px 11px;border-radius:10px;background:#dabb6e;color:#17130c;font:800 11px/1.35 Inter,system-ui,sans-serif;box-shadow:0 12px 35px rgba(0,0,0,.45);pointer-events:none}
@@ -260,13 +271,42 @@
     box.appendChild(card);box.scrollTop=box.scrollHeight;
   }
 
-  function answer(query){
+  function accessToken(){
+    try{
+      for(let index=0;index<localStorage.length;index+=1){
+        const key=localStorage.key(index)||"";
+        if(!/^sb-.*-auth-token$/.test(key))continue;
+        const stored=JSON.parse(localStorage.getItem(key)||"null");
+        const token=stored?.access_token||stored?.currentSession?.access_token;
+        if(token)return token;
+      }
+    }catch(_){ }
+    return "";
+  }
+
+  async function askAI(query){
+    const token=accessToken();
+    if(!token){
+      addMessage("Bu soru hazır rehberlerin dışında. Güvenli AI yanıtı için gerçek Pİ-RE/Supabase oturumuyla giriş yapmanız gerekiyor; yerel kurtarma oturumu AI erişimi vermez.");
+      return;
+    }
+    const response=await fetch("/api/assistant",{
+      method:"POST",
+      headers:{"content-type":"application/json",Authorization:`Bearer ${token}`},
+      body:JSON.stringify({question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||""})
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||"AI yanıtı alınamadı.");
+    addMessage(payload.answer||"Bu soru için yanıt üretilemedi.");
+  }
+
+  async function answer(query){
     const currentRole=role();
     const guide=guides.find(item=>item.match.test(query)&&(item.roles.includes(currentRole)||item.roles.length===0));
     if(guide){addMessage(`${guide.title} için sizi adım adım yönlendireceğim.`);renderGuide(guide);return}
     const blocked=guides.find(item=>item.match.test(query));
     if(blocked){addMessage(`Bu işlem ${currentRole} rolünde kullanılamıyor. Yetkili bir yönetici hesabıyla giriş yapmanız gerekir.`);return}
-    addMessage("Bu işlemi henüz hazır rehberlerim arasında bulamadım. İsteğinizi “öğrenci ekle”, “ders oluştur”, “fatura gideri gir”, “yoklama yap”, “ödeme kaydet”, “telafi planla” veya “rapor al” gibi biraz daha kısa yazabilirsiniz.");
+    try{await askAI(query)}catch(error){addMessage(error?.message||"AI servisine şu anda ulaşılamıyor. Lütfen biraz sonra tekrar deneyin.")}
   }
 
   function build(){
@@ -277,7 +317,14 @@
     document.body.appendChild(root);
     root.querySelector(".pire-guide-launcher").addEventListener("click",()=>root.querySelector(".pire-guide-panel").classList.toggle("open"));
     root.querySelector(".pire-guide-close").addEventListener("click",()=>{root.querySelector(".pire-guide-panel").classList.remove("open");removeHighlight()});
-    root.querySelector("form").addEventListener("submit",event=>{event.preventDefault();const input=root.querySelector("input"),query=input.value.trim();if(!query)return;addMessage(query,"user");input.value="";answer(query)});
+    root.querySelector("form").addEventListener("submit",async event=>{
+      event.preventDefault();
+      if(state.pending)return;
+      const input=root.querySelector("input"),button=root.querySelector(".pire-guide-form button"),query=input.value.trim();
+      if(!query)return;
+      addMessage(query,"user");input.value="";state.pending=true;input.disabled=true;button.disabled=true;
+      try{await answer(query)}finally{state.pending=false;input.disabled=false;button.disabled=false;input.focus()}
+    });
     root.addEventListener("click",event=>{
       const action=event.target.closest("[data-guide-action]")?.dataset.guideAction;
       if(action==="show")showStep();
