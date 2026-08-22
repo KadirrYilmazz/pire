@@ -1,0 +1,282 @@
+(()=>{
+  "use strict";
+
+  const STYLE_ID="pire-guide-style";
+  const ROOT_ID="pire-guide-root";
+  const HIGHLIGHT_CLASS="pire-guide-highlight";
+  const state={guide:null,step:0};
+
+  const guides=[
+    {
+      id:"invoice-expense",
+      match:/fatura|elektrik|doğalgaz|internet|telefon|su fatur|kira|gider/i,
+      title:"Faturaları gider olarak kaydetme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüde Finans bölümünü açın.",targets:["Finans"]},
+        {text:"Açılan menüden Gider Takibi seçeneğine basın.",targets:["Gider Takibi","Giderler"]},
+        {text:"Gider ekle veya Yeni gider düğmesine basın.",targets:["Gider ekle","Yeni gider","Gider Ekle"]},
+        {text:"Kategori alanında Fatura seçin; faturanın açıklamasını, tutarını ve tarihini girin.",targets:["Kategori","Fatura"]},
+        {text:"Bilgileri kontrol edip Kaydet düğmesine basın. Her faturayı ayrı kayıt olarak girin.",targets:["Kaydet","Gideri kaydet"]}
+      ]
+    },
+    {
+      id:"student",
+      match:/öğrenci.*(ekle|kaydet|oluştur)|yeni öğrenci/i,
+      title:"Yeni öğrenci ekleme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüde Yeni düğmesine basın.",targets:["Yeni"]},
+        {text:"Öğrenci ekle seçeneğini açın.",targets:["Öğrenci ekle"]},
+        {text:"Öğrenci ve veli bilgilerini eksiksiz doldurun.",targets:["Ad Soyad","Öğrenci Bilgileri"]},
+        {text:"Durumu Aktif seçip Kaydet düğmesine basın.",targets:["Kaydet","Öğrenciyi kaydet"]}
+      ]
+    },
+    {
+      id:"teacher",
+      match:/eğitmen.*(ekle|kaydet|oluştur)|yeni eğitmen|öğretmen.*ekle/i,
+      title:"Yeni eğitmen ekleme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüde Yeni düğmesine basın.",targets:["Yeni"]},
+        {text:"Eğitmen ekle seçeneğini açın.",targets:["Eğitmen ekle"]},
+        {text:"Kimlik, iletişim ve branş bilgilerini doldurun.",targets:["Ad Soyad","Branş"]},
+        {text:"Bilgileri kontrol edip Kaydet düğmesine basın.",targets:["Kaydet","Eğitmeni kaydet"]}
+      ]
+    },
+    {
+      id:"lesson",
+      match:/ders.*(ekle|oluştur|planla|tanımla)|yeni ders/i,
+      title:"Yeni ders oluşturma",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüde Yeni düğmesine basın.",targets:["Yeni"]},
+        {text:"Ders oluştur seçeneğine basın.",targets:["Ders oluştur"]},
+        {text:"Öğrenci, eğitmen, tarih, saat, süre ve dersliği seçin.",targets:["Öğrenci","Eğitmen"]},
+        {text:"Tekrarlama ve ücret bilgilerini kontrol edin.",targets:["Tekrarlama","Ücret"]},
+        {text:"Dersi Kaydet düğmesine basın.",targets:["Kaydet","Dersi oluştur"]}
+      ]
+    },
+    {
+      id:"payment",
+      match:/ödeme|tahsilat|borç|ücret.*gir/i,
+      title:"Ödeme veya tahsilat kaydı",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüde Finans bölümünü açın.",targets:["Finans"]},
+        {text:"Ödeme Takibi seçeneğine basın.",targets:["Ödeme Takibi","Ödemeler"]},
+        {text:"Ödeme ekle veya Tahsilat ekle düğmesini açın.",targets:["Ödeme ekle","Tahsilat ekle"]},
+        {text:"Öğrenciyi, tutarı, tarihi ve ödeme yöntemini seçin.",targets:["Öğrenci","Tutar"]},
+        {text:"Kaydet düğmesine basın.",targets:["Kaydet"]}
+      ]
+    },
+    {
+      id:"attendance",
+      match:/yoklama|devamsız|katıldı|gelmedi/i,
+      title:"Yoklama girme",
+      roles:["Yönetici","Eğitmen"],
+      steps:[
+        {text:"Üst menüden Yoklama ve Ders Notları bölümünü açın.",targets:["Yoklama","Yoklama ve Ders Notları"]},
+        {text:"İşlem yapmak istediğiniz dersi seçin.",targets:["Ders seç","Ders"]},
+        {text:"Öğrencilerin katılım durumlarını işaretleyin.",targets:["Katıldı","Gelmedi"]},
+        {text:"Yoklamayı Kaydet düğmesine basın.",targets:["Kaydet","Yoklamayı kaydet"]}
+      ]
+    },
+    {
+      id:"makeup",
+      match:/telafi|ders.*iptal|ertele/i,
+      title:"İptal ve telafi işlemi",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüden Telafi ve Ders Değişiklikleri bölümünü açın.",targets:["Telafi","Telafi ve Ders Değişiklikleri"]},
+        {text:"İlgili iptal veya telafi kaydını seçin.",targets:["Telafi planla","İptal"]},
+        {text:"Önerilen uygun saatlerden birini veya özel tarih ve saati seçin.",targets:["Uygun saat","Tarih"]},
+        {text:"Çakışma uyarılarını kontrol edip Kaydet düğmesine basın.",targets:["Kaydet","Telafiyi planla"]}
+      ]
+    },
+    {
+      id:"report",
+      match:/rapor|analiz|excel|pdf|istatistik/i,
+      title:"Rapor görüntüleme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüden Raporlar ve Analiz bölümünü açın.",targets:["Raporlar","Raporlar ve Analiz"]},
+        {text:"İncelemek istediğiniz dönemi ve filtreleri seçin.",targets:["Bu ay","Filtre"]},
+        {text:"İsterseniz Excel veya PDF dışa aktarma düğmesini kullanın.",targets:["Excel","PDF"]}
+      ]
+    },
+    {
+      id:"account",
+      match:/kullanıcı|hesap|şifre|giriş.*yetki|rol ata/i,
+      title:"Kullanıcı hesabı ve yetki işlemi",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüden Kullanıcı Hesapları bölümünü açın.",targets:["Kullanıcı Hesapları","Kullanıcılar"]},
+        {text:"İlgili kişiyi bulun veya yeni hesap oluşturun.",targets:["Hesap oluştur","Kullanıcı ara"]},
+        {text:"Rolü, bağlı öğrenci/eğitmen kaydını ve aktiflik durumunu kontrol edin.",targets:["Rol","Aktif"]},
+        {text:"Değişiklikleri Kaydet düğmesine basın.",targets:["Kaydet"]}
+      ]
+    },
+    {
+      id:"settings",
+      match:/ayar|kurum bilg|bildirim zamanı/i,
+      title:"Kurum ayarlarını düzenleme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüden Kurum Ayarları bölümünü açın.",targets:["Kurum Ayarları","Ayarlar"]},
+        {text:"Değiştirmek istediğiniz ayar grubunu seçin.",targets:["Bildirim Zamanları","Genel"]},
+        {text:"Yeni değeri girip Kaydet düğmesine basın.",targets:["Kaydet"]}
+      ]
+    }
+  ];
+
+  function injectStyle(){
+    if(document.getElementById(STYLE_ID))return;
+    const style=document.createElement("style");
+    style.id=STYLE_ID;
+    style.textContent=`
+      #${ROOT_ID}{position:fixed;right:22px;bottom:22px;z-index:2147482000;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
+      .pire-guide-launcher{width:58px;height:58px;border:1px solid rgba(218,181,92,.58);border-radius:50%;background:linear-gradient(145deg,#dabb6e,#9f772c);color:#17130c;box-shadow:0 16px 38px rgba(0,0,0,.42),0 0 0 7px rgba(218,181,92,.08);font-size:24px;font-weight:900;cursor:pointer;transition:.25s ease}
+      .pire-guide-launcher:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 0 10px rgba(218,181,92,.12)}
+      .pire-guide-panel{position:absolute;right:0;bottom:72px;width:min(390px,calc(100vw - 30px));max-height:min(650px,calc(100vh - 110px));display:none;grid-template-rows:auto minmax(150px,1fr) auto;background:rgba(15,16,15,.98);color:#eee9df;border:1px solid rgba(218,181,92,.3);border-radius:20px;box-shadow:0 28px 75px rgba(0,0,0,.58);overflow:hidden;backdrop-filter:blur(18px)}
+      .pire-guide-panel.open{display:grid;animation:pireGuideIn .24s ease-out}
+      @keyframes pireGuideIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+      .pire-guide-head{display:flex;align-items:center;gap:11px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(100deg,rgba(218,181,92,.13),transparent)}
+      .pire-guide-mark{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#dabb6e;color:#17130c;font-weight:950}
+      .pire-guide-head div{display:grid;gap:2px;min-width:0}.pire-guide-head b{font-size:14px}.pire-guide-head small{color:#a9a296;font-size:10px}
+      .pire-guide-close{margin-left:auto;border:0;background:transparent;color:#aaa39a;font-size:20px;cursor:pointer;padding:5px}
+      .pire-guide-messages{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:11px}
+      .pire-guide-message{max-width:92%;padding:11px 13px;border-radius:14px;font-size:12px;line-height:1.55;white-space:pre-line}
+      .pire-guide-message.bot{align-self:flex-start;background:#20211f;border:1px solid rgba(218,181,92,.18);color:#eee9df;border-bottom-left-radius:4px}
+      .pire-guide-message.user{align-self:flex-end;background:#b99343;color:#17130c;font-weight:700;border-bottom-right-radius:4px}
+      .pire-guide-card{display:grid;gap:10px;padding:13px;border:1px solid rgba(218,181,92,.25);border-radius:14px;background:rgba(218,181,92,.06)}
+      .pire-guide-card b{font-size:12px;color:#dabb6e}.pire-guide-card ol{margin:0;padding-left:19px;display:grid;gap:7px;color:#ccc6bb;font-size:11px;line-height:1.45}
+      .pire-guide-card li.active{color:#fff;font-weight:800}
+      .pire-guide-controls{display:flex;gap:7px}.pire-guide-controls button{flex:1;border:1px solid rgba(218,181,92,.3);border-radius:9px;background:#24241f;color:#e8dfca;padding:8px 9px;font-size:10px;font-weight:800;cursor:pointer}.pire-guide-controls button.primary{background:#dabb6e;color:#17130c}
+      .pire-guide-form{display:flex;gap:8px;padding:13px;border-top:1px solid rgba(255,255,255,.08);background:#121312}
+      .pire-guide-form input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#1c1d1b;color:#fff;outline:none;padding:11px 12px;font-size:12px}.pire-guide-form input:focus{border-color:#dabb6e}
+      .pire-guide-form button{border:0;border-radius:11px;background:#dabb6e;color:#17130c;padding:0 14px;font-weight:950;cursor:pointer}
+      .${HIGHLIGHT_CLASS}{position:relative!important;z-index:2147482500!important;outline:3px solid #e4bf62!important;outline-offset:5px!important;box-shadow:0 0 0 10px rgba(228,191,98,.18),0 0 35px rgba(228,191,98,.8)!important;animation:pireGuideSignal 1.15s ease-in-out infinite!important}
+      @keyframes pireGuideSignal{50%{outline-offset:10px;box-shadow:0 0 0 16px rgba(228,191,98,.06),0 0 44px rgba(228,191,98,.55)}}
+      .pire-guide-tip{position:fixed;z-index:2147483000;max-width:260px;padding:9px 11px;border-radius:10px;background:#dabb6e;color:#17130c;font:800 11px/1.35 Inter,system-ui,sans-serif;box-shadow:0 12px 35px rgba(0,0,0,.45);pointer-events:none}
+      html[data-theme="light"] .pire-guide-panel{background:rgba(255,253,248,.98);color:#231f18;border-color:rgba(143,101,20,.28)}
+      html[data-theme="light"] .pire-guide-message.bot{background:#f2eee5;color:#29251e}html[data-theme="light"] .pire-guide-card ol{color:#5d564b}html[data-theme="light"] .pire-guide-form{background:#f7f3eb}html[data-theme="light"] .pire-guide-form input{background:#fff;color:#211d16;border-color:#d9d1c3}
+      @media(max-width:600px){#${ROOT_ID}{right:14px;bottom:14px}.pire-guide-panel{position:fixed;left:12px;right:12px;bottom:82px;width:auto;max-height:72vh}.pire-guide-launcher{width:52px;height:52px}}
+      @media(prefers-reduced-motion:reduce){.${HIGHLIGHT_CLASS},.pire-guide-panel.open{animation:none!important}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  const normalized=value=>String(value||"").toLocaleLowerCase("tr-TR").replace(/\s+/g," ").trim();
+  function role(){
+    const text=document.querySelector(".brand-user-identity span")?.textContent||document.querySelector(".authenticated-user-chip")?.textContent||"";
+    return ["Yönetici","Eğitmen","Öğrenci","Veli"].find(item=>text.includes(item))||"";
+  }
+  function fullName(){return document.querySelector(".brand-user-identity b")?.textContent?.trim()||""}
+  function authenticated(){return Boolean(role()&&fullName())}
+  function salutation(){
+    const name=fullName().split(/\s+/)[0]||"";
+    const suffix=role()==="Yönetici"?" Bey":"";
+    return name?`${name}${suffix}`:"";
+  }
+
+  function addMessage(text,type="bot"){
+    const box=document.querySelector(`#${ROOT_ID} .pire-guide-messages`);
+    if(!box)return;
+    const item=document.createElement("div");
+    item.className=`pire-guide-message ${type}`;
+    item.textContent=text;
+    box.appendChild(item);
+    box.scrollTop=box.scrollHeight;
+  }
+
+  function removeHighlight(){
+    document.querySelectorAll(`.${HIGHLIGHT_CLASS}`).forEach(el=>el.classList.remove(HIGHLIGHT_CLASS));
+    document.querySelectorAll(".pire-guide-tip").forEach(el=>el.remove());
+  }
+
+  function visible(el){const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.visibility!=="hidden"&&s.display!=="none"}
+  function findTarget(names){
+    const selectors="button,summary,a,label,[role='button'],input,select,textarea";
+    const elements=[...document.querySelectorAll(selectors)].filter(visible);
+    for(const name of names||[]){
+      const wanted=normalized(name);
+      const exact=elements.find(el=>normalized(el.innerText||el.textContent||el.getAttribute("aria-label")||el.getAttribute("placeholder"))===wanted);
+      if(exact)return exact;
+      const partial=elements.find(el=>normalized(el.innerText||el.textContent||el.getAttribute("aria-label")||el.getAttribute("placeholder")).includes(wanted));
+      if(partial)return partial;
+    }
+    return null;
+  }
+
+  function showStep(){
+    removeHighlight();
+    if(!state.guide)return;
+    const step=state.guide.steps[state.step];
+    const target=findTarget(step.targets);
+    document.querySelectorAll(".pire-guide-card li").forEach((li,index)=>li.classList.toggle("active",index===state.step));
+    if(!target){addMessage(`Bu adım için ekranda “${step.targets?.[0]||"ilgili alan"}” öğesini göremedim. Önce önceki adımı tamamlayın veya ilgili menüyü açın.`);return}
+    target.scrollIntoView({behavior:"smooth",block:"center",inline:"center"});
+    setTimeout(()=>{
+      target.classList.add(HIGHLIGHT_CLASS);
+      const rect=target.getBoundingClientRect(),tip=document.createElement("div");
+      tip.className="pire-guide-tip";
+      tip.textContent=`${state.step+1}. adım: Buraya basın`;
+      tip.style.left=`${Math.max(10,Math.min(window.innerWidth-270,rect.left))}px`;
+      tip.style.top=`${Math.min(window.innerHeight-55,rect.bottom+13)}px`;
+      document.body.appendChild(tip);
+    },280);
+  }
+
+  function renderGuide(guide){
+    state.guide=guide;state.step=0;
+    const box=document.querySelector(`#${ROOT_ID} .pire-guide-messages`);
+    const card=document.createElement("div");
+    card.className="pire-guide-card";
+    card.innerHTML=`<b>${guide.title}</b><ol>${guide.steps.map((s,i)=>`<li class="${i===0?"active":""}">${s.text}</li>`).join("")}</ol><div class="pire-guide-controls"><button type="button" data-guide-action="show" class="primary">Bu adımı göster</button><button type="button" data-guide-action="next">Sonraki adım</button></div>`;
+    box.appendChild(card);box.scrollTop=box.scrollHeight;
+  }
+
+  function answer(query){
+    const currentRole=role();
+    const guide=guides.find(item=>item.match.test(query)&&(item.roles.includes(currentRole)||item.roles.length===0));
+    if(guide){addMessage(`${guide.title} için sizi adım adım yönlendireceğim.`);renderGuide(guide);return}
+    const blocked=guides.find(item=>item.match.test(query));
+    if(blocked){addMessage(`Bu işlem ${currentRole} rolünde kullanılamıyor. Yetkili bir yönetici hesabıyla giriş yapmanız gerekir.`);return}
+    addMessage("Bu işlemi henüz hazır rehberlerim arasında bulamadım. İsteğinizi “öğrenci ekle”, “ders oluştur”, “fatura gideri gir”, “yoklama yap”, “ödeme kaydet”, “telafi planla” veya “rapor al” gibi biraz daha kısa yazabilirsiniz.");
+  }
+
+  function build(){
+    if(document.getElementById(ROOT_ID))return;
+    injectStyle();
+    const root=document.createElement("div");root.id=ROOT_ID;root.hidden=true;
+    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark">π</span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber">?</button>`;
+    document.body.appendChild(root);
+    root.querySelector(".pire-guide-launcher").addEventListener("click",()=>root.querySelector(".pire-guide-panel").classList.toggle("open"));
+    root.querySelector(".pire-guide-close").addEventListener("click",()=>{root.querySelector(".pire-guide-panel").classList.remove("open");removeHighlight()});
+    root.querySelector("form").addEventListener("submit",event=>{event.preventDefault();const input=root.querySelector("input"),query=input.value.trim();if(!query)return;addMessage(query,"user");input.value="";answer(query)});
+    root.addEventListener("click",event=>{
+      const action=event.target.closest("[data-guide-action]")?.dataset.guideAction;
+      if(action==="show")showStep();
+      if(action==="next"&&state.guide){state.step=Math.min(state.guide.steps.length-1,state.step+1);showStep()}
+    });
+  }
+
+  let lastAuth=false;
+  function sync(){
+    build();
+    const root=document.getElementById(ROOT_ID),isAuth=authenticated();
+    root.hidden=!isAuth;
+    if(isAuth&&!lastAuth){
+      const messages=root.querySelector(".pire-guide-messages");
+      messages.innerHTML="";
+      addMessage(`Merhabalar ${salutation()}. Bugün ne yapmak istiyorsunuz? Yapmak istediğiniz işlemi yazın; size adım adım göstereyim.`);
+      root.querySelector(".pire-guide-panel").classList.add("open");
+    }
+    if(!isAuth){removeHighlight();root.querySelector(".pire-guide-panel")?.classList.remove("open")}
+    lastAuth=isAuth;
+  }
+
+  document.readyState==="loading"?document.addEventListener("DOMContentLoaded",sync):sync();
+  new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true});
+})();
