@@ -1,0 +1,8 @@
+Pİ-RE V0 Kurtarılmış Backend Alpha
+HAR tarihindeki gerçek API GET cevapları ile başlatılır.
+/api çağrıları tarayıcı localStorage içinde emüle edilir.
+Bu aşama test/kurtarma sürümüdür; cihazlar arası ortak veri için Supabase kalıcı backend bağlantısı sonraki adımdır.
+
+Fix 37 notu:
+Tarayıcı emülasyonunda kullanılan temel GET/POST/PATCH/PUT/DELETE akışları tamamlandı.
+Veriler bu sürümde yalnızca kullanılan tarayıcı ve cihazda kalır. Farklı cihazlar ortak veri görmez.

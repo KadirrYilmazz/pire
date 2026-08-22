@@ -1,0 +1,37 @@
+Pİ-RE — Fix 36 / F5 Oturum Stabilizasyonu
+Taban: Fix 35.
+
+Fix 37 — Kurtarılmış API Emülasyonu Tamamlama
+- Katalogda ders ve eğitmen ekleme, güncelleme, arşivleme, aktifleştirme ve kalıcı silme tamamlandı.
+- Öğrenci ödeme durumunu güncelleyen işlem düzeltildi.
+- Bildirimlerde tümünü okundu işaretleme ve kullanıcı tercihleri eklendi.
+- Duyuru oluşturma, geri çekme ve arşivleme eklendi.
+- Telafi planlaması için çakışmasız saat/derslik önerileri eklendi.
+- Güvenlik günlüğünde limit desteği eklendi.
+- Kurum yedeğini indirme, doğrulama ve onaylı geri yükleme eklendi.
+- Tarayıcı içi API emülasyonu CRUD ve yedekleme testlerinden geçirildi.
+
+Fix 38 — Açık Tema Kullanıcı Kimliği Kontrastı
+- Üst alandaki kullanıcı adı açık temada koyu ve yüksek kontrastlı yapıldı.
+- Kurum ID ve rol satırı daha belirgin altın-kahverengi tona geçirildi.
+- Ayırıcı çizginin açık temadaki görünürlüğü artırıldı.
+- Karanlık tema renkleri değiştirilmedi.
+
+Fix 39 — Sosyal Medya İkonları
+- Takip Et alanına Facebook, X ve TikTok ikonları eklendi.
+- Yeni ikonlar şimdilik yalnızca görsel olarak gösterilir ve tıklanmaz.
+- Instagram bağlantısı ve marka renkleri korunur.
+- Açık tema ve mobil görünüm için ikon kontrastı ayarlandı.
+
+Kök sorun:
+- F5 sonrası local Yönetici hesabı React kullanıcı state'ine geri yüklenmiyordu.
+- Supabase oturumu geri geldiğinde aktif sayfa $i() tarafından varsayılan panele sıfırlanıyordu.
+- Kaydedilmiş sayfa ile aktif rol bir süre veya kalıcı olarak uyuşmayabiliyordu.
+
+Düzeltme:
+- Önce local Yönetici oturumu kontrol edilir ve doğrudan geri yüklenir.
+- Sonra gerekirse Supabase session doğrulanır.
+- Rol geri yüklendikten sonra sadece o role izin verilen son sayfa açılır.
+- Geçersiz/stale bir sayfa kaydı varsa role ait varsayılan sayfaya dönülür.
+- Gerçek oturum yoksa eski sayfa hafızası temizlenir ve Ziyaretçi ekranı açılır.
+- Fix 35'in React içinde doğal isim/ID gösterimi korunur.
