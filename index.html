@@ -1126,11 +1126,27 @@ window.__PIRE_RECOVERED_BACKEND__={reset(){localStorage.removeItem(DBKEY);locati
   const enhance=()=>document.querySelectorAll('.contact-socials').forEach(area=>{
     if(!area.querySelector('.pire-social-placeholders')) area.insertAdjacentHTML('beforeend',icons);
   });
-  enhance();
-  new MutationObserver(enhance).observe(document.documentElement,{childList:true,subtree:true});
+  const boot=()=>{
+    enhance();
+    new MutationObserver(enhance).observe(document.documentElement,{childList:true,subtree:true});
+  };
+  if(document.readyState==='complete') requestAnimationFrame(boot);
+  else window.addEventListener('load',()=>requestAnimationFrame(boot),{once:true});
 })();
 </script>
-<script src="/pire-assistant.js" defer></script>
+<script id="pire-assistant-loader">
+(()=>{
+  const load=()=>{
+    if(document.querySelector('script[data-pire-assistant]'))return;
+    const script=document.createElement('script');
+    script.src='/pire-assistant.js';
+    script.dataset.pireAssistant='true';
+    document.body.appendChild(script);
+  };
+  if(document.readyState==='complete') requestAnimationFrame(load);
+  else window.addEventListener('load',()=>requestAnimationFrame(load),{once:true});
+})();
+</script>
 <script id="_R_">import("/assets/index-BS0ANsbn.js")</script>
 
 
