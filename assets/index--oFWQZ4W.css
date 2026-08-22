@@ -1056,3 +1056,8 @@ html[data-theme="light"] .tiktok-icon{color:#151515}
   .pire-social-icon{width:20px;height:20px;flex-basis:20px}
   .pire-social-icon svg{width:18px;height:18px}
 }
+
+/* FIX 40 — Ziyaretçi sekmelerinde tekrarlanan sayfa başlığını kaldır */
+.visitor-mode .content > header{
+  display:none!important;
+}
