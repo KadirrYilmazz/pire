@@ -228,6 +228,19 @@
     },280);
   }
 
+  function advanceStep(){
+    if(!state.guide)return;
+    removeHighlight();
+    if(state.step>=state.guide.steps.length-1){
+      document.querySelectorAll(".pire-guide-card li").forEach(li=>li.classList.remove("active"));
+      addMessage("Rehber adımlarını tamamladınız. İşlemin kaydedildiğini ekrandaki başarı bildirimiyle kontrol edebilirsiniz.");
+      return;
+    }
+    state.step+=1;
+    document.querySelectorAll(".pire-guide-card li").forEach((li,index)=>li.classList.toggle("active",index===state.step));
+    window.setTimeout(showStep,650);
+  }
+
   function renderGuide(guide){
     state.guide=guide;state.step=0;
     const box=document.querySelector(`#${ROOT_ID} .pire-guide-messages`);
@@ -258,8 +271,12 @@
     root.addEventListener("click",event=>{
       const action=event.target.closest("[data-guide-action]")?.dataset.guideAction;
       if(action==="show")showStep();
-      if(action==="next"&&state.guide){state.step=Math.min(state.guide.steps.length-1,state.step+1);showStep()}
+      if(action==="next"&&state.guide)advanceStep();
     });
+    document.addEventListener("click",event=>{
+      if(!state.guide||!event.target.closest(`.${HIGHLIGHT_CLASS}`))return;
+      advanceStep();
+    },true);
   }
 
   let lastAuth=false;
