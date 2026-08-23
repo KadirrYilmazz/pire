@@ -303,18 +303,40 @@
     });
   }
 
+  function isMonthlyExpenseQuestion(query){
+    const text=normalized(query);
+    return /(bu|içinde bulunduğumuz|şu) ay/.test(text)&&/(harca|gider|masraf)/.test(text)&&/(ne kadar|toplam|tutar)/.test(text);
+  }
+
+  async function monthlyExpenseSummary(){
+    const response=await window.fetch("/api/expenses");
+    if(!response.ok)throw new Error("Gider kayıtları şu anda okunamadı.");
+    const payload=await response.json();
+    const now=new Date();
+    const month=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+    const expenses=(Array.isArray(payload)?payload:payload?.expenses)||[];
+    const current=expenses.filter(item=>String(item?.expenseDate||"").slice(0,7)===month);
+    return {metric:"monthly_expenses",month,total:current.reduce((sum,item)=>sum+Number(item?.amount||0),0),count:current.length};
+  }
+
   async function askAI(query){
     const token=accessToken();
     if(!token){
       addMessage("Bu soru hazır rehberlerin dışında. Güvenli AI yanıtı için gerçek Pİ-RE/Supabase oturumuyla giriş yapmanız gerekiyor; yerel kurtarma oturumu AI erişimi vermez.");
       return;
     }
-    const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||""});
+    const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():undefined;
+    const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
     addMessage(payload.answer||"Bu soru için yanıt üretilemedi.");
   }
 
   async function answer(query){
     const currentRole=role();
+    if(isMonthlyExpenseQuestion(query)){
+      if(currentRole!=="Yönetici"){addMessage("Kurum gider toplamı yalnızca doğrulanmış yönetici hesabıyla görüntülenebilir.");return}
+      try{await askAI(query)}catch(error){addMessage(error?.message||"Gider toplamı şu anda alınamıyor.")}
+      return;
+    }
     const guide=guides.find(item=>item.match.test(query)&&(item.roles.includes(currentRole)||item.roles.length===0));
     if(guide){addMessage(`${guide.title} için sizi adım adım yönlendireceğim.`);renderGuide(guide);return}
     const blocked=guides.find(item=>item.match.test(query));
