@@ -54,6 +54,28 @@
       ]
     },
     {
+      id:"view-own-payments",
+      completion:"view",
+      match:/ödem|borç|bakiye|ücret/i,
+      title:"Kendi ödeme durumunu görüntüleme",
+      roles:["Öğrenci","Veli"],
+      steps:[
+        {text:"Üst menüden kendi panelinizi açın.",targets:["Öğrenci Panelim","Veli Panelim"]},
+        {text:"Ödeme durumu alanında bu ayın borç, tahsilat ve kalan bakiye bilgilerini inceleyin.",targets:["Ödeme durumu","Ödeme bekleniyor","Borcunuz bulunmuyor"]}
+      ]
+    },
+    {
+      id:"view-own-lessons",
+      completion:"view",
+      match:/ders|program/i,
+      title:"Kendi derslerini görüntüleme",
+      roles:["Öğrenci","Veli"],
+      steps:[
+        {text:"Üst menüden kendi panelinizi açın.",targets:["Öğrenci Panelim","Veli Panelim"]},
+        {text:"Ders alanında son ve yaklaşan derslerin tarih, saat ve branş bilgilerini inceleyin.",targets:["Yaklaşan dersler","Son dersler","Ders programı"]}
+      ]
+    },
+    {
       id:"today-lessons",
       completion:"view",
       match:/bug[uü]n(?:kü)?\s+(?:hangi\s+)?ders(?:ler)?(?:\s+var)?|bug[uü]n.*program/i,
@@ -429,9 +451,10 @@
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(state.lastTask?{previousTask:{intent:state.lastTask.intent,targetModule:state.lastTask.targetModule}}:{}),...(summary?{summary}:{})});
     const answer=payload.answer||"Bu soru için yanıt üretilemedi.";
     addMessage(answer);
-    const intentGuides={"student.create":"student","teacher.create":"teacher","lesson.create":"lesson","payment.create":"payment","finance.receivables":"view-receivables"};
+    const intentGuides={"student.create":"student","teacher.create":"teacher","lesson.create":"lesson","payment.create":"payment","finance.receivables":"view-receivables","self.payment.view":"view-own-payments"};
     const moduleGuides={teachers:"view-teachers",students:"view-students",expenses:"view-expenses",payments:"payment",lessons:"today-lessons",attendance:"attendance",makeups:"makeup",reports:"report",accounts:"account",settings:"settings"};
-    const guideId=intentGuides[payload.task?.intent]||moduleGuides[payload.task?.targetModule];
+    const ownLessonGuide=payload.task?.intent==="lesson.view"&&["Öğrenci","Veli"].includes(role())?"view-own-lessons":"";
+    const guideId=ownLessonGuide||intentGuides[payload.task?.intent]||moduleGuides[payload.task?.targetModule];
     const relatedGuide=guides.find(item=>item.id===guideId);
     state.lastTask=payload.task||null;
     if(relatedGuide&&relatedGuide.roles.includes(role())){
