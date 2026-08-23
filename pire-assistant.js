@@ -306,7 +306,7 @@
         let payload={};
         try{payload=JSON.parse(xhr.responseText||"{}")}catch(_){ }
         if(xhr.status>=200&&xhr.status<300)resolve(payload);
-        else reject(new Error(payload.error||"AI yanıtı alınamadı."));
+        else reject(new Error(`${payload.error||"AI yanıtı alınamadı."}${payload.serviceCode?` (Hata kodu: ${payload.serviceCode})`:""}`));
       };
       xhr.onerror=()=>reject(new Error("AI servisine bağlanılamadı."));
       xhr.ontimeout=()=>reject(new Error("AI yanıtı zaman aşımına uğradı."));
