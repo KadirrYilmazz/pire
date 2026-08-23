@@ -18,3 +18,11 @@ test('a related task is remembered for context follow-up', () => {
   assert.match(source, /if\(relatedGuide&&relatedGuide\.roles\.includes\(role\(\)\)\)/);
   assert.match(source, /state\.lastIntent=relatedGuide\.id/);
 });
+
+test('viewing guides show their own completion success instead of a save notice', () => {
+  assert.match(source, /id:"view-receivables",\s+completion:"view"/);
+  assert.match(source, /completedGuide\.completion==="view"/);
+  assert.match(source, /Rehber başarıyla tamamlandı/);
+  assert.match(source, /Doğru ekrana ulaştınız/);
+  assert.match(source, /pire-guide-message\.success/);
+});
