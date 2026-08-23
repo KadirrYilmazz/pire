@@ -330,13 +330,37 @@
     return {metric:"monthly_expenses",month,total:current.reduce((sum,item)=>sum+Number(item?.amount||0),0),count:current.length};
   }
 
+  async function institutionSummary(){
+    const endpoints=["students","catalog","lessons","expenses","finance","packages","attendance","settings"];
+    const values=await Promise.all(endpoints.map(async endpoint=>{
+      try{const response=await window.fetch(`/api/${endpoint}`);return response.ok?await response.json():{}}catch(_){return {}}
+    }));
+    const [studentsData,catalogData,lessonsData,expensesData,financeData,packagesData,attendanceData,settingsData]=values;
+    const students=studentsData?.students||[],teachers=catalogData?.teachers||[],courses=catalogData?.courses||[];
+    const lessons=lessonsData?.lessons||[],expenses=expensesData?.expenses||[],packages=packagesData?.packages||[];
+    const attendance=attendanceData?.attendance||[],today=new Date().toISOString().slice(0,10),month=today.slice(0,7);
+    const monthExpenses=expenses.filter(item=>String(item?.expenseDate||"").slice(0,7)===month);
+    return {
+      metric:"institution_overview",generatedDate:today,
+      students:{total:students.length,active:students.filter(item=>item?.status==="Aktif").length,frozen:students.filter(item=>item?.status==="Kayıt dondurmuş").length,archived:students.filter(item=>item?.status==="Ayrılmış").length},
+      teachers:{total:teachers.length,active:teachers.filter(item=>item?.status==="Aktif").length},
+      courses:{total:courses.length},
+      lessons:{total:lessons.length,today:lessons.filter(item=>item?.lessonDate===today).length,planned:lessons.filter(item=>["Planlandı","Yaklaşıyor"].includes(item?.status)).length,completed:lessons.filter(item=>item?.status==="Tamamlandı").length},
+      expenses:{month,count:monthExpenses.length,total:monthExpenses.reduce((sum,item)=>sum+Number(item?.amount||0),0)},
+      finance:{totalCharged:Number(financeData?.summary?.totalCharged||0),totalPaid:Number(financeData?.summary?.totalPaid||0),totalBalance:Number(financeData?.summary?.totalBalance||0)},
+      packages:{total:packages.length,active:packages.filter(item=>item?.status==="Aktif").length},
+      attendance:{total:attendance.length,present:attendance.filter(item=>item?.status==="Katıldı").length,absent:attendance.filter(item=>/gelmedi/i.test(item?.status||"")).length},
+      institution:{name:String(settingsData?.settings?.institutionName||"").slice(0,100)}
+    };
+  }
+
   async function askAI(query){
     const token=accessToken();
     if(!token){
       addMessage("Bu soru hazır rehberlerin dışında. Güvenli AI yanıtı için gerçek Pİ-RE/Supabase oturumuyla giriş yapmanız gerekiyor; yerel kurtarma oturumu AI erişimi vermez.");
       return;
     }
-    const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():undefined;
+    const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():(role()==="Yönetici"?await institutionSummary():undefined);
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
     addMessage(payload.answer||"Bu soru için yanıt üretilemedi.");
     if(summary){
