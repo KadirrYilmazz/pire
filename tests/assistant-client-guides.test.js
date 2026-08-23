@@ -19,6 +19,10 @@ test('a related task is remembered for context follow-up', () => {
   assert.match(source, /state\.lastIntent=relatedGuide\.id/);
 });
 
+test('the client sends only the previous validated task identifiers as context', () => {
+  assert.match(source, /previousTask:\{intent:state\.lastTask\.intent,targetModule:state\.lastTask\.targetModule\}/);
+});
+
 test('viewing guides show their own completion success instead of a save notice', () => {
   assert.match(source, /id:"view-receivables",\s+completion:"view"/);
   assert.match(source, /completedGuide\.completion==="view"/);
