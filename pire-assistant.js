@@ -39,6 +39,17 @@
       ]
     },
     {
+      id:"view-receivables",
+      match:/alacak|tahsil\s+edilecek|bekleyen\s+ödeme/i,
+      title:"Alacakları görüntüleme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüden Finans bölümünü açın.",targets:["Finans"]},
+        {text:"Açılan menüden Ödeme Takibi seçeneğine basın.",targets:["Ödeme Takibi","Ödemeler"]},
+        {text:"Ödeme listesinde Bekliyor, Kısmi veya Gecikmiş durumundaki kayıtları ve kalan bakiyeyi inceleyin.",targets:["Bekliyor","Kısmi","Gecikmiş","Bakiye"]}
+      ]
+    },
+    {
       id:"today-lessons",
       match:/bug[uü]n(?:kü)?\s+(?:hangi\s+)?ders(?:ler)?(?:\s+var)?|bug[uü]n.*program/i,
       title:"Bugünün derslerini görüntüleme",
@@ -407,15 +418,17 @@
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
     const answer=payload.answer||"Bu soru için yanıt üretilemedi.";
     addMessage(answer);
-    const intentGuides={"student.create":"student","teacher.create":"teacher","lesson.create":"lesson","payment.create":"payment"};
+    const intentGuides={"student.create":"student","teacher.create":"teacher","lesson.create":"lesson","payment.create":"payment","finance.receivables":"view-receivables"};
     const moduleGuides={teachers:"view-teachers",students:"view-students",expenses:"view-expenses",payments:"payment",lessons:"today-lessons",attendance:"attendance",makeups:"makeup",reports:"report",accounts:"account",settings:"settings"};
     const guideId=intentGuides[payload.task?.intent]||moduleGuides[payload.task?.targetModule];
     const relatedGuide=guides.find(item=>item.id===guideId);
     state.lastTask=payload.task||null;
-    if(relatedGuide&&payload.task?.needsGuide&&relatedGuide.roles.includes(role())){
+    if(relatedGuide&&relatedGuide.roles.includes(role())){
       state.lastIntent=relatedGuide.id;
-      addMessage("Bu işlemi gerçek panel üzerinde gösterebilirim. Aşağıdaki “Adım adım göster” düğmesine basın.");
-      offerGuide(relatedGuide);
+      if(payload.task?.needsGuide){
+        addMessage("Bu işlemi gerçek panel üzerinde gösterebilirim. Aşağıdaki “Adım adım göster” düğmesine basın.");
+        offerGuide(relatedGuide);
+      }
     }else if(/adım\s+adım|yönlendir|göster/i.test(query)){
       addMessage("Bu işlem için güvenilir bir panel rehberi henüz tanımlı değil. Yanlış bir alanı göstermemek için otomatik yönlendirme başlatamıyorum.");
     }
