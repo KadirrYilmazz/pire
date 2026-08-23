@@ -56,6 +56,7 @@ const TASK_RULES=[
   {intent:"student.view",targetModule:"students",roles:["Yönetici","Eğitmen"],test:/öğrenci/i},
   {intent:"finance.expenses",targetModule:"expenses",roles:["Yönetici"],test:/gider|harca|masraf|fatura|kira/i},
   {intent:"finance.receivables",targetModule:"payments",roles:["Yönetici"],test:/alacak|tahsil\s+edilecek|bekleyen\s+ödeme/i},
+  {intent:"self.payment.view",targetModule:"payments",roles:["Öğrenci","Veli"],test:/ödem|borç|bakiye|ücret/i},
   {intent:"finance.payments",targetModule:"payments",roles:["Yönetici"],test:/ödeme|tahsilat|borç|bakiye|ciro|gelir/i},
   {intent:"lesson.view",targetModule:"lessons",roles:["Yönetici","Eğitmen","Öğrenci","Veli"],test:/ders|program|takvim/i},
   {intent:"attendance.manage",targetModule:"attendance",roles:["Yönetici","Eğitmen"],test:/yoklama|devamsız|katıldı|gelmedi/i},
@@ -67,7 +68,8 @@ const TASK_RULES=[
 
 function classifyTask(question,identity){
   const normalizedQuestion=String(question||"").toLocaleLowerCase("tr-TR");
-  const rule=TASK_RULES.find(item=>item.test.test(normalizedQuestion));
+  const matches=TASK_RULES.filter(item=>item.test.test(normalizedQuestion));
+  const rule=matches.find(item=>item.roles.some(role=>identity.roles.includes(role)))||matches[0];
   if(!rule)return {intent:"general.answer",targetModule:null,needsGuide:false,allowed:true,confidence:0.5};
   return {intent:rule.intent,targetModule:rule.targetModule,needsGuide:true,allowed:rule.roles.some(role=>identity.roles.includes(role)),confidence:0.95};
 }
@@ -118,6 +120,47 @@ function sanitizeInstitutionSummary(summary,identity){
     finance:{totalCharged:safeNumber(summary.finance?.totalCharged),totalPaid:safeNumber(summary.finance?.totalPaid),totalBalance:safeNumber(summary.finance?.totalBalance)},
     packages:counts(summary.packages),attendance:counts(summary.attendance),
     institution:{name:String(summary.institution?.name||"").replace(/[^A-Za-zÇĞİÖŞÜçğıöşü0-9 .&'’-]/g,"").slice(0,100)}
+  };
+}
+
+async function fetchAuthorizedRows(token,table,select){
+  const url=process.env.SUPABASE_URL;
+  const key=process.env.SUPABASE_ANON_KEY||process.env.SUPABASE_PUBLISHABLE_KEY;
+  const response=await fetch(`${url.replace(/\/$/,"")}/rest/v1/${table}?select=${encodeURIComponent(select)}`,{
+    headers:{apikey:key,Authorization:`Bearer ${token}`,Accept:"application/json"}
+  });
+  if(!response.ok)throw Object.assign(new Error("Yetkili kullanıcı verileri okunamadı."),{status:502});
+  const rows=await response.json();
+  return Array.isArray(rows)?rows:[];
+}
+
+async function buildAuthorizedUserContext(token,identity){
+  if(!["Öğrenci","Veli","Eğitmen"].some(role=>identity.roles.includes(role)))return null;
+  const [students,lessons,lessonStudents,payments,packages,attendance]=await Promise.all([
+    fetchAuthorizedRows(token,"pire_ai_students","id,status,monthly_fee,payment_day"),
+    fetchAuthorizedRows(token,"pire_ai_lessons","id,course,lesson_date,start_time,duration_minutes,status"),
+    fetchAuthorizedRows(token,"pire_ai_lesson_students","lesson_id,student_id"),
+    fetchAuthorizedRows(token,"pire_ai_payments","student_id,billing_month,amount_due,amount_paid,status"),
+    fetchAuthorizedRows(token,"pire_ai_packages","student_id,course,total_lessons,remaining_lessons,makeup_rights,frozen_lessons,status,end_date"),
+    fetchAuthorizedRows(token,"pire_ai_attendance","student_id,status,late_minutes,occurred_at")
+  ]);
+  const allowedIds=new Set(students.map(row=>String(row.id)));
+  const lessonIds=new Set(lessonStudents.filter(row=>allowedIds.has(String(row.student_id))).map(row=>String(row.lesson_id)));
+  const safeLessons=lessons.filter(row=>lessonIds.has(String(row.id))).sort((a,b)=>String(b.lesson_date).localeCompare(String(a.lesson_date)));
+  const safePayments=payments.filter(row=>allowedIds.has(String(row.student_id)));
+  const safePackages=packages.filter(row=>allowedIds.has(String(row.student_id)));
+  const safeAttendance=attendance.filter(row=>allowedIds.has(String(row.student_id)));
+  const now=new Date(),month=`${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,"0")}`;
+  const currentPayments=safePayments.filter(row=>String(row.billing_month||"").slice(0,7)===month);
+  const due=currentPayments.reduce((sum,row)=>sum+safeNumber(row.amount_due),0);
+  const paid=currentPayments.reduce((sum,row)=>sum+safeNumber(row.amount_paid),0);
+  const latest=safeLessons[0];
+  return {
+    metric:"authorized_user_overview",role:identity.role,generatedDate:now.toISOString().slice(0,10),studentCount:students.length,
+    lessons:{total:safeLessons.length,latestDate:latest?.lesson_date||"",latestCourse:String(latest?.course||"").slice(0,60),latestStatus:String(latest?.status||"").slice(0,40)},
+    payments:{month,due,paid,balance:Math.max(0,due-paid),pendingCount:currentPayments.filter(row=>row.status!=="Ödendi").length},
+    packages:{activeCount:safePackages.filter(row=>row.status==="Aktif").length,remainingLessons:safePackages.filter(row=>row.status==="Aktif").reduce((sum,row)=>sum+safeNumber(row.remaining_lessons,10000),0),makeupRights:safePackages.reduce((sum,row)=>sum+safeNumber(row.makeup_rights,10000),0)},
+    attendance:{total:safeAttendance.length,present:safeAttendance.filter(row=>/katıldı/i.test(row.status||"")).length,absent:safeAttendance.filter(row=>/gelmedi/i.test(row.status||"")).length}
   };
 }
 
@@ -203,7 +246,8 @@ module.exports=async function handler(req,res){
   const authorization=String(req.headers.authorization||"");
   if(!authorization.startsWith("Bearer "))return send(res,401,{error:"Geçerli Pİ-RE oturumu gerekiyor."});
   try{
-    const identity=await getVerifiedIdentity(authorization.slice(7).trim());
+    const token=authorization.slice(7).trim();
+    const identity=await getVerifiedIdentity(token);
     if(!consumeRateLimit(`user:${identity.userId}`))return send(res,429,{error:"Çok fazla istek gönderdiniz. Bir dakika sonra tekrar deneyin.",retryAfter:60},{"retry-after":"60"});
     const question=String(req.body?.question||"").trim().slice(0,600);
     const page=String(req.body?.page||"").trim().slice(0,80);
@@ -219,7 +263,7 @@ module.exports=async function handler(req,res){
       if(identity.role!=="Yönetici")return send(res,403,{error:"Finans bilgileri yalnızca doğrulanmış yönetici rolüyle kullanılabilir."});
       return send(res,200,{answer:expenseAnswer,source:"verified-local-summary",task});
     }
-    const context=sanitizeInstitutionSummary(req.body?.summary,identity);
+    const context=identity.role==="Yönetici"?sanitizeInstitutionSummary(req.body?.summary,identity):await buildAuthorizedUserContext(token,identity);
     let answer;
     if(process.env.GROQ_API_KEY){
       const generated=await askGroq(question,identity,page,context,task);
@@ -236,4 +280,4 @@ module.exports=async function handler(req,res){
   }
 };
 
-module.exports._test={consumeRateLimit,hasSensitiveData,requiresAdminFinance,classifyTask,taskFromIntent,isContextFollowup,verifiedPreviousTask,sanitizeQuestionForModel,monthlyExpenseAnswer,sanitizeInstitutionSummary,originAllowed,getVerifiedIdentity,outputText,askGroq,rateBuckets};
+module.exports._test={consumeRateLimit,hasSensitiveData,requiresAdminFinance,classifyTask,taskFromIntent,isContextFollowup,verifiedPreviousTask,sanitizeQuestionForModel,monthlyExpenseAnswer,sanitizeInstitutionSummary,buildAuthorizedUserContext,originAllowed,getVerifiedIdentity,outputText,askGroq,rateBuckets};
