@@ -21,6 +21,7 @@ function mockFetch({validToken="valid",role="Yönetici",status="Aktif",capture}=
   global.fetch=async(url,options={})=>{
     if(String(url).endsWith("/auth/v1/user"))return options.headers.Authorization===`Bearer ${validToken}`?new Response(JSON.stringify({id:"user-1",is_anonymous:false}),{status:200}):new Response("{}",{status:401});
     if(String(url).includes("/rest/v1/pire_profiles"))return new Response(JSON.stringify([{role,roles:[role],status}]),{status:200});
+    if(String(url).match(/\/rest\/v1\/pire_ai_[a-z_]+/))return new Response("[]",{status:200});
     if(String(url)==="https://api.openai.com/v1/responses"){
       capture?.(JSON.parse(options.body));
       return new Response(JSON.stringify({output:[{content:[{type:"output_text",text:"Genel Bakış bölümündeki Bugünkü Dersler alanını açın."}]}]}),{status:200});
@@ -38,10 +39,12 @@ function mockOpenAIError(code="invalid_request_error"){
   };
 }
 
-function mockGroq({capture,content="Kurumda 9 kayıtlı öğrenci bulunuyor; bunların 6'sı aktif.",role="Yönetici"}={}){
+function mockGroq({capture,content="Kurumda 9 kayıtlı öğrenci bulunuyor; bunların 6'sı aktif.",role="Yönetici",tables={}}={}){
   global.fetch=async(url,options={})=>{
     if(String(url).endsWith("/auth/v1/user"))return new Response(JSON.stringify({id:"user-1",is_anonymous:false}),{status:200});
     if(String(url).includes("/rest/v1/pire_profiles"))return new Response(JSON.stringify([{role,roles:[role],status:"Aktif"}]),{status:200});
+    const tableMatch=String(url).match(/\/rest\/v1\/(pire_ai_[a-z_]+)/);
+    if(tableMatch)return new Response(JSON.stringify(tables[tableMatch[1]]||[]),{status:200});
     if(String(url)==="https://api.groq.com/openai/v1/chat/completions"){
       capture?.(JSON.parse(options.body));
       return new Response(JSON.stringify({choices:[{message:{content}}]}),{status:200});
@@ -50,7 +53,7 @@ function mockGroq({capture,content="Kurumda 9 kayıtlı öğrenci bulunuyor; bun
   };
 }
 
-async function run(name,fn){try{handler._test.rateBuckets.clear();await fn();console.log(`✓ ${name}`)}catch(error){console.error(`✗ ${name}`);throw error}}
+async function run(name,fn){try{handler._test.rateBuckets.clear();await fn();console.log(`✓ ${name}`)}catch(error){console.error(`✗ ${name}`,error);throw error}}
 
 (async()=>{
   await run("oturum olmadan 401",async()=>{mockFetch();const res=response();await handler(request({body:{question:"Ders oluştur"}}),res);assert.equal(res.statusCode,401)});
@@ -70,6 +73,7 @@ async function run(name,fn){try{handler._test.rateBuckets.clear();await fn();con
   await run("devam sorusu doğrulanmış önceki görevin bağlamını kullanır",async()=>{process.env.GROQ_API_KEY="server-only-groq-test-key";mockGroq({content:JSON.stringify({answer:"Finans bölümündeki Ödeme Takibi ekranını açın.",intent:"general.answer"})});const res=response();await handler(request({token:"valid",body:{question:"Nereden bakabilirim?",previousTask:{intent:"finance.receivables",targetModule:"payments"}}}),res);delete process.env.GROQ_API_KEY;assert.equal(res.statusCode,200);assert.equal(res.body.task.intent,"finance.receivables");assert.equal(res.body.task.allowed,true)});
   await run("istemciden gelen önceki görev rol yükseltemez",async()=>{process.env.GROQ_API_KEY="server-only-groq-test-key";mockGroq({role:"Eğitmen",content:JSON.stringify({answer:"Genel yardım.",intent:"general.answer"})});const res=response();await handler(request({token:"valid",body:{question:"Nereden bakabilirim?",previousTask:{intent:"finance.receivables",targetModule:"payments"}}}),res);delete process.env.GROQ_API_KEY;assert.equal(res.statusCode,200);assert.equal(res.body.task.intent,"general.answer")});
   await run("AI seçimi doğrulanmış rolün yetkisini aşamaz",async()=>{process.env.GROQ_API_KEY="server-only-groq-test-key";mockGroq({role:"Eğitmen",content:JSON.stringify({answer:"Finans ekranını açın.",intent:"finance.receivables"})});const res=response();await handler(request({token:"valid",body:{question:"Kurumdan beklediğimiz tutarı göster"}}),res);delete process.env.GROQ_API_KEY;assert.equal(res.statusCode,403);assert.equal(res.body.task.intent,"finance.receivables");assert.equal(res.body.task.allowed,false)});
+  await run("öğrenci ödeme özeti yalnızca RLS ile okunan sunucu verisinden gelir",async()=>{let sent;process.env.GROQ_API_KEY="server-only-groq-test-key";mockGroq({role:"Öğrenci",capture:value=>{sent=JSON.stringify(value)},content:JSON.stringify({answer:"Bu ay 750 TL ödemeniz kaldı.",intent:"self.payment.view"}),tables:{pire_ai_students:[{id:9203,status:"Aktif",monthly_fee:1500,payment_day:12}],pire_ai_payments:[{student_id:9203,billing_month:"2026-08-01",amount_due:1500,amount_paid:750,status:"Kısmi"}]}});const res=response();await handler(request({token:"valid",body:{question:"Bu ay ne kadar ödeme yapmalıyım?",summary:{metric:"institution_overview",finance:{totalBalance:999999},studentName:"GİZLİ"}}}),res);delete process.env.GROQ_API_KEY;assert.equal(res.statusCode,200);assert.equal(res.body.task.intent,"self.payment.view");assert.match(sent,/\\"balance\\":750/);assert.doesNotMatch(sent,/999999|GİZLİ|9203/)});
   await run("görev yöneticisi eğitmen isteğini güvenilir modüle bağlar",async()=>{const task=handler._test.classifyTask("Bana Kadir hocayı bul",{roles:["Yönetici"]});assert.deepEqual(task,{intent:"teacher.find",targetModule:"teachers",needsGuide:true,allowed:true,confidence:0.95})});
   await run("öğrenci ekleme görüntüleme yerine oluşturma görevine bağlanır",async()=>{const task=handler._test.classifyTask("Öğrenci ekleme işlemini göster",{roles:["Yönetici"]});assert.equal(task.intent,"student.create");assert.equal(task.targetModule,"students");assert.equal(task.allowed,true)});
   await run("Türkçe büyük harfli öğrenci isteği oluşturma görevine bağlanır",async()=>{const task=handler._test.classifyTask("ÖĞRENCİ EKLEMEK İSTİYORUM",{roles:["Yönetici"]});assert.equal(task.intent,"student.create");assert.equal(task.targetModule,"students");assert.equal(task.needsGuide,true)});
