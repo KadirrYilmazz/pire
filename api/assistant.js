@@ -65,7 +65,8 @@ const TASK_RULES=[
 ];
 
 function classifyTask(question,identity){
-  const rule=TASK_RULES.find(item=>item.test.test(String(question||"")));
+  const normalizedQuestion=String(question||"").toLocaleLowerCase("tr-TR");
+  const rule=TASK_RULES.find(item=>item.test.test(normalizedQuestion));
   if(!rule)return {intent:"general.answer",targetModule:null,needsGuide:false,allowed:true,confidence:0.5};
   return {intent:rule.intent,targetModule:rule.targetModule,needsGuide:true,allowed:rule.roles.some(role=>identity.roles.includes(role)),confidence:0.95};
 }
