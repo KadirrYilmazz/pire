@@ -220,6 +220,9 @@
   function isContextFollowup(query){
     return !hasExplicitTopic(query)&&/(?:beni\s+sen\s+)?yönlendir|adım\s+adım|rehberlik\s+et|nereden\s+(?:bak|bul|gör)|nasıl\s+(?:bak|bul|gör)|\b(?:buna|bunu|onu|orada)\b/i.test(normalized(query));
   }
+  function isStepConfirmation(query){
+    return /^(?:girdim|açtım|bastım|tıkladım|seçtim|yaptım|tamam|devam|oldu|hazır|sonraki(?:\s+adım)?)[.! ]*$/i.test(normalized(query));
+  }
   function role(){
     const text=document.querySelector(".brand-user-identity span")?.textContent||document.querySelector(".authenticated-user-chip")?.textContent||"";
     return ["Yönetici","Eğitmen","Öğrenci","Veli"].find(item=>text.includes(item))||"";
@@ -292,6 +295,7 @@
       document.querySelectorAll(".pire-guide-card li").forEach(li=>li.classList.remove("active"));
       addMessage("Rehber adımlarını tamamladınız. İşlemin kaydedildiğini ekrandaki başarı bildirimiyle kontrol edebilirsiniz.");
       document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.add("open");
+      state.guide=null;state.step=0;
       return;
     }
     state.step+=1;
@@ -403,6 +407,16 @@
 
   async function answer(query){
     const currentRole=role();
+    if(isStepConfirmation(query)){
+      if(state.guide){
+        const isLast=state.step>=state.guide.steps.length-1;
+        addMessage(isLast?"Tamam, rehberin son adımını da tamamladınız.":`Tamam, ${state.step+1}. adımı tamamladınız. Sıradaki adımı gösteriyorum.`);
+        advanceStep();
+      }else{
+        addMessage("Şu anda devam eden bir rehber bulunmuyor. Yapmak istediğiniz işlemi yazarsanız ilgili adımları başlatabilirim.");
+      }
+      return;
+    }
     if(isContextFollowup(query)&&state.lastIntent){
       const rememberedGuide=guides.find(item=>item.id===state.lastIntent);
       if(rememberedGuide&&rememberedGuide.roles.includes(currentRole)){
