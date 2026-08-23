@@ -419,6 +419,7 @@
 
   async function answer(query){
     const currentRole=role();
+    const normalizedQuery=normalized(query);
     if(isStepConfirmation(query)){
       if(state.guide){
         const isLast=state.step>=state.guide.steps.length-1;
@@ -457,9 +458,9 @@
       try{await askAI(query)}catch(error){addMessage(error?.message||"Gider toplamı şu anda alınamıyor.")}
       return;
     }
-    const guide=guides.find(item=>!item.id.startsWith("view-")&&item.match.test(query)&&(item.roles.includes(currentRole)||item.roles.length===0));
+    const guide=guides.find(item=>!item.id.startsWith("view-")&&item.match.test(normalizedQuery)&&(item.roles.includes(currentRole)||item.roles.length===0));
     if(guide){addMessage(`${guide.title} için sizi adım adım yönlendireceğim.`);renderGuide(guide);return}
-    const blocked=guides.find(item=>item.match.test(query)&&!item.roles.includes(currentRole)&&item.roles.length>0);
+    const blocked=guides.find(item=>item.match.test(normalizedQuery)&&!item.roles.includes(currentRole)&&item.roles.length>0);
     if(blocked){addMessage(`Bu işlem ${currentRole} rolünde kullanılamıyor. Yetkili bir yönetici hesabıyla giriş yapmanız gerekir.`);return}
     try{await askAI(query)}catch(error){addMessage(error?.message||"AI servisine şu anda ulaşılamıyor. Lütfen biraz sonra tekrar deneyin.")}
   }
