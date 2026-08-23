@@ -29,6 +29,15 @@ function mockFetch({validToken="valid",role="Yönetici",status="Aktif",capture}=
   };
 }
 
+function mockOpenAIError(code="invalid_request_error"){
+  global.fetch=async(url,options={})=>{
+    if(String(url).endsWith("/auth/v1/user"))return new Response(JSON.stringify({id:"user-1",is_anonymous:false}),{status:200});
+    if(String(url).includes("/rest/v1/pire_profiles"))return new Response(JSON.stringify([{role:"Yönetici",roles:["Yönetici"],status:"Aktif"}]),{status:200});
+    if(String(url)==="https://api.openai.com/v1/responses")return new Response(JSON.stringify({error:{type:code}}),{status:400});
+    throw new Error(`Unexpected URL: ${url}`);
+  };
+}
+
 async function run(name,fn){try{handler._test.rateBuckets.clear();await fn();console.log(`✓ ${name}`)}catch(error){console.error(`✗ ${name}`);throw error}}
 
 (async()=>{
@@ -43,5 +52,6 @@ async function run(name,fn){try{handler._test.rateBuckets.clear();await fn();con
   await run("istemci bağlamı allowlist dışında kalır",async()=>{let sent;mockFetch({capture:value=>{sent=JSON.stringify(value)}});const res=response();await handler(request({token:"valid",body:{question:"Programı nasıl açarım?",context:{studentName:"Ahmet Yılmaz",phone:"05321234567"}}}),res);assert.equal(res.statusCode,200);assert.doesNotMatch(sent,/Ahmet|05321234567/)});
   await run("yönetici toplu kurum özetiyle genel soruya yanıt alır",async()=>{let sent;mockFetch({capture:value=>{sent=value}});const res=response();await handler(request({token:"valid",body:{question:"Kurumda kaç öğrenci var?",summary:{metric:"institution_overview",generatedDate:"2026-08-23",students:{total:9,active:6},finance:{totalPaid:3950},institution:{name:"Pİ-RE Eğitim Atölye"},studentNames:["GİZLİ KİŞİ"]}}}),res);assert.equal(res.statusCode,200);assert.match(sent.input,/"students":\{"total":9/);assert.doesNotMatch(sent.input,/GİZLİ KİŞİ|studentNames/)});
   await run("eğitmenin gönderdiği kurum özeti modele aktarılmaz",async()=>{let sent;mockFetch({role:"Eğitmen",capture:value=>{sent=JSON.stringify(value)}});const res=response();await handler(request({token:"valid",body:{question:"Programı nasıl açarım?",summary:{metric:"institution_overview",students:{total:999},finance:{totalPaid:999999}}}}),res);assert.equal(res.statusCode,200);assert.doesNotMatch(sent,/999/)});
+  await run("OpenAI hata kodu güvenli biçimde istemciye döner",async()=>{mockOpenAIError();const res=response();await handler(request({token:"valid",body:{question:"Kurumda kaç öğrenci var?"}}),res);assert.equal(res.statusCode,502);assert.equal(res.body.serviceCode,"invalid_request_error");assert.doesNotMatch(JSON.stringify(res.body),/server-only-test-key|Kişisel/)});
   await run("rate limit aşımı 429",async()=>{mockFetch();let last;for(let index=0;index<13;index+=1){last=response();await handler(request({token:"valid",body:{question:"Programı nasıl açarım?"},ip:"10.0.0.1"}),last)}assert.equal(last.statusCode,429)});
 })().catch(()=>process.exitCode=1);
