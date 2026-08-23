@@ -42,7 +42,7 @@ function hasSensitiveData(value){
 }
 
 function requiresAdminFinance(question){
-  return /\b(finans|ciro|gelir|gider|harca|masraf|tahsilat|ödeme\s+toplam|kasa|bakiye|borç\s+toplam)[a-zçğıöşü]*\b/i.test(String(question||""));
+  return /\b(finans|ciro|gelir|gider|harca|masraf|tahsilat|alacak|ödeme\s+toplam|kasa|bakiye|borç\s+toplam)[a-zçğıöşü]*\b/i.test(String(question||""));
 }
 
 const TASK_RULES=[
@@ -55,6 +55,7 @@ const TASK_RULES=[
   {intent:"student.find",targetModule:"students",roles:["Yönetici","Eğitmen"],test:/öğrenci.*(?:bul|ara|nerede|göster|ulaş)|(?:bul|ara|göster).*öğrenci/i},
   {intent:"student.view",targetModule:"students",roles:["Yönetici","Eğitmen"],test:/öğrenci/i},
   {intent:"finance.expenses",targetModule:"expenses",roles:["Yönetici"],test:/gider|harca|masraf|fatura|kira/i},
+  {intent:"finance.receivables",targetModule:"payments",roles:["Yönetici"],test:/alacak|tahsil\s+edilecek|bekleyen\s+ödeme/i},
   {intent:"finance.payments",targetModule:"payments",roles:["Yönetici"],test:/ödeme|tahsilat|borç|bakiye|ciro|gelir/i},
   {intent:"lesson.view",targetModule:"lessons",roles:["Yönetici","Eğitmen","Öğrenci","Veli"],test:/ders|program|takvim/i},
   {intent:"attendance.manage",targetModule:"attendance",roles:["Yönetici","Eğitmen"],test:/yoklama|devamsız|katıldı|gelmedi/i},
