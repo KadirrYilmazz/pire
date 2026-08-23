@@ -426,7 +426,7 @@
       return;
     }
     const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():(role()==="Yönetici"?await institutionSummary():undefined);
-    const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
+    const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(state.lastTask?{previousTask:{intent:state.lastTask.intent,targetModule:state.lastTask.targetModule}}:{}),...(summary?{summary}:{})});
     const answer=payload.answer||"Bu soru için yanıt üretilemedi.";
     addMessage(answer);
     const intentGuides={"student.create":"student","teacher.create":"teacher","lesson.create":"lesson","payment.create":"payment","finance.receivables":"view-receivables"};
