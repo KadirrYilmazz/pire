@@ -42,7 +42,17 @@ function hasSensitiveData(value){
 }
 
 function requiresAdminFinance(question){
-  return /\b(finans|ciro|gelir|gider|tahsilat|ödeme\s+toplam|kasa|bakiye|borç\s+toplam)[a-zçğıöşü]*\b/i.test(String(question||""));
+  return /\b(finans|ciro|gelir|gider|harca|masraf|tahsilat|ödeme\s+toplam|kasa|bakiye|borç\s+toplam)[a-zçğıöşü]*\b/i.test(String(question||""));
+}
+
+function monthlyExpenseAnswer(summary){
+  if(summary?.metric!=="monthly_expenses")return "";
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(String(summary.month||"")))return "";
+  const total=Number(summary.total),count=Number(summary.count);
+  if(!Number.isFinite(total)||total<0||!Number.isInteger(count)||count<0||count>100000)return "";
+  const [year,month]=summary.month.split("-");
+  const monthName=new Intl.DateTimeFormat("tr-TR",{month:"long"}).format(new Date(Number(year),Number(month)-1,1));
+  return `Paneldeki ${count} gider kaydına göre ${monthName} ${year} kurum harcaması toplam ${new Intl.NumberFormat("tr-TR",{style:"currency",currency:"TRY",maximumFractionDigits:2}).format(total)}.`;
 }
 
 async function getVerifiedIdentity(token){
@@ -102,6 +112,11 @@ module.exports=async function handler(req,res){
     if(question.length<2)return send(res,400,{error:"Lütfen sorunuzu yazın."});
     if(hasSensitiveData(question)||hasSensitiveData(page))return send(res,400,{error:"Kişisel veri içeren sorular AI modeline gönderilmez. İsim, telefon, e-posta, T.C. veya IBAN bilgisini kaldırıp tekrar deneyin."});
     if(requiresAdminFinance(question)&&identity.role!=="Yönetici")return send(res,403,{error:"Finans bilgileri yalnızca doğrulanmış yönetici rolüyle kullanılabilir."});
+    const expenseAnswer=monthlyExpenseAnswer(req.body?.summary);
+    if(expenseAnswer){
+      if(identity.role!=="Yönetici")return send(res,403,{error:"Finans bilgileri yalnızca doğrulanmış yönetici rolüyle kullanılabilir."});
+      return send(res,200,{answer:expenseAnswer,source:"verified-local-summary"});
+    }
     const answer=await askOpenAI(question,identity,page);
     return send(res,200,{answer});
   }catch(error){
@@ -109,4 +124,4 @@ module.exports=async function handler(req,res){
   }
 };
 
-module.exports._test={consumeRateLimit,hasSensitiveData,requiresAdminFinance,originAllowed,getVerifiedIdentity,outputText,rateBuckets};
+module.exports._test={consumeRateLimit,hasSensitiveData,requiresAdminFinance,monthlyExpenseAnswer,originAllowed,getVerifiedIdentity,outputText,rateBuckets};
