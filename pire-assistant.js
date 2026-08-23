@@ -9,7 +9,7 @@
   const guides=[
     {
       id:"view-teachers",
-      match:/kaç\s+(?:aktif\s+)?eğitmen|eğitmen(?:ler)?(?:imiz)?.*(?:kaç|nerede|nereden|nasıl|liste|görüntüle)/i,
+      match:/kaç\s+(?:aktif\s+)?eğitmen|eğitmen(?:ler)?(?:imiz)?.*(?:kaç|nerede|nereden|nasıl|liste|görüntüle)|(?:hoca|öğretmen).*(?:bul|nerede|göster|ulaş)/i,
       title:"Eğitmenleri görüntüleme",
       roles:["Yönetici"],
       steps:[
@@ -382,14 +382,16 @@
     }
     const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():(role()==="Yönetici"?await institutionSummary():undefined);
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
-    addMessage(payload.answer||"Bu soru için yanıt üretilemedi.");
+    const answer=payload.answer||"Bu soru için yanıt üretilemedi.";
+    addMessage(answer);
     if(summary?.metric==="monthly_expenses"){
       state.lastIntent="monthly-expenses";
       const guide=guides.find(item=>item.id==="view-expenses");
       addMessage("Bu toplamın kayıtlarını nereden kontrol edeceğinizi de adım adım gösterebilirim.");
       renderGuide(guide);
     }else{
-      const relatedGuide=/eğitmen|öğretmen/i.test(query)?guides.find(item=>item.id==="view-teachers"):/öğrenci/i.test(query)?guides.find(item=>item.id==="view-students"):null;
+      const topicText=`${query} ${answer}`;
+      const relatedGuide=/eğitmen|öğretmen|hoca/i.test(topicText)?guides.find(item=>item.id==="view-teachers"):/öğrenci/i.test(topicText)?guides.find(item=>item.id==="view-students"):null;
       if(relatedGuide&&relatedGuide.roles.includes(role())){
         state.lastIntent=relatedGuide.id;
         addMessage("Bu kayıtları nereden kontrol edeceğinizi de adım adım gösterebilirim.");
@@ -400,6 +402,14 @@
 
   async function answer(query){
     const currentRole=role();
+    if(/(?:beni\s+sen\s+)?yönlendir|adım\s+adım|rehberlik\s+et|nereden\s+(?:bak|bul|gör)|nasıl\s+(?:bak|bul|gör)/i.test(normalized(query))&&state.lastIntent){
+      const rememberedGuide=guides.find(item=>item.id===state.lastIntent);
+      if(rememberedGuide&&rememberedGuide.roles.includes(currentRole)){
+        addMessage(`${rememberedGuide.title} için sizi gerçek panel üzerinde adım adım yönlendireceğim.`);
+        renderGuide(rememberedGuide);
+        return;
+      }
+    }
     if(state.lastIntent==="monthly-expenses"&&/(nereden|nasıl).*(bak|gör|incele)|(?:bak|gör|incele).*(nerede|nasıl)|buna|bunu/i.test(normalized(query))){
       const guide=guides.find(item=>item.id==="view-expenses");
       if(currentRole!=="Yönetici"){addMessage("Kurum giderleri yalnızca doğrulanmış yönetici hesabıyla görüntülenebilir.");return}
