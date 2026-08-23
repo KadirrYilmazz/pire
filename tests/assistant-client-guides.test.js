@@ -30,3 +30,10 @@ test('viewing guides show their own completion success instead of a save notice'
   assert.match(source, /Doğru ekrana ulaştınız/);
   assert.match(source, /pire-guide-message\.success/);
 });
+
+test('student and parent tasks use private payment and lesson guides', () => {
+  assert.match(source, /id:"view-own-payments"/);
+  assert.match(source, /id:"view-own-lessons"/);
+  assert.match(source, /"self\.payment\.view":"view-own-payments"/);
+  assert.match(source, /\["Öğrenci","Veli"\]\.includes\(role\(\)\)/);
+});
