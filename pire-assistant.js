@@ -9,6 +9,7 @@
   const guides=[
     {
       id:"view-teachers",
+      completion:"view",
       match:/kaç\s+(?:aktif\s+)?eğitmen|eğitmen(?:ler)?(?:imiz)?.*(?:kaç|nerede|nereden|nasıl|liste|görüntüle)|(?:hoca|öğretmen).*(?:bul|nerede|göster|ulaş)/i,
       title:"Eğitmenleri görüntüleme",
       roles:["Yönetici"],
@@ -19,6 +20,7 @@
     },
     {
       id:"view-students",
+      completion:"view",
       match:/kaç\s+(?:aktif\s+)?öğrenci|öğrenci(?:ler)?(?:miz)?.*(?:kaç|nerede|nereden|nasıl|liste|görüntüle)/i,
       title:"Öğrencileri görüntüleme",
       roles:["Yönetici","Eğitmen"],
@@ -29,6 +31,7 @@
     },
     {
       id:"view-expenses",
+      completion:"view",
       match:/gider(?:leri|lere)?\s*(?:nereden|nasıl)?\s*(?:bak|gör|incele)|harcama(?:ları|lara)?\s*(?:nereden|nasıl)?\s*(?:bak|gör|incele)/i,
       title:"Kurum giderlerini görüntüleme",
       roles:["Yönetici"],
@@ -40,6 +43,7 @@
     },
     {
       id:"view-receivables",
+      completion:"view",
       match:/alacak|tahsil\s+edilecek|bekleyen\s+ödeme/i,
       title:"Alacakları görüntüleme",
       roles:["Yönetici"],
@@ -51,6 +55,7 @@
     },
     {
       id:"today-lessons",
+      completion:"view",
       match:/bug[uü]n(?:kü)?\s+(?:hangi\s+)?ders(?:ler)?(?:\s+var)?|bug[uü]n.*program/i,
       title:"Bugünün derslerini görüntüleme",
       roles:["Yönetici","Eğitmen","Öğrenci","Veli"],
@@ -148,6 +153,7 @@
     },
     {
       id:"report",
+      completion:"view",
       match:/rapor|analiz|excel|pdf|istatistik/i,
       title:"Rapor görüntüleme",
       roles:["Yönetici"],
@@ -205,6 +211,7 @@
       .pire-guide-message{max-width:94%;padding:12px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;white-space:pre-line}
       .pire-guide-message.bot{align-self:flex-start;background:#20211f;border:1px solid rgba(218,181,92,.18);color:#eee9df;border-bottom-left-radius:4px}
       .pire-guide-message.user{align-self:flex-end;background:#b99343;color:#17130c;font-weight:700;border-bottom-right-radius:4px}
+      .pire-guide-message.success{align-self:stretch;max-width:100%;background:rgba(57,151,91,.14);border:1px solid rgba(86,194,124,.48);color:#b9f1cb;font-weight:800;box-shadow:inset 3px 0 #56c27c}
       .pire-guide-card{display:grid;gap:10px;padding:13px;border:1px solid rgba(218,181,92,.25);border-radius:14px;background:rgba(218,181,92,.06)}
       .pire-guide-card b{font-size:14px;color:#dabb6e}.pire-guide-card ol{margin:0;padding-left:20px;display:grid;gap:9px;color:#ccc6bb;font-size:12.5px;line-height:1.5}
       .pire-guide-card li.active{color:#fff;font-weight:800}
@@ -308,8 +315,12 @@
     if(!state.guide)return;
     removeHighlight();
     if(state.step>=state.guide.steps.length-1){
+      const completedGuide=state.guide;
       document.querySelectorAll(".pire-guide-card li").forEach(li=>li.classList.remove("active"));
-      addMessage("Rehber adımlarını tamamladınız. İşlemin kaydedildiğini ekrandaki başarı bildirimiyle kontrol edebilirsiniz.");
+      const completionMessage=completedGuide.completion==="view"
+        ?`✓ Rehber başarıyla tamamlandı.\nDoğru ekrana ulaştınız; ${completedGuide.title.toLocaleLowerCase("tr-TR")} bilgilerini burada inceleyebilirsiniz.`
+        :"✓ Rehber başarıyla tamamlandı.\nİşlemi kaydettiyseniz sonucu ekrandaki işlem bildirimiyle kontrol edebilirsiniz.";
+      addMessage(completionMessage,"success");
       document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.add("open");
       state.guide=null;state.suggestedGuide=null;state.step=0;
       document.querySelector(`#${ROOT_ID} .pire-guide-quick`)?.classList.remove("visible");
