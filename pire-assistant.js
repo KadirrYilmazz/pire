@@ -216,10 +216,14 @@
 
   const normalized=value=>String(value||"").toLocaleLowerCase("tr-TR").replace(/\s+/g," ").trim();
   function hasExplicitTopic(query){
-    return /öğrenci|eğitmen|öğretmen|hoca|finans|gider|harcama|masraf|ödeme|tahsilat|borç|ders|program|takvim|yoklama|devamsız|telafi|rapor|kullanıcı|hesap|ayar/i.test(normalized(query));
+    return /öğrenci|eğitmen|öğretmen|hoca|finans|gider|harcama|masraf|ödeme|tahsilat|alacak|borç|ders|program|takvim|yoklama|devamsız|telafi|rapor|kullanıcı|hesap|ayar/i.test(normalized(query));
   }
   function isContextFollowup(query){
-    return !hasExplicitTopic(query)&&/(?:beni\s+sen\s+)?yönlendir|adım\s+adım|rehberlik\s+et|nereden\s+(?:bak|bul|gör)|nasıl\s+(?:bak|bul|gör)|\b(?:buna|bunu|onu|orada)\b/i.test(normalized(query));
+    const text=normalized(query);
+    if(hasExplicitTopic(text))return false;
+    if(/\b(?:buna|bunu|onu|orada|burada)\b/i.test(text))return true;
+    if(/^(?:beni\s+sen\s+)?yönlendir|^adım\s+adım(?:\s+göster)?$|^rehberlik\s+et/i.test(text))return true;
+    return text.split(" ").length<=4&&/(?:nereden|nasıl)\s+(?:bak|bul|gör)/i.test(text);
   }
   function isStepConfirmation(query){
     return /^(?:girdim|açtım|bastım|tıkladım|seçtim|yaptım|tamam|devam|oldu|hazır|sonraki(?:\s+adım)?)[.! ]*$/i.test(normalized(query));
@@ -430,7 +434,8 @@
       }
       return;
     }
-    if(isContextFollowup(query)&&state.lastIntent){
+    const contextFollowup=isContextFollowup(query);
+    if(contextFollowup&&state.lastIntent){
       const rememberedGuide=guides.find(item=>item.id===state.lastIntent);
       if(rememberedGuide&&rememberedGuide.roles.includes(currentRole)){
         addMessage(`${rememberedGuide.title} için sizi gerçek panel üzerinde adım adım yönlendireceğim.`);
@@ -438,13 +443,14 @@
         return;
       }
     }
-    if(isContextFollowup(query)&&state.lastTask&&!state.lastIntent){
+    if(contextFollowup&&state.lastTask&&!state.lastIntent){
       addMessage("Önceki istek için çalıştırılabilir bir panel rehberi bulunmuyor. Yanlış yönlendirmemek için adım gösteremiyorum.");
       return;
     }
-    if(hasExplicitTopic(query)){
-      state.lastIntent="";state.suggestedGuide=null;
+    if(!contextFollowup){
+      state.lastIntent="";state.lastTask=null;state.guide=null;state.suggestedGuide=null;state.step=0;
       document.querySelector(`#${ROOT_ID} .pire-guide-quick`)?.classList.remove("visible");
+      removeHighlight();
     }
     if(state.lastIntent==="monthly-expenses"&&/(nereden|nasıl).*(bak|gör|incele)|(?:bak|gör|incele).*(nerede|nasıl)|buna|bunu/i.test(normalized(query))){
       const guide=guides.find(item=>item.id==="view-expenses");
