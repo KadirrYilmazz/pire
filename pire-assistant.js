@@ -4,7 +4,7 @@
   const STYLE_ID="pire-guide-style";
   const ROOT_ID="pire-guide-root";
   const HIGHLIGHT_CLASS="pire-guide-highlight";
-  const state={guide:null,step:0,pending:false,lastIntent:""};
+  const state={guide:null,step:0,pending:false,lastIntent:"",lastTask:null};
 
   const guides=[
     {
@@ -384,19 +384,14 @@
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
     const answer=payload.answer||"Bu soru için yanıt üretilemedi.";
     addMessage(answer);
-    if(summary?.metric==="monthly_expenses"){
-      state.lastIntent="monthly-expenses";
-      const guide=guides.find(item=>item.id==="view-expenses");
-      addMessage("Bu toplamın kayıtlarını nereden kontrol edeceğinizi de adım adım gösterebilirim.");
-      renderGuide(guide);
-    }else{
-      const topicText=`${query} ${answer}`;
-      const relatedGuide=/eğitmen|öğretmen|hoca/i.test(topicText)?guides.find(item=>item.id==="view-teachers"):/öğrenci/i.test(topicText)?guides.find(item=>item.id==="view-students"):null;
-      if(relatedGuide&&relatedGuide.roles.includes(role())){
-        state.lastIntent=relatedGuide.id;
-        addMessage("Bu kayıtları nereden kontrol edeceğinizi de adım adım gösterebilirim.");
-        renderGuide(relatedGuide);
-      }
+    const guideIds={teachers:"view-teachers",students:"view-students",expenses:"view-expenses",payments:"payment",lessons:"today-lessons",attendance:"attendance",makeups:"makeup",reports:"report",accounts:"account",settings:"settings"};
+    const guideId=guideIds[payload.task?.targetModule];
+    const relatedGuide=guides.find(item=>item.id===guideId);
+    state.lastTask=payload.task||null;
+    if(relatedGuide&&payload.task?.needsGuide&&relatedGuide.roles.includes(role())){
+      state.lastIntent=relatedGuide.id;
+      addMessage("Bu kayıtları gerçek panelde nereden kontrol edeceğinizi de adım adım gösterebilirim.");
+      renderGuide(relatedGuide);
     }
   }
 
