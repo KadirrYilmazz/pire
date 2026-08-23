@@ -46,6 +46,10 @@ function requiresAdminFinance(question){
 }
 
 const TASK_RULES=[
+  {intent:"student.create",targetModule:"students",roles:["Yönetici"],test:/öğrenci.*(?:ekle|kaydet|oluştur)|yeni\s+öğrenci/i},
+  {intent:"teacher.create",targetModule:"teachers",roles:["Yönetici"],test:/(?:eğitmen|öğretmen).*(?:ekle|kaydet|oluştur)|yeni\s+(?:eğitmen|öğretmen)/i},
+  {intent:"lesson.create",targetModule:"lessons",roles:["Yönetici"],test:/ders.*(?:ekle|oluştur|planla|tanımla)|yeni\s+ders/i},
+  {intent:"payment.create",targetModule:"payments",roles:["Yönetici"],test:/(?:ödeme|tahsilat).*(?:ekle|gir|kaydet|oluştur)/i},
   {intent:"teacher.find",targetModule:"teachers",roles:["Yönetici"],test:/(?:hoca|öğretmen|eğitmen).*(?:bul|ara|nerede|göster|ulaş)|(?:bul|ara|göster).*(?:hoca|öğretmen|eğitmen)/i},
   {intent:"teacher.view",targetModule:"teachers",roles:["Yönetici"],test:/eğitmen|öğretmen|hoca/i},
   {intent:"student.find",targetModule:"students",roles:["Yönetici","Eğitmen"],test:/öğrenci.*(?:bul|ara|nerede|göster|ulaş)|(?:bul|ara|göster).*öğrenci/i},
