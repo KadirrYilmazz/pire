@@ -1134,6 +1134,35 @@ window.__PIRE_RECOVERED_BACKEND__={reset(){localStorage.removeItem(DBKEY);locati
   else window.addEventListener('load',()=>requestAnimationFrame(boot),{once:true});
 })();
 </script>
+<script id="pire-dashboard-mode-sync">
+(()=>{
+  let scheduled=false;
+
+  const sync=()=>{
+    scheduled=false;
+    const shell=document.querySelector('.app-shell');
+    if(!shell)return;
+
+    const dashboardVisible=Boolean(shell.querySelector('.premium-dashboard'));
+    shell.classList.toggle('dashboard-mode',dashboardVisible);
+    if(dashboardVisible) shell.classList.remove('visitor-mode');
+  };
+
+  const schedule=()=>{
+    if(scheduled)return;
+    scheduled=true;
+    requestAnimationFrame(sync);
+  };
+
+  const boot=()=>{
+    sync();
+    new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
+  };
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+</script>
 <script id="pire-assistant-loader">
 (()=>{
   const load=()=>{
