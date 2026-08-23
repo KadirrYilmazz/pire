@@ -4,7 +4,7 @@
   const STYLE_ID="pire-guide-style";
   const ROOT_ID="pire-guide-root";
   const HIGHLIGHT_CLASS="pire-guide-highlight";
-  const state={guide:null,step:0,pending:false,lastIntent:"",lastTask:null};
+  const state={guide:null,suggestedGuide:null,step:0,pending:false,lastIntent:"",lastTask:null};
 
   const guides=[
     {
@@ -183,7 +183,7 @@
       .pire-guide-nudge{position:absolute;right:73px;bottom:10px;width:max-content;max-width:240px;padding:10px 13px;border:1px solid rgba(218,181,92,.38);border-radius:12px;background:rgba(15,16,15,.97);color:#eee9df;box-shadow:0 12px 30px rgba(0,0,0,.38);font-size:12px;font-weight:800;opacity:0;visibility:hidden;transform:translateX(8px);transition:.22s ease;pointer-events:none}
       .pire-guide-nudge:after{content:"";position:absolute;right:-6px;top:50%;width:10px;height:10px;background:#111210;border-top:1px solid rgba(218,181,92,.38);border-right:1px solid rgba(218,181,92,.38);transform:translateY(-50%) rotate(45deg)}
       #${ROOT_ID}:has(.pire-guide-launcher:hover) .pire-guide-nudge,#${ROOT_ID}:has(.pire-guide-launcher:focus-visible) .pire-guide-nudge{opacity:1;visibility:visible;transform:none}
-      .pire-guide-panel{position:absolute;right:0;bottom:76px;width:min(350px,calc(100vw - 30px));max-height:min(560px,calc(100vh - 115px));display:none;grid-template-rows:auto minmax(150px,1fr) auto;background:rgba(15,16,15,.98);color:#eee9df;border:1px solid rgba(218,181,92,.3);border-radius:18px;box-shadow:0 28px 75px rgba(0,0,0,.58);overflow:hidden;backdrop-filter:blur(18px)}
+      .pire-guide-panel{position:absolute;right:0;bottom:76px;width:min(350px,calc(100vw - 30px));max-height:min(560px,calc(100vh - 115px));display:none;grid-template-rows:auto minmax(150px,1fr) auto auto;background:rgba(15,16,15,.98);color:#eee9df;border:1px solid rgba(218,181,92,.3);border-radius:18px;box-shadow:0 28px 75px rgba(0,0,0,.58);overflow:hidden;backdrop-filter:blur(18px)}
       .pire-guide-panel.open{display:grid;animation:pireGuideIn .24s ease-out}
       @keyframes pireGuideIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
       .pire-guide-head{display:flex;align-items:center;gap:11px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(100deg,rgba(218,181,92,.13),transparent)}
@@ -199,6 +199,7 @@
       .pire-guide-card li.active{color:#fff;font-weight:800}
       .pire-guide-controls{display:flex;gap:7px}.pire-guide-controls button{flex:1;border:1px solid rgba(218,181,92,.3);border-radius:9px;background:#24241f;color:#e8dfca;padding:10px 9px;font-size:12px;font-weight:800;cursor:pointer}.pire-guide-controls button.primary{background:#dabb6e;color:#17130c}
       .pire-guide-form{display:flex;gap:8px;padding:13px;border-top:1px solid rgba(255,255,255,.08);background:#121312}
+      .pire-guide-quick{display:none;margin:0 13px 10px;border:1px solid rgba(218,181,92,.52);border-radius:11px;background:#dabb6e;color:#17130c;padding:11px 14px;font-size:12px;font-weight:900;cursor:pointer}.pire-guide-quick.visible{display:block}
       .pire-guide-form input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#1c1d1b;color:#fff;outline:none;padding:12px;font-size:13px}.pire-guide-form input:focus{border-color:#dabb6e}
       .pire-guide-form button{border:0;border-radius:11px;background:#dabb6e;color:#17130c;padding:0 14px;font-weight:950;cursor:pointer}
       .pire-guide-form button:disabled,.pire-guide-form input:disabled{cursor:wait;opacity:.6}
@@ -295,7 +296,8 @@
       document.querySelectorAll(".pire-guide-card li").forEach(li=>li.classList.remove("active"));
       addMessage("Rehber adımlarını tamamladınız. İşlemin kaydedildiğini ekrandaki başarı bildirimiyle kontrol edebilirsiniz.");
       document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.add("open");
-      state.guide=null;state.step=0;
+      state.guide=null;state.suggestedGuide=null;state.step=0;
+      document.querySelector(`#${ROOT_ID} .pire-guide-quick`)?.classList.remove("visible");
       return;
     }
     state.step+=1;
@@ -304,12 +306,19 @@
   }
 
   function renderGuide(guide){
-    state.guide=guide;state.step=0;
+    state.guide=guide;state.suggestedGuide=guide;state.step=0;
+    const quick=document.querySelector(`#${ROOT_ID} .pire-guide-quick`);if(quick){quick.classList.add("visible");quick.textContent="İlk adımı ekranda göster"}
     const box=document.querySelector(`#${ROOT_ID} .pire-guide-messages`);
     const card=document.createElement("div");
     card.className="pire-guide-card";
     card.innerHTML=`<b>${guide.title}</b><ol>${guide.steps.map((s,i)=>`<li class="${i===0?"active":""}">${s.text}</li>`).join("")}</ol><div class="pire-guide-controls"><button type="button" data-guide-action="show" class="primary">Bu adımı göster</button><button type="button" data-guide-action="next">Sonraki adım</button></div>`;
     box.appendChild(card);box.scrollTop=box.scrollHeight;
+  }
+
+  function offerGuide(guide){
+    state.guide=null;state.suggestedGuide=guide;state.step=0;
+    const quick=document.querySelector(`#${ROOT_ID} .pire-guide-quick`);
+    if(quick){quick.classList.add("visible");quick.textContent="Adım adım göster"}
   }
 
   function accessToken(){
@@ -394,14 +403,17 @@
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
     const answer=payload.answer||"Bu soru için yanıt üretilemedi.";
     addMessage(answer);
-    const guideIds={teachers:"view-teachers",students:"view-students",expenses:"view-expenses",payments:"payment",lessons:"today-lessons",attendance:"attendance",makeups:"makeup",reports:"report",accounts:"account",settings:"settings"};
-    const guideId=guideIds[payload.task?.targetModule];
+    const intentGuides={"student.create":"student","teacher.create":"teacher","lesson.create":"lesson","payment.create":"payment"};
+    const moduleGuides={teachers:"view-teachers",students:"view-students",expenses:"view-expenses",payments:"payment",lessons:"today-lessons",attendance:"attendance",makeups:"makeup",reports:"report",accounts:"account",settings:"settings"};
+    const guideId=intentGuides[payload.task?.intent]||moduleGuides[payload.task?.targetModule];
     const relatedGuide=guides.find(item=>item.id===guideId);
     state.lastTask=payload.task||null;
     if(relatedGuide&&payload.task?.needsGuide&&relatedGuide.roles.includes(role())){
       state.lastIntent=relatedGuide.id;
-      addMessage("Bu kayıtları gerçek panelde nereden kontrol edeceğinizi de adım adım gösterebilirim.");
-      renderGuide(relatedGuide);
+      addMessage("Bu işlemi gerçek panel üzerinde gösterebilirim. Aşağıdaki “Adım adım göster” düğmesine basın.");
+      offerGuide(relatedGuide);
+    }else if(/adım\s+adım|yönlendir|göster/i.test(query)){
+      addMessage("Bu işlem için güvenilir bir panel rehberi henüz tanımlı değil. Yanlış bir alanı göstermemek için otomatik yönlendirme başlatamıyorum.");
     }
   }
 
@@ -425,7 +437,14 @@
         return;
       }
     }
-    if(hasExplicitTopic(query))state.lastIntent="";
+    if(isContextFollowup(query)&&state.lastTask&&!state.lastIntent){
+      addMessage("Önceki istek için çalıştırılabilir bir panel rehberi bulunmuyor. Yanlış yönlendirmemek için adım gösteremiyorum.");
+      return;
+    }
+    if(hasExplicitTopic(query)){
+      state.lastIntent="";state.suggestedGuide=null;
+      document.querySelector(`#${ROOT_ID} .pire-guide-quick`)?.classList.remove("visible");
+    }
     if(state.lastIntent==="monthly-expenses"&&/(nereden|nasıl).*(bak|gör|incele)|(?:bak|gör|incele).*(nerede|nasıl)|buna|bunu/i.test(normalized(query))){
       const guide=guides.find(item=>item.id==="view-expenses");
       if(currentRole!=="Yönetici"){addMessage("Kurum giderleri yalnızca doğrulanmış yönetici hesabıyla görüntülenebilir.");return}
@@ -449,10 +468,15 @@
     if(document.getElementById(ROOT_ID))return;
     injectStyle();
     const root=document.createElement("div");root.id=ROOT_ID;root.hidden=true;
-    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark"><img src="/pire-logo-clean.png" alt=""></span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><span class="pire-guide-nudge" aria-hidden="true">Size nasıl yardımcı olabilirim?</span><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber"><img src="/pire-logo-clean.png" alt=""></button>`;
+    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark"><img src="/pire-logo-clean.png" alt=""></span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><button type="button" class="pire-guide-quick">Adım adım göster</button><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><span class="pire-guide-nudge" aria-hidden="true">Size nasıl yardımcı olabilirim?</span><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber"><img src="/pire-logo-clean.png" alt=""></button>`;
     document.body.appendChild(root);
     root.querySelector(".pire-guide-launcher").addEventListener("click",()=>root.querySelector(".pire-guide-panel").classList.toggle("open"));
     root.querySelector(".pire-guide-close").addEventListener("click",()=>{root.querySelector(".pire-guide-panel").classList.remove("open");removeHighlight()});
+    root.querySelector(".pire-guide-quick").addEventListener("click",()=>{
+      const guide=state.suggestedGuide;if(!guide)return;
+      if(state.guide!==guide)renderGuide(guide);
+      showStep();
+    });
     root.querySelector("form").addEventListener("submit",async event=>{
       event.preventDefault();
       if(state.pending)return;
