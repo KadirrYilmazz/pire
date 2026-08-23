@@ -214,6 +214,12 @@
   }
 
   const normalized=value=>String(value||"").toLocaleLowerCase("tr-TR").replace(/\s+/g," ").trim();
+  function hasExplicitTopic(query){
+    return /öğrenci|eğitmen|öğretmen|hoca|finans|gider|harcama|masraf|ödeme|tahsilat|borç|ders|program|takvim|yoklama|devamsız|telafi|rapor|kullanıcı|hesap|ayar/i.test(normalized(query));
+  }
+  function isContextFollowup(query){
+    return !hasExplicitTopic(query)&&/(?:beni\s+sen\s+)?yönlendir|adım\s+adım|rehberlik\s+et|nereden\s+(?:bak|bul|gör)|nasıl\s+(?:bak|bul|gör)|\b(?:buna|bunu|onu|orada)\b/i.test(normalized(query));
+  }
   function role(){
     const text=document.querySelector(".brand-user-identity span")?.textContent||document.querySelector(".authenticated-user-chip")?.textContent||"";
     return ["Yönetici","Eğitmen","Öğrenci","Veli"].find(item=>text.includes(item))||"";
@@ -397,7 +403,7 @@
 
   async function answer(query){
     const currentRole=role();
-    if(/(?:beni\s+sen\s+)?yönlendir|adım\s+adım|rehberlik\s+et|nereden\s+(?:bak|bul|gör)|nasıl\s+(?:bak|bul|gör)/i.test(normalized(query))&&state.lastIntent){
+    if(isContextFollowup(query)&&state.lastIntent){
       const rememberedGuide=guides.find(item=>item.id===state.lastIntent);
       if(rememberedGuide&&rememberedGuide.roles.includes(currentRole)){
         addMessage(`${rememberedGuide.title} için sizi gerçek panel üzerinde adım adım yönlendireceğim.`);
@@ -405,6 +411,7 @@
         return;
       }
     }
+    if(hasExplicitTopic(query))state.lastIntent="";
     if(state.lastIntent==="monthly-expenses"&&/(nereden|nasıl).*(bak|gör|incele)|(?:bak|gör|incele).*(nerede|nasıl)|buna|bunu/i.test(normalized(query))){
       const guide=guides.find(item=>item.id==="view-expenses");
       if(currentRole!=="Yönetici"){addMessage("Kurum giderleri yalnızca doğrulanmış yönetici hesabıyla görüntülenebilir.");return}
