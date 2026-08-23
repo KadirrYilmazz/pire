@@ -109,6 +109,7 @@ async function askOpenAI(question,identity,page,context){
   if(!response.ok){
     const code=String(payload?.error?.code||payload?.error?.type||"openai_error");
     const messages={invalid_api_key:"OpenAI API anahtarı geçersiz veya iptal edilmiş.",insufficient_quota:"OpenAI API hesabında kullanılabilir bakiye bulunmuyor.",model_not_found:"Seçilen OpenAI modeli bu API projesinde kullanılamıyor.",rate_limit_exceeded:"OpenAI kullanım sınırına ulaşıldı; biraz sonra tekrar deneyin."};
+    console.error("OpenAI request failed",{status:response.status,code});
     throw Object.assign(new Error(messages[code]||"AI servisi şu anda yanıt veremiyor."),{status:code==="rate_limit_exceeded"?429:502,serviceCode:code});
   }
   const answer=outputText(payload);
