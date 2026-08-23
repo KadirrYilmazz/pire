@@ -61,6 +61,20 @@ const DBKEY='pire-recovered-backend-v1';
 let db;
 try{db=JSON.parse(localStorage.getItem(DBKEY)||'null')||structuredClone(SEED)}catch(e){db=structuredClone(SEED)}
 function persist(){try{localStorage.setItem(DBKEY,JSON.stringify(db))}catch(e){}}
+function authToken(){try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i)||'';if(!/^sb-.*-auth-token$/.test(key))continue;const value=JSON.parse(localStorage.getItem(key)||'null');const token=value?.access_token||value?.currentSession?.access_token;if(token)return token}}catch(e){}return ''}
+function aiSnapshot(){
+ const students=(db.students?.students||[]).map(s=>({id:s.id,status:s.status,monthly_fee:s.fee,payment_day:s.paymentDay}));
+ const validStudents=new Set(students.map(s=>String(s.id))),lessons=(db.lessons?.lessons||[]).map(l=>({id:l.id,course:l.course,lesson_date:l.lessonDate,start_time:l.startTime,duration_minutes:l.duration,status:l.status}));
+ const validLessons=new Set(lessons.map(l=>String(l.id))),lesson_students=[];
+ for(const lesson of db.lessons?.lessons||[]){let ids=[];try{ids=Array.isArray(lesson.studentIds)?lesson.studentIds:JSON.parse(lesson.studentIds||'[]')}catch(e){}for(const id of ids)if(validStudents.has(String(id)))lesson_students.push({lesson_id:lesson.id,student_id:Number(id)})}
+ const transactions=db.finance?.transactions||[];
+ const payments=(db.students?.payments||[]).filter(p=>validStudents.has(String(p.studentId))).map(p=>{const paid=transactions.filter(t=>Number(t.paymentId)===Number(p.id)).reduce((sum,t)=>sum+Number(t.amount||0),0);return {id:p.id,student_id:p.studentId,billing_month:String(p.month||'').slice(0,7)+'-01',amount_due:p.amount,amount_paid:p.status==='Ödendi'?Number(p.amount||0):Math.min(Number(p.amount||0),paid),status:p.status,paid_at:p.paidAt}});
+ const packages=(db.packages?.packages||[]).filter(p=>validStudents.has(String(p.studentId))).map(p=>({id:p.id,student_id:p.studentId,course:p.course,total_lessons:p.totalLessons,remaining_lessons:p.remainingLessons,makeup_rights:p.makeupRights,frozen_lessons:p.frozenLessons,status:p.status,start_date:p.startDate,end_date:p.endDate}));
+ const attendance=(db.attendance?.attendance||[]).filter(a=>validStudents.has(String(a.studentId))&&validLessons.has(String(a.lessonId))).map(a=>({id:a.id,lesson_id:a.lessonId,student_id:a.studentId,status:a.status,late_minutes:a.lateMinutes,occurred_at:a.enteredAt||a.updatedAt}));
+ return {students,lessons,lesson_students,payments,packages,attendance};
+}
+let aiSyncTimer;
+function scheduleAiSync(delay=900){clearTimeout(aiSyncTimer);aiSyncTimer=setTimeout(()=>{const token=authToken();if(!token)return;try{const xhr=new XMLHttpRequest();xhr.open('POST','/api/assistant-sync');xhr.setRequestHeader('authorization','Bearer '+token);xhr.setRequestHeader('content-type','application/json');xhr.onload=()=>{window.__PIRE_AI_SYNC__={ok:xhr.status>=200&&xhr.status<300,status:xhr.status,at:new Date().toISOString()}};xhr.onerror=()=>{window.__PIRE_AI_SYNC__={ok:false,status:0,at:new Date().toISOString()}};xhr.send(JSON.stringify({snapshot:aiSnapshot()}))}catch(e){}},delay)}
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json;charset=utf-8','cache-control':'no-store'}})}
 function bodyObj(init){if(!init||!init.body)return {}; try{return typeof init.body==='string'?JSON.parse(init.body):init.body}catch(e){return {}}}
 function nextId(items,floor=100000){let m=floor; for(const x of items||[]) if(Number(x?.id)>m)m=Number(x.id); return m+1}
@@ -131,8 +145,9 @@ async function localApi(url,init={}){
  return json({error:'Recovered backend: '+method+' '+ep+' henüz uygulanmadı'},501)
 }
 const realFetch=window.fetch.bind(window);
-window.fetch=function(input,init){try{const url=typeof input==='string'?input:input?.url||String(input);const u=new URL(url,location.origin);if(u.origin===location.origin&&u.pathname.startsWith('/api/')) return localApi(url,init||{});}catch(e){}return realFetch(input,init)};
-window.__PIRE_RECOVERED_BACKEND__={reset(){localStorage.removeItem(DBKEY);location.reload()},exportData(){return JSON.parse(JSON.stringify(db))}};
+window.fetch=function(input,init){try{const url=typeof input==='string'?input:input?.url||String(input);const u=new URL(url,location.origin);if(u.origin===location.origin&&u.pathname.startsWith('/api/')){const method=String(init?.method||'GET').toUpperCase();return Promise.resolve(localApi(url,init||{})).then(response=>{if(response.ok&&!['GET','HEAD'].includes(method)&&!['notifications','security-audit'].includes(u.pathname.replace(/^\/api\//,'').split('/')[0]))scheduleAiSync();return response})}}catch(e){}return realFetch(input,init)};
+window.__PIRE_RECOVERED_BACKEND__={reset(){localStorage.removeItem(DBKEY);location.reload()},exportData(){return JSON.parse(JSON.stringify(db))},syncAi(){scheduleAiSync(0)}};
+scheduleAiSync(1800);
 })();
 </script><script id="pire-header-safety-fix">
 /* Backend Alpha 2 — HTTP header Turkish-character compatibility fix. */
