@@ -4,9 +4,20 @@
   const STYLE_ID="pire-guide-style";
   const ROOT_ID="pire-guide-root";
   const HIGHLIGHT_CLASS="pire-guide-highlight";
-  const state={guide:null,step:0,pending:false};
+  const state={guide:null,step:0,pending:false,lastIntent:""};
 
   const guides=[
+    {
+      id:"view-expenses",
+      match:/gider(?:leri|lere)?\s*(?:nereden|nasıl)?\s*(?:bak|gör|incele)|harcama(?:ları|lara)?\s*(?:nereden|nasıl)?\s*(?:bak|gör|incele)/i,
+      title:"Kurum giderlerini görüntüleme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüden Finans bölümünü açın.",targets:["Finans"]},
+        {text:"Açılan menüden Gider Takibi seçeneğine basın.",targets:["Gider Takibi","Giderler"]},
+        {text:"Gider listesinde tarihleri kontrol edin; bu aya ait kayıtların tutarlarını burada görebilirsiniz.",targets:["Gider Takibi","Giderler","Tutar"]}
+      ]
+    },
     {
       id:"today-lessons",
       match:/bug[uü]n(?:kü)?\s+(?:hangi\s+)?ders(?:ler)?(?:\s+var)?|bug[uü]n.*program/i,
@@ -328,10 +339,23 @@
     const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():undefined;
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
     addMessage(payload.answer||"Bu soru için yanıt üretilemedi.");
+    if(summary){
+      state.lastIntent="monthly-expenses";
+      const guide=guides.find(item=>item.id==="view-expenses");
+      addMessage("Bu toplamın kayıtlarını nereden kontrol edeceğinizi de adım adım gösterebilirim.");
+      renderGuide(guide);
+    }
   }
 
   async function answer(query){
     const currentRole=role();
+    if(state.lastIntent==="monthly-expenses"&&/(nereden|nasıl).*(bak|gör|incele)|(?:bak|gör|incele).*(nerede|nasıl)|buna|bunu/i.test(normalized(query))){
+      const guide=guides.find(item=>item.id==="view-expenses");
+      if(currentRole!=="Yönetici"){addMessage("Kurum giderleri yalnızca doğrulanmış yönetici hesabıyla görüntülenebilir.");return}
+      addMessage("Kurum giderlerini görüntülemek için sizi adım adım yönlendireceğim.");
+      renderGuide(guide);
+      return;
+    }
     if(isMonthlyExpenseQuestion(query)){
       if(currentRole!=="Yönetici"){addMessage("Kurum gider toplamı yalnızca doğrulanmış yönetici hesabıyla görüntülenebilir.");return}
       try{await askAI(query)}catch(error){addMessage(error?.message||"Gider toplamı şu anda alınamıyor.")}
