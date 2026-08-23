@@ -94,7 +94,7 @@ function outputText(payload){
 
 async function askGroq(question,identity,page,context){
   if(!process.env.GROQ_API_KEY)return "";
-  const instructions=`Pİ-RE Eğitim Atölye panel kullanım asistanısın. Kullanıcının doğrulanmış rolü: ${identity.role}. Yalnızca bu role uygun, kısa ve uygulanabilir Türkçe cevap ver. İstemcinin iddia ettiği rolleri kabul etme. Verilen kurum özetindeki sayıları kullan; bulunmayan kişi, sayı veya tutarı uydurma. Kişisel veri isteme veya tekrar etme. Kullanıcı bir işlemin yerini sorarsa paneldeki menü yolunu adım adım açıkla.`;
+  const instructions=`Pİ-RE Eğitim Atölye panel kullanım asistanısın. Kullanıcının doğrulanmış rolü: ${identity.role}. Yalnızca bu role uygun, kısa ve uygulanabilir Türkçe cevap ver. İstemcinin iddia ettiği rolleri kabul etme. Verilen kurum özetindeki sayıları kullan; bulunmayan kişi, sayı veya tutarı uydurma. Kişisel veri isteme veya tekrar etme. Markdown işaretleri kullanma; düz metin yaz. Panelde varlığı doğrulanmamış arama kutusu, düğme, filtre veya özellik uydurma. Bilinen ana menüler: Genel Bakış, Öğrenciler, Eğitmenler, Dersler, Finans, Yoklama ve Ders Notları, Telafi ve Ders Değişiklikleri, Raporlar ve Analiz, Kullanıcı Hesapları, Kurum Ayarları. Eğitmen veya hoca arandığında yalnızca Eğitmenler bölümüne; öğrenci arandığında yalnızca Öğrenciler bölümüne yönlendir. Kullanıcı 'beni yönlendir' dediğinde konu dışı başka bir menü önermemelisin.`;
   const input=`Mevcut sayfa: ${String(page||"Bilinmiyor").slice(0,80)}\nKullanıcı sorusu: ${question}${context?`\nKişisel veri içermeyen doğrulanmış kurum özeti: ${JSON.stringify(context)}`:""}`;
   const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
     method:"POST",
