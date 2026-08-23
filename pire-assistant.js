@@ -8,6 +8,26 @@
 
   const guides=[
     {
+      id:"view-teachers",
+      match:/kaç\s+(?:aktif\s+)?eğitmen|eğitmen(?:ler)?(?:imiz)?.*(?:kaç|nerede|nereden|nasıl|liste|görüntüle)/i,
+      title:"Eğitmenleri görüntüleme",
+      roles:["Yönetici"],
+      steps:[
+        {text:"Üst menüden Eğitmenler bölümünü açın.",targets:["Eğitmenler"]},
+        {text:"Eğitmen kartlarında aktiflik, branş, program ve iş yükü bilgilerini inceleyin.",targets:["Eğitmenler","Aktif Eğitmen"]}
+      ]
+    },
+    {
+      id:"view-students",
+      match:/kaç\s+(?:aktif\s+)?öğrenci|öğrenci(?:ler)?(?:miz)?.*(?:kaç|nerede|nereden|nasıl|liste|görüntüle)/i,
+      title:"Öğrencileri görüntüleme",
+      roles:["Yönetici","Eğitmen"],
+      steps:[
+        {text:"Üst menüden Öğrenciler bölümünü açın.",targets:["Öğrenciler"]},
+        {text:"Öğrenci kartlarında aktiflik, branş, paket ve ders bilgilerini inceleyin.",targets:["Öğrenciler","Aktif Öğrenci"]}
+      ]
+    },
+    {
       id:"view-expenses",
       match:/gider(?:leri|lere)?\s*(?:nereden|nasıl)?\s*(?:bak|gör|incele)|harcama(?:ları|lara)?\s*(?:nereden|nasıl)?\s*(?:bak|gör|incele)/i,
       title:"Kurum giderlerini görüntüleme",
@@ -363,11 +383,18 @@
     const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():(role()==="Yönetici"?await institutionSummary():undefined);
     const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(summary?{summary}:{})});
     addMessage(payload.answer||"Bu soru için yanıt üretilemedi.");
-    if(summary){
+    if(summary?.metric==="monthly_expenses"){
       state.lastIntent="monthly-expenses";
       const guide=guides.find(item=>item.id==="view-expenses");
       addMessage("Bu toplamın kayıtlarını nereden kontrol edeceğinizi de adım adım gösterebilirim.");
       renderGuide(guide);
+    }else{
+      const relatedGuide=/eğitmen|öğretmen/i.test(query)?guides.find(item=>item.id==="view-teachers"):/öğrenci/i.test(query)?guides.find(item=>item.id==="view-students"):null;
+      if(relatedGuide&&relatedGuide.roles.includes(role())){
+        state.lastIntent=relatedGuide.id;
+        addMessage("Bu kayıtları nereden kontrol edeceğinizi de adım adım gösterebilirim.");
+        renderGuide(relatedGuide);
+      }
     }
   }
 
@@ -385,7 +412,7 @@
       try{await askAI(query)}catch(error){addMessage(error?.message||"Gider toplamı şu anda alınamıyor.")}
       return;
     }
-    const guide=guides.find(item=>item.match.test(query)&&(item.roles.includes(currentRole)||item.roles.length===0));
+    const guide=guides.find(item=>!item.id.startsWith("view-")&&item.match.test(query)&&(item.roles.includes(currentRole)||item.roles.length===0));
     if(guide){addMessage(`${guide.title} için sizi adım adım yönlendireceğim.`);renderGuide(guide);return}
     const blocked=guides.find(item=>item.match.test(query));
     if(blocked){addMessage(`Bu işlem ${currentRole} rolünde kullanılamıyor. Yetkili bir yönetici hesabıyla giriş yapmanız gerekir.`);return}
