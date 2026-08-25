@@ -1,0 +1,226 @@
+/*
+ * Pİ-RE Genel Bakış — Kompakt masaüstü katmanı
+ * Geri alma: index.html içindeki /pire-dashboard-compact.css bağlantısını kaldırın.
+ * Mevcut tema, arka plan, bileşenler ve veri akışı değiştirilmez.
+ */
+
+@media (min-width: 1180px) {
+  .app-shell.dashboard-mode .content {
+    padding: 14px clamp(22px, 3vw, 52px) 24px !important;
+  }
+
+  .dashboard-mode .premium-dashboard {
+    width: min(100%, 1720px);
+    gap: 10px !important;
+    margin-inline: auto;
+  }
+
+  .dashboard-mode .dashboard-intro {
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 2px 7px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .dashboard-mode .dashboard-intro h2 {
+    font-size: clamp(20px, 1.55vw, 27px) !important;
+    line-height: 1.05 !important;
+  }
+
+  .dashboard-mode .dashboard-kicker {
+    margin-bottom: 3px !important;
+    font-size: 8px !important;
+  }
+
+  .dashboard-mode .dashboard-bento {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-rows: 100px !important;
+    gap: 10px !important;
+    margin: 0 !important;
+  }
+
+  .dashboard-mode .bento-card {
+    width: auto !important;
+    min-height: 100px !important;
+    height: 100px !important;
+    padding: 13px 15px !important;
+  }
+
+  .dashboard-mode .bento-card .kpi-copy small {
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+  }
+
+  .dashboard-mode .bento-card .kpi-copy strong,
+  .dashboard-mode .kpi-lessons .kpi-copy > strong,
+  .dashboard-mode .kpi-revenue .kpi-copy > strong {
+    margin-top: 4px !important;
+    font-size: clamp(23px, 1.8vw, 31px) !important;
+    line-height: 1 !important;
+  }
+
+  .dashboard-mode .bento-card .kpi-copy p {
+    margin-top: 5px !important;
+    font-size: 8.5px !important;
+    line-height: 1.25 !important;
+  }
+
+  .dashboard-mode .student-constellation {
+    transform: scale(.72);
+    transform-origin: right bottom;
+  }
+
+  .dashboard-mode .student-reveal,
+  .dashboard-mode .card-corner-note {
+    font-size: 7px !important;
+  }
+
+  .dashboard-mode .lesson-rhythm,
+  .dashboard-mode .revenue-curve {
+    bottom: 8px !important;
+    height: 30px !important;
+    opacity: .72;
+  }
+
+  .dashboard-mode .attendance-orbit {
+    transform: scale(.74) !important;
+    transform-origin: right center;
+  }
+
+  .dashboard-mode .dashboard-detail-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(300px, .7fr) !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+
+  .dashboard-mode .dashboard-lessons,
+  .dashboard-mode .dashboard-alerts,
+  .dashboard-mode .dashboard-lessons:has(.lesson-empty-signature) {
+    min-height: 214px !important;
+    height: 214px !important;
+  }
+
+  .dashboard-mode .dashboard-section-head {
+    min-height: 48px !important;
+    height: 48px !important;
+    padding: 8px 13px !important;
+  }
+
+  .dashboard-mode .dashboard-section-head small {
+    margin-bottom: 1px !important;
+    font-size: 7px !important;
+  }
+
+  .dashboard-mode .dashboard-section-head h3 {
+    font-size: 13px !important;
+    line-height: 1.15 !important;
+  }
+
+  .dashboard-mode .dashboard-section-head button {
+    font-size: 8px !important;
+  }
+
+  .dashboard-mode .today-timeline {
+    max-height: 165px;
+    padding: 1px 13px 4px !important;
+    overflow: auto;
+  }
+
+  .dashboard-mode .today-lesson {
+    grid-template-columns: 58px 3px minmax(0, 1fr) auto !important;
+    gap: 8px !important;
+    min-height: 49px !important;
+    padding: 7px 0 !important;
+  }
+
+  .dashboard-mode .today-lesson time { font-size: 12px !important; }
+  .dashboard-mode .today-lesson time small { font-size: 7px !important; }
+  .dashboard-mode .today-lesson b { font-size: 10px !important; }
+  .dashboard-mode .today-lesson div small,
+  .dashboard-mode .today-lesson em { font-size: 7.5px !important; }
+
+  .dashboard-mode .lesson-empty-signature {
+    min-height: 164px !important;
+    padding: 14px 18px !important;
+  }
+
+  .dashboard-mode .lesson-empty-calendar {
+    transform: scale(.78);
+  }
+
+  .dashboard-mode .alert-stream {
+    padding: 2px 10px !important;
+  }
+
+  .dashboard-mode .alert-stream > button,
+  .dashboard-mode .dashboard-clear {
+    min-height: 39px !important;
+    gap: 8px !important;
+    padding: 6px 4px !important;
+  }
+
+  .dashboard-mode .alert-stream b { font-size: 9px !important; }
+  .dashboard-mode .alert-stream small {
+    margin-top: 1px !important;
+    font-size: 7px !important;
+    line-height: 1.25 !important;
+  }
+  .dashboard-mode .alert-stream button > span { font-size: 7px !important; }
+
+  .dashboard-mode .dashboard-finance-foot {
+    min-height: 42px !important;
+    margin: 3px 10px 9px !important;
+    padding: 6px 10px !important;
+  }
+
+  .dashboard-mode .dashboard-finance-foot small,
+  .dashboard-mode .dashboard-finance-foot span { font-size: 7px !important; }
+  .dashboard-mode .dashboard-finance-foot strong { font-size: 14px !important; }
+
+  .dashboard-mode .dashboard-recent-activity {
+    margin-top: 0 !important;
+  }
+
+  .dashboard-mode .dashboard-recent-activity .dashboard-section-head {
+    min-height: 39px !important;
+    height: 39px !important;
+    padding-block: 6px !important;
+  }
+
+  .dashboard-mode .recent-payment-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .dashboard-mode .recent-payment-row button {
+    min-height: 52px !important;
+    padding: 7px 11px !important;
+  }
+
+  .dashboard-mode .recent-payment-row span { font-size: 8px !important; }
+  .dashboard-mode .recent-payment-row strong {
+    margin: 3px 0 2px !important;
+    font-size: 12px !important;
+  }
+  .dashboard-mode .recent-payment-row small { font-size: 7px !important; }
+}
+
+/* Kısa dizüstü ekranlarında içerik hâlâ okunabilir kalarak biraz daha sıkışır. */
+@media (min-width: 1180px) and (max-height: 820px) {
+  .app-shell.dashboard-mode .content {
+    padding-top: 9px !important;
+    padding-bottom: 14px !important;
+  }
+
+  .dashboard-mode .premium-dashboard { gap: 7px !important; }
+  .dashboard-mode .dashboard-intro { min-height: 36px !important; padding-bottom: 5px !important; }
+  .dashboard-mode .dashboard-bento { grid-template-rows: 88px !important; gap: 8px !important; }
+  .dashboard-mode .bento-card { min-height: 88px !important; height: 88px !important; padding: 10px 13px !important; }
+  .dashboard-mode .dashboard-lessons,
+  .dashboard-mode .dashboard-alerts,
+  .dashboard-mode .dashboard-lessons:has(.lesson-empty-signature) { min-height: 188px !important; height: 188px !important; }
+  .dashboard-mode .dashboard-section-head { min-height: 43px !important; height: 43px !important; }
+  .dashboard-mode .lesson-empty-signature { min-height: 144px !important; }
+  .dashboard-mode .recent-payment-row button { min-height: 46px !important; }
+}
+
