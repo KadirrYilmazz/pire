@@ -6,7 +6,22 @@
 
 @media (min-width: 1180px) {
   .app-shell.dashboard-mode .content {
+    position: relative !important;
     padding: 14px clamp(22px, 3vw, 52px) 24px !important;
+  }
+
+  /* “+ Yeni” ayrı bir satır kaplamaz; dashboard başlığıyla aynı hizada durur. */
+  .app-shell.dashboard-mode .content > .dashboard-page-header {
+    position: absolute !important;
+    z-index: 8 !important;
+    top: 10px !important;
+    right: clamp(22px, 3vw, 52px) !important;
+    width: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
   }
 
   .dashboard-mode .premium-dashboard {
@@ -33,11 +48,22 @@
     font-size: 8px !important;
   }
 
-  .dashboard-mode .dashboard-bento {
+  .app-shell.dashboard-mode .content .premium-dashboard .dashboard-bento {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     grid-template-rows: 100px !important;
+    grid-auto-flow: row !important;
     gap: 10px !important;
     margin: 0 !important;
+  }
+
+  /* Eski bento alan atamalarını kesin olarak iptal eder. */
+  .app-shell.dashboard-mode .premium-dashboard .dashboard-bento > .kpi-students,
+  .app-shell.dashboard-mode .premium-dashboard .dashboard-bento > .kpi-lessons,
+  .app-shell.dashboard-mode .premium-dashboard .dashboard-bento > .kpi-attendance,
+  .app-shell.dashboard-mode .premium-dashboard .dashboard-bento > .kpi-revenue {
+    grid-area: auto !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
 
   .dashboard-mode .bento-card {
@@ -179,7 +205,7 @@
   .dashboard-mode .dashboard-finance-foot strong { font-size: 14px !important; }
 
   .dashboard-mode .dashboard-recent-activity {
-    margin-top: 0 !important;
+    display: none !important;
   }
 
   .dashboard-mode .dashboard-recent-activity .dashboard-section-head {
@@ -223,4 +249,3 @@
   .dashboard-mode .lesson-empty-signature { min-height: 144px !important; }
   .dashboard-mode .recent-payment-row button { min-height: 46px !important; }
 }
-
