@@ -46,11 +46,7 @@
   }
 
   .dashboard-mode .dashboard-intro {
-    min-height: 42px !important;
-    margin: 0 !important;
-    padding: 0 2px 7px !important;
-    flex-direction: row !important;
-    align-items: center !important;
+    display: none !important;
   }
 
   .dashboard-mode .dashboard-intro h2 {
@@ -65,7 +61,7 @@
 
   .app-shell.dashboard-mode .content .premium-dashboard {
     grid-template-columns: minmax(0, 1fr) clamp(380px, 25vw, 440px) !important;
-    grid-template-rows: auto minmax(470px, calc(100vh - 380px)) !important;
+    grid-template-rows: minmax(500px, calc(100vh - 330px)) !important;
     column-gap: 14px !important;
   }
 
@@ -76,7 +72,7 @@
 
   .app-shell.dashboard-mode .content .premium-dashboard .dashboard-bento {
     grid-column: 2 !important;
-    grid-row: 2 !important;
+    grid-row: 1 !important;
     grid-template-columns: 1fr !important;
     grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
     grid-auto-flow: row !important;
@@ -103,7 +99,7 @@
 
   .dashboard-mode .pire-dashboard-calendar {
     grid-column: 1 !important;
-    grid-row: 2 !important;
+    grid-row: 1 !important;
     min-width: 0;
     min-height: 410px;
     height: 100%;
@@ -351,7 +347,7 @@
 
   .dashboard-mode .premium-dashboard { gap: 7px !important; }
   .dashboard-mode .dashboard-intro { min-height: 36px !important; padding-bottom: 5px !important; }
-  .app-shell.dashboard-mode .content .premium-dashboard { grid-template-rows:auto minmax(410px,calc(100vh - 365px)) !important; }
+  .app-shell.dashboard-mode .content .premium-dashboard { grid-template-rows:minmax(430px,calc(100vh - 315px)) !important; }
   .dashboard-mode .dashboard-bento { grid-template-rows:repeat(4,minmax(0,1fr)) !important;gap:8px !important; }
   .dashboard-mode .bento-card { min-height:0 !important;height:auto !important;padding:10px 13px !important; }
   .dashboard-mode .pire-dashboard-calendar { min-height:350px;grid-template-rows:52px 1fr 62px; }
