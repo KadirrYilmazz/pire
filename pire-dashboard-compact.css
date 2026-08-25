@@ -7,15 +7,16 @@
 @media (min-width: 1180px) {
   .app-shell.dashboard-mode .content {
     position: relative !important;
-    padding: 14px clamp(22px, 3vw, 52px) 24px !important;
+    padding: 10px clamp(16px, 1.8vw, 32px) 18px !important;
   }
 
   /* “+ Yeni” ayrı bir satır kaplamaz; dashboard başlığıyla aynı hizada durur. */
   .app-shell.dashboard-mode .content > .dashboard-page-header {
     position: absolute !important;
     z-index: 8 !important;
-    top: 10px !important;
-    right: clamp(22px, 3vw, 52px) !important;
+    /* Üst navigasyondaki İletişim öğesinin hemen sağında görünür. */
+    top: -86px !important;
+    right: clamp(16px, 1.8vw, 32px) !important;
     width: auto !important;
     min-height: 0 !important;
     height: auto !important;
@@ -25,8 +26,10 @@
   }
 
   .dashboard-mode .premium-dashboard {
-    width: min(100%, 1720px);
+    width: 100%;
+    max-width: 1840px !important;
     gap: 10px !important;
+    margin-top: -68px !important;
     margin-inline: auto;
   }
 
@@ -49,9 +52,9 @@
   }
 
   .app-shell.dashboard-mode .content .premium-dashboard {
-    grid-template-columns: minmax(0, 1fr) clamp(300px, 24vw, 390px) !important;
-    grid-template-rows: auto minmax(410px, calc(100vh - 370px)) !important;
-    column-gap: 12px !important;
+    grid-template-columns: minmax(0, 1fr) clamp(380px, 25vw, 440px) !important;
+    grid-template-rows: auto minmax(500px, calc(100vh - 330px)) !important;
+    column-gap: 14px !important;
   }
 
   .app-shell.dashboard-mode .content .premium-dashboard > .dashboard-intro {
@@ -83,7 +86,7 @@
     width: auto !important;
     min-height: 0 !important;
     height: auto !important;
-    padding: 13px 15px !important;
+    padding: 16px 18px !important;
   }
 
   .dashboard-mode .pire-dashboard-calendar {
@@ -112,21 +115,21 @@
     align-items: center !important;
     justify-content: space-between !important;
   }
-  .pire-dashboard-calendar header small { color:#b1aa9b;font-size:9px;letter-spacing:.13em;font-weight:600; }
-  .pire-dashboard-calendar header h3 { margin:2px 0 0;color:#fffaf0;font-size:18px;font-weight:650; }
+  .pire-dashboard-calendar header small { color:#c5bfb3;font-size:11px;letter-spacing:.13em;font-weight:650; }
+  .pire-dashboard-calendar header h3 { margin:2px 0 0;color:#fffaf0;font-size:21px;font-weight:680; }
   .pire-calendar-actions { display:flex;align-items:center;gap:5px; }
-  .pire-calendar-actions button { color:#e0c474;cursor:pointer;background:#d4b66f0d;border:1px solid #d4b66f35;border-radius:7px;height:30px;padding:0 10px;font-size:10px;font-weight:600; }
+  .pire-calendar-actions button { color:#efd17d;cursor:pointer;background:#d4b66f12;border:1px solid #d4b66f45;border-radius:8px;height:34px;padding:0 12px;font-size:12px;font-weight:650; }
   .pire-calendar-actions button:hover { background:#d4b66f12; }
   .pire-calendar-actions [data-alerts-toggle] { margin-right:5px; }
   .pire-calendar-actions [data-alerts-toggle] i { background:#d4b66f1f;border:1px solid #d4b66f40;border-radius:99px;margin-left:5px;padding:2px 6px;font-size:9px;font-style:normal; }
 
   .pire-calendar-grid { grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:24px repeat(6,minmax(0,1fr));gap:4px;padding:9px 12px 7px;display:grid; }
-  .pire-calendar-weekday { color:#aaa59b;text-align:center;align-self:center;font-size:9px;font-weight:600;letter-spacing:.08em; }
+  .pire-calendar-weekday { color:#c5c0b7;text-align:center;align-self:center;font-size:11px;font-weight:650;letter-spacing:.08em; }
   .pire-calendar-blank { min-width:0; }
   .pire-calendar-day { color:#e2ded5;cursor:pointer;background:#ffffff04;border:1px solid #ffffff0d;border-radius:8px;min-width:0;padding:6px 7px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;align-items:start;text-align:left;transition:.18s ease; }
   .pire-calendar-day:hover { color:#eee7d8;background:#d4b66f0a;border-color:#d4b66f25; }
-  .pire-calendar-day b { font-size:13px;font-weight:650; }
-  .pire-calendar-day small { color:#bba66c;align-self:end;font-size:9px;font-weight:500; }
+  .pire-calendar-day b { font-size:16px;font-weight:680; }
+  .pire-calendar-day small { color:#d1b974;align-self:end;font-size:11px;font-weight:550; }
   .pire-calendar-day.is-today { border-color:#d4b66f62;box-shadow:inset 0 0 0 1px #d4b66f12; }
   .pire-calendar-day.is-selected { color:#17140e;background:linear-gradient(135deg,#e0c678,#b8913d);border-color:#e6cf8e; }
   .pire-calendar-day.is-selected small { color:#3f3520; }
@@ -165,7 +168,7 @@
 
   .dashboard-mode .bento-card .kpi-copy small {
     color: #c0bbb1 !important;
-    font-size: 11px !important;
+    font-size: 13px !important;
     line-height: 1.2 !important;
   }
 
@@ -174,14 +177,14 @@
   .dashboard-mode .kpi-revenue .kpi-copy > strong {
     margin-top: 4px !important;
     color: #fffaf0 !important;
-    font-size: clamp(27px, 2vw, 34px) !important;
+    font-size: clamp(32px, 2.25vw, 40px) !important;
     line-height: 1 !important;
   }
 
   .dashboard-mode .bento-card .kpi-copy p {
     margin-top: 5px !important;
     color: #bcb6aa !important;
-    font-size: 10px !important;
+    font-size: 12px !important;
     line-height: 1.25 !important;
   }
 
