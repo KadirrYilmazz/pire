@@ -3,7 +3,7 @@
   const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const DAYS=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
   let viewDate=new Date(),selected='';
-  let movedActions=null,actionsHome=null,syncQueued=false;
+  let movedActions=null,actionsHome=null,syncQueued=false,smartAlertCount='',openSmartAlertsAfterNavigation=false;
   const boundPanels=new WeakSet();
 
   const iso=(year,month,day)=>`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -110,29 +110,39 @@
   }
 
   function placeNewActions(){
-    const dashboard=document.querySelector('.premium-dashboard');
-    const sidebar=document.querySelector('.app-shell.dashboard-mode .sidebar');
-    const header=document.querySelector('.app-shell.dashboard-mode .content > header');
-    const actions=header?.querySelector(':scope > .top-actions')||sidebar?.querySelector(':scope > .pire-nav-new-actions')||movedActions;
-    if(!dashboard||!sidebar||!actions){if(!dashboard)restoreNewActions();return}
-    if(movedActions&&movedActions!==actions&&movedActions.parentElement===sidebar)movedActions.remove();
+    const shell=document.querySelector('.app-shell');
+    const sidebar=shell?.querySelector('.sidebar');
+    const header=shell?.querySelector('.content > header');
+    const actions=header?.querySelector(':scope > .top-actions')||sidebar?.querySelector(':scope > .pire-nav-new-actions')||(movedActions?.isConnected?movedActions:null);
+    if(!shell||!sidebar||!header||!actions?.querySelector('.pire-new-menu')){
+      shell?.classList.remove('pire-persistent-header');
+      restoreNewActions();
+      return false;
+    }
     if(!movedActions||movedActions!==actions){movedActions=actions;actionsHome=actions.parentElement}
-    if(header)header.classList.add('pire-dashboard-actions-home');
+    if(!actionsHome?.isConnected)actionsHome=header;
+    shell.classList.add('pire-persistent-header');
+    header.classList.add('pire-dashboard-actions-home');
     if(actions.parentElement!==sidebar)sidebar.appendChild(actions);
     actions.classList.add('pire-nav-new-actions');
+    return true;
   }
 
   function sync(){
-    placeNewActions();
+    const hasPersistentHeader=placeNewActions();
+    let dashboard=null;
     document.querySelectorAll('.premium-dashboard').forEach(dashboard=>{
       const panel=makePanel(dashboard),badge=dashboard.querySelector('.dashboard-alerts .dashboard-section-head > span');
-      placeSmartAlertButton(dashboard,badge?.textContent||'');
+      smartAlertCount=badge?.textContent||'';
+      if(openSmartAlertsAfterNavigation){dashboard.classList.add('compact-alerts-open');openSmartAlertsAfterNavigation=false}
     });
-    if(!document.querySelector('.premium-dashboard'))document.querySelectorAll('.pire-smart-alert-button').forEach(button=>button.remove());
+    dashboard=document.querySelector('.premium-dashboard');
+    if(hasPersistentHeader)placeSmartAlertButton(dashboard,smartAlertCount);
+    else document.querySelectorAll('.pire-smart-alert-button').forEach(button=>button.remove());
   }
 
   function placeSmartAlertButton(dashboard,count){
-    const tools=document.querySelector('.app-shell.dashboard-mode .navbar-tools');
+    const tools=document.querySelector('.app-shell.pire-persistent-header .navbar-tools');
     const notifications=tools?.querySelector('.notification-wrap');
     if(!tools||!notifications)return;
     let button=tools.querySelector('.pire-smart-alert-button');
@@ -141,7 +151,12 @@
       button.innerHTML='<span aria-hidden="true">✦</span><b></b>';
       notifications.insertAdjacentElement('afterend',button);
     }
-    button.onclick=event=>{event.stopPropagation();dashboard.classList.toggle('compact-alerts-open')};
+    button.onclick=event=>{
+      event.stopPropagation();
+      if(dashboard?.isConnected){dashboard.classList.toggle('compact-alerts-open');return}
+      const dashboardButton=[...document.querySelectorAll('.primary-nav button')].find(item=>item.textContent?.trim()==='Genel Bakış');
+      if(dashboardButton){openSmartAlertsAfterNavigation=true;dashboardButton.click()}
+    };
     const badge=button.querySelector('b');if(badge.textContent!==count)badge.textContent=count;
     badge.hidden=!count||count==='0';
     button.setAttribute('aria-label',`Akıllı uyarılar, ${count||0} kayıt`);button.title='Akıllı uyarılar';

@@ -19,11 +19,11 @@
     display: none !important;
   }
 
-  .app-shell.dashboard-mode .sidebar {
+  .app-shell.pire-persistent-header .sidebar {
     position: relative !important;
   }
 
-  .app-shell.dashboard-mode .sidebar > .pire-nav-new-actions {
+  .app-shell.pire-persistent-header .sidebar > .pire-nav-new-actions {
     z-index: 12 !important;
     position: absolute !important;
     top: 140px !important;
@@ -36,7 +36,7 @@
     align-items: center !important;
   }
 
-  .app-shell.dashboard-mode .sidebar > .pire-nav-new-actions .pire-new-trigger {
+  .app-shell.pire-persistent-header .sidebar > .pire-nav-new-actions .pire-new-trigger {
     min-height: 46px !important;
     padding-inline: 17px !important;
   }
@@ -133,10 +133,10 @@
   .pire-calendar-actions { display:flex;align-items:center;gap:5px; }
   .pire-calendar-actions button { color:#efd17d;cursor:pointer;background:#d4b66f12;border:1px solid #d4b66f45;border-radius:8px;height:34px;padding:0 12px;font-size:12px;font-weight:650; }
   .pire-calendar-actions button:hover { background:#d4b66f12; }
-  .app-shell.dashboard-mode .navbar-tools .pire-smart-alert-button { color:#e4c676 !important;background:#d4b66f0c !important;border-color:#d4b66f42 !important; }
-  .app-shell.dashboard-mode .navbar-tools .pire-smart-alert-button:hover { color:#f1d78e !important;background:#d4b66f18 !important; }
-  .app-shell.dashboard-mode .navbar-tools .pire-smart-alert-button > span { font-size:16px;line-height:1; }
-  .app-shell.dashboard-mode .navbar-tools .pire-smart-alert-button > b[hidden] { display:none !important; }
+  .app-shell.pire-persistent-header .navbar-tools .pire-smart-alert-button { color:#e4c676 !important;background:#d4b66f0c !important;border-color:#d4b66f42 !important; }
+  .app-shell.pire-persistent-header .navbar-tools .pire-smart-alert-button:hover { color:#f1d78e !important;background:#d4b66f18 !important; }
+  .app-shell.pire-persistent-header .navbar-tools .pire-smart-alert-button > span { font-size:16px;line-height:1; }
+  .app-shell.pire-persistent-header .navbar-tools .pire-smart-alert-button > b[hidden] { display:none !important; }
 
   .pire-calendar-grid { grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:24px repeat(6,minmax(0,1fr));gap:4px;padding:9px 12px 7px;min-height:0;display:grid; }
   .pire-calendar-weekday { color:#c5c0b7;text-align:center;align-self:center;font-size:11px;font-weight:650;letter-spacing:.08em; }
@@ -396,7 +396,7 @@
     background: #caa74f2b !important;
   }
 
-  html[data-theme="light"] .app-shell.dashboard-mode .navbar-tools .pire-smart-alert-button {
+  html[data-theme="light"] .app-shell.pire-persistent-header .navbar-tools .pire-smart-alert-button {
     color:#795b18 !important;background:#fff !important;border-color:#b9974f66 !important;box-shadow:0 7px 18px #352d1f12 !important;
   }
 

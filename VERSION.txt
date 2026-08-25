@@ -49,3 +49,10 @@ Fix 43 — Bildirim Tıklamalarında Siyah Ekran Düzeltmesi
 - Bildirim türleri mevcut API yanıtında doğru modüle eşlenir; kayıtlı kullanıcı verileri değiştirilmez.
 - Ödeme, paket, yoklama, ödev, telafi, ders iptali ve program değişikliği yönlendirmeleri korunur.
 - Mevcut bildirim okundu kaydı, kullanıcı verileri ve akıllı uyarıların özgün davranışı korunur.
+
+Fix 44 — Tüm Sekmelerde Sabit Üst Menü
+- Yönetici üst menüsü ve altın Yeni düğmesi tüm modüllerde aynı konumda korunur.
+- Akıllı uyarı düğmesi ve uyarı sayısı sekmeler arasında görünür kalır.
+- Diğer modüllerde akıllı uyarıya basıldığında Genel Bakış açılır ve uyarı paneli gösterilir.
+- Her modülün özgün sayfa başlığı, içeriği ve mevcut kullanıcı verileri korunur.
+- Sekme ve bildirim geçişlerindeki siyah ekran önlemi korunur.
