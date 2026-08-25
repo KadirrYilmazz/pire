@@ -8,16 +8,7 @@ Fix 37 — Kurtarılmış API Emülasyonu Tamamlama
 - Duyuru oluşturma, geri çekme ve arşivleme eklendi.
 - Telafi planlaması için çakışmasız saat/derslik önerileri eklendi.
 - Güvenlik günlüğünde limit desteği eklendi.
-- Kurum yedeğini indirme, doğrulama ve onaylı g
-
-Fix 47 — Güvenli Yönetici Giriş Bildirimi
-- WhatsApp bildirimi dil modülünden ayrılarak doğrudan tüm siteye yüklenir.
-- Supabase'in doğruladığı gerçek giriş zamanı kullanılarak aynı girişin yeniden bildirilmesi engellenir.
-- Profildeki giriş zamanı atomik olarak sahiplenilir; eşzamanlı sekmelerden yalnızca biri mesaj gönderebilir.
-- Mesaj gönderilmeden önce tekrar kaydı oluşturulur; kayıt hatasında WhatsApp çağrısı yapılmaz.
-- Supabase token yenilemeleri aynı oturum kimliğiyle tanınır ve yeni giriş sayılmaz.
-- Yetki, aktif hesap ve telefon doğrulaması sunucu tarafında korunur.
-eri yükleme eklendi.
+- Kurum yedeğini indirme, doğrulama ve onaylı geri yükleme eklendi.
 - Tarayıcı içi API emülasyonu CRUD ve yedekleme testlerinden geçirildi.
 
 Fix 38 — Açık Tema Kullanıcı Kimliği Kontrastı
@@ -82,3 +73,11 @@ Fix 46 — Classical Vibes 5 Piyano Parçası
 - Mixkit Stock Music Free License kapsamındaki web sitesi kullanım izni korunur.
 - Tüm ziyaretçi ve kullanıcı rollerindeki müzik düğmesi, ses seviyesi ve kalıcı sessize alma tercihi korunur.
 - Mevcut kullanıcı verileri, üst menü ve bildirim davranışları değiştirilmez.
+
+Fix 47 — Güvenli Yönetici Giriş Bildirimi
+- WhatsApp bildirimi dil modülünden ayrılarak doğrudan tüm siteye yüklenir.
+- Supabase'in doğruladığı gerçek giriş zamanı kullanılarak aynı girişin yeniden bildirilmesi engellenir.
+- Profildeki giriş zamanı atomik olarak sahiplenilir; eşzamanlı sekmelerden yalnızca biri mesaj gönderebilir.
+- Mesaj gönderilmeden önce tekrar kaydı oluşturulur; kayıt hatasında WhatsApp çağrısı yapılmaz.
+- Supabase token yenilemeleri aynı oturum kimliğiyle tanınır ve yeni giriş sayılmaz.
+- Yetki, aktif hesap ve telefon doğrulaması sunucu tarafında korunur.
