@@ -3,7 +3,7 @@
   const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const DAYS=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
   let viewDate=new Date(),selected='';
-  let movedActions=null,actionsHome=null;
+  let movedActions=null,actionsHome=null,syncQueued=false;
 
   const iso=(year,month,day)=>`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
   const data=()=>{try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()||{}}catch(_){return {}}};
@@ -84,11 +84,11 @@
 
   function placeNewActions(){
     const dashboard=document.querySelector('.premium-dashboard');
-    const nav=document.querySelector('.primary-nav');
+    const sidebar=document.querySelector('.app-shell.dashboard-mode .sidebar');
     const actions=document.querySelector('.dashboard-page-header .top-actions')||movedActions;
-    if(!dashboard||!nav||!actions){if(!dashboard)restoreNewActions();return}
+    if(!dashboard||!sidebar||!actions){if(!dashboard)restoreNewActions();return}
     if(!movedActions||movedActions!==actions){movedActions=actions;actionsHome=actions.parentElement}
-    if(actions.parentElement!==nav)nav.appendChild(actions);
+    if(actions.parentElement!==sidebar)sidebar.appendChild(actions);
     actions.classList.add('pire-nav-new-actions');
   }
 
@@ -106,6 +106,11 @@
     const nav=event.target.closest?.('.primary-nav');
     if(nav&&!event.target.closest('.pire-nav-new-actions'))restoreNewActions();
   },true);
-  const boot=()=>{sync();new MutationObserver(()=>requestAnimationFrame(sync)).observe(document.body,{childList:true,subtree:true})};
+  const queueSync=()=>{if(syncQueued)return;syncQueued=true;requestAnimationFrame(()=>{syncQueued=false;sync()})};
+  const boot=()=>{
+    queueSync();
+    new MutationObserver(queueSync).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+    [100,300,800,1600].forEach(delay=>setTimeout(queueSync,delay));
+  };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
