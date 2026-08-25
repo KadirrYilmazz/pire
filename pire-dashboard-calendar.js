@@ -3,6 +3,7 @@
   const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const DAYS=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
   let viewDate=new Date(),selected='';
+  let movedActions=null,actionsHome=null;
 
   const iso=(year,month,day)=>`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
   const data=()=>{try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()||{}}catch(_){return {}}};
@@ -69,7 +70,22 @@
     render(panel);return panel;
   }
 
+  function restoreNewActions(){
+    if(movedActions&&actionsHome?.isConnected&&movedActions.parentElement!==actionsHome)actionsHome.appendChild(movedActions);
+  }
+
+  function placeNewActions(){
+    const dashboard=document.querySelector('.premium-dashboard');
+    const nav=document.querySelector('.primary-nav');
+    const actions=document.querySelector('.dashboard-page-header .top-actions')||movedActions;
+    if(!dashboard||!nav||!actions){if(!dashboard)restoreNewActions();return}
+    if(!movedActions||movedActions!==actions){movedActions=actions;actionsHome=actions.parentElement}
+    if(actions.parentElement!==nav)nav.appendChild(actions);
+    actions.classList.add('pire-nav-new-actions');
+  }
+
   function sync(){
+    placeNewActions();
     document.querySelectorAll('.premium-dashboard').forEach(dashboard=>{
       const panel=makePanel(dashboard),badge=dashboard.querySelector('.dashboard-alerts .dashboard-section-head > span');
       const alertButton=panel.querySelector('[data-alerts-toggle]');
@@ -78,6 +94,10 @@
   }
   document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!dashboard.querySelector('[data-alerts-toggle]')?.contains(event.target))dashboard.classList.remove('compact-alerts-open')}));
   document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(x=>x.classList.remove('compact-alerts-open'))});
+  document.addEventListener('click',event=>{
+    const nav=event.target.closest?.('.primary-nav');
+    if(nav&&!event.target.closest('.pire-nav-new-actions'))restoreNewActions();
+  },true);
   const boot=()=>{sync();new MutationObserver(()=>requestAnimationFrame(sync)).observe(document.body,{childList:true,subtree:true})};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
