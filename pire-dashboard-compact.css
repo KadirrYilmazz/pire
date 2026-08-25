@@ -361,6 +361,51 @@
   .dashboard-mode .recent-payment-row small { font-size: 7px !important; }
 }
 
+/* Tüm ziyaretçi ve kullanıcı rollerinde site geneli müzik denetimi. */
+.app-shell .navbar-tools .pire-music-toggle {
+  color: #d8bd77;
+  transition: color .18s ease, border-color .18s ease, opacity .18s ease;
+}
+
+.app-shell .navbar-tools .pire-music-toggle:hover {
+  color: #f0d489;
+  border-color: #d4b66f55;
+}
+
+.app-shell .navbar-tools .pire-music-toggle svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.app-shell .navbar-tools .pire-music-toggle .pire-music-muted-line {
+  display: none;
+}
+
+.app-shell .navbar-tools .pire-music-toggle.is-muted {
+  color: #aaa59b;
+  opacity: .75;
+}
+
+.app-shell .navbar-tools .pire-music-toggle.is-muted .pire-music-wave {
+  display: none;
+}
+
+.app-shell .navbar-tools .pire-music-toggle.is-muted .pire-music-muted-line {
+  display: block;
+}
+
+html[data-theme="light"] .app-shell .navbar-tools .pire-music-toggle {
+  color: #80621f;
+}
+
+html[data-theme="light"] .app-shell .navbar-tools .pire-music-toggle.is-muted {
+  color: #77736c;
+}
+
 /* Açık tema: kompakt dashboard için bağımsız ve yüksek kontrastlı renk sistemi. */
 @media (min-width: 1180px) {
   html[data-theme="light"] .dashboard-mode .pire-dashboard-calendar {

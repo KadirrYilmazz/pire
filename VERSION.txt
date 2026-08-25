@@ -56,3 +56,13 @@ Fix 44 — Tüm Sekmelerde Sabit Üst Menü
 - Diğer modüllerde akıllı uyarıya basıldığında Genel Bakış açılır ve uyarı paneli gösterilir.
 - Her modülün özgün sayfa başlığı, içeriği ve mevcut kullanıcı verileri korunur.
 - Sekme ve bildirim geçişlerindeki siyah ekran önlemi korunur.
+
+Fix 45 — Tüm Ziyaretçiler İçin Telifsiz Piyano Müziği
+- Alejandro Magaña'nın Staring at the Night Sky adlı Mixkit lisanslı piyano parçası eklendi.
+- 2 dakika 22 saniyelik sakin ve hafif gizemli enstrümantal düşük sesle döngüde çalar.
+- Müzik ziyaretçiler, yönetici, eğitmen, öğrenci, veli ve müşteri dahil tüm rollerde geçerlidir.
+- Yönetici araç çubuğunda müzik düğmesi filtreler ile bildirimler arasına yerleştirilir.
+- Girişsiz ziyaretçi ekranında aynı müzik düğmesi üst araç çubuğunda görünür.
+- Sessize alma tercihi tarayıcıda saklanır; sekme ve sayfa geçişlerinde korunur.
+- Otomatik çalmanın engellendiği tarayıcılarda müzik ilk kullanıcı etkileşimiyle başlar.
+- Parça ve lisans bilgisi: https://mixkit.co/license/#musicFree
