@@ -10,6 +10,13 @@
   const lessons=()=>Array.isArray(data()?.lessons?.lessons)?data().lessons.lessons:[];
   const trTime=value=>String(value||'').slice(0,5);
 
+  function openFullCalendar(){
+    const lessonMenu=[...document.querySelectorAll('.primary-nav details')].find(item=>item.querySelector('summary')?.textContent?.trim().startsWith('Dersler'));
+    const calendarButton=[...(lessonMenu?.querySelectorAll('button')||[])].find(button=>button.textContent?.trim()==='Takvim');
+    if(calendarButton){calendarButton.click();return}
+    lessonMenu?.querySelector('summary')?.click();
+  }
+
   function render(panel){
     const year=viewDate.getFullYear(),month=viewDate.getMonth();
     const first=(new Date(year,month,1).getDay()+6)%7;
@@ -42,8 +49,9 @@
     const area=panel.querySelector('[data-calendar-selected]');
     const date=new Date(`${selected}T12:00:00`);
     const title=date.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});
-    if(!items.length){area.innerHTML=`<div><small>${title}</small><b>Bu gün için ders planlanmamış</b></div><span>Takvim açık</span>`;return}
-    area.innerHTML=`<div><small>${title}</small><b>${items.length} ders planlandı</b></div><div class="pire-calendar-selected-lessons">${items.slice(0,2).map(item=>`<span><time>${trTime(item.startTime)}</time><b>${String(item.course||'Ders')}</b><small>${String(item.teacher||'')}</small></span>`).join('')}</div>`;
+    if(!items.length)area.innerHTML=`<div><small>${title}</small><b>Bu gün için ders planlanmamış</b></div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;
+    else area.innerHTML=`<div><small>${title}</small><b>${items.length} ders planlandı</b></div><div class="pire-calendar-selected-lessons">${items.slice(0,2).map(item=>`<span><time>${trTime(item.startTime)}</time><b>${String(item.course||'Ders')}</b><small>${String(item.teacher||'')}</small></span>`).join('')}</div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;
+    area.querySelector('[data-open-full-calendar]').onclick=openFullCalendar;
   }
 
   function makePanel(dashboard){
