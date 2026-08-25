@@ -146,6 +146,64 @@
     badge.hidden=!count||count==='0';
     button.setAttribute('aria-label',`Akıllı uyarılar, ${count||0} kayıt`);button.title='Akıllı uyarılar';
   }
+
+  const NOTIFICATION_ROUTES={
+    'Ders iptali':'Takvim',
+    'Ders hatırlatması':'Takvim',
+    'Program değişikliği':'Takvim',
+    'Telafi':'Telafiler',
+    'Yoklama':'Yoklama',
+    'Ödev':'Yoklama',
+    'Devamsızlık':'Yoklama',
+    'Ödeme':'Ödemeler',
+    'Paket':'Öğrenciler'
+  };
+
+  const SMART_ALERT_ROUTES={
+    'Paket süresi yaklaşıyor':'Öğrenciler',
+    'Bekleyen tahsilatlar':'Ödemeler',
+    'Yoklama bekleyen dersler':'Yoklama'
+  };
+
+  function findNavButton(label){
+    return [...document.querySelectorAll('.primary-nav button')].find(button=>
+      button.querySelector(':scope > span')?.textContent?.trim()===label
+    );
+  }
+
+  function openCorrectModule(label){
+    const button=findNavButton(label);
+    if(!button)return false;
+    button.click();
+    document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>
+      dashboard.classList.remove('compact-alerts-open')
+    );
+    return true;
+  }
+
+  function reinforceNavigation(label){
+    // Bildirim tıklaması önce okundu bilgisini kaydediyor. React'in kendi
+    // yönlendirmesi tamamlandıktan sonra tür için doğrulanmış modülü aç.
+    [0,80,240].forEach(delay=>setTimeout(()=>openCorrectModule(label),delay));
+  }
+
+  document.addEventListener('click',event=>{
+    const notification=event.target.closest?.('.notification-list > button');
+    if(notification){
+      const type=notification.querySelector('span')?.textContent?.trim();
+      const route=NOTIFICATION_ROUTES[type];
+      if(route)reinforceNavigation(route);
+      return;
+    }
+
+    const smartAlert=event.target.closest?.('.dashboard-alerts .alert-stream > button');
+    if(smartAlert){
+      const title=smartAlert.querySelector('b')?.textContent?.trim();
+      const route=SMART_ALERT_ROUTES[title];
+      if(route)reinforceNavigation(route);
+    }
+  },true);
+
   document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!event.target.closest?.('.pire-smart-alert-button'))dashboard.classList.remove('compact-alerts-open')}));
   document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(x=>x.classList.remove('compact-alerts-open'))});
   document.addEventListener('click',event=>{

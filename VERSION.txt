@@ -35,3 +35,10 @@ Düzeltme:
 - Geçersiz/stale bir sayfa kaydı varsa role ait varsayılan sayfaya dönülür.
 - Gerçek oturum yoksa eski sayfa hafızası temizlenir ve Ziyaretçi ekranı açılır.
 - Fix 35'in React içinde doğal isim/ID gösterimi korunur.
+
+Fix 42 — Bildirim ve Akıllı Uyarı Yönlendirmeleri
+- Ders iptali, ders hatırlatması ve program değişikliği bildirimleri Takvim modülünü açar.
+- Telafi bildirimleri Telafiler; yoklama, ödev ve devamsızlık bildirimleri Yoklama modülünü açar.
+- Ödeme bildirimleri Ödemeler, paket bildirimleri Öğrenciler modülünü açar.
+- Akıllı uyarılardaki paket, tahsilat ve yoklama satırları ilgili modüle kesin olarak yönlendirilir.
+- Bildirimin okundu olarak kaydedilmesi ve mevcut panel davranışları korunur.
