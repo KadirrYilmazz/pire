@@ -133,7 +133,8 @@
   function updateButtons(){
     const current=language();
     document.querySelectorAll('.pire-language-toggle').forEach(button=>{
-      button.textContent=current==='tr'?'TR':'ENG';
+      const label=current==='tr'?'TR':'ENG';
+      if(button.textContent!==label)button.textContent=label;
       button.setAttribute('aria-label',current==='tr'?'Switch site language to English':'Site dilini Türkçe yap');
       button.title=current==='tr'?'English':'Türkçe';
     });
@@ -150,8 +151,7 @@
     if(document.querySelector('style[data-pire-language]'))return;
     const style=document.createElement('style');style.dataset.pireLanguage='true';
     style.textContent=`
-      body > .pire-language-toggle{z-index:2147482500!important;position:fixed!important;width:var(--pire-language-width,46px)!important;min-width:var(--pire-language-width,46px)!important;height:var(--pire-language-height,46px)!important;padding:0!important;color:#e4c676!important;background:#151616!important;border:1px solid #d4b66f42!important;border-radius:var(--pire-language-radius,10px)!important;font-size:12px!important;font-weight:800!important;letter-spacing:.05em!important}
-      body > .pire-language-toggle:hover{background:#1d1c18!important}
+      .navbar-tools > .pire-language-toggle{color:#e4c676!important;font-size:12px!important;font-weight:800!important;letter-spacing:.05em!important}
       html[data-theme="light"] .pire-language-toggle{color:#765b20!important}
       @media(max-width:700px){.pire-language-toggle{font-size:10px!important}}
     `;
@@ -162,27 +162,13 @@
     const tools=document.querySelector('.app-shell .navbar-tools');
     const music=tools?.querySelector('.pire-music-toggle');
     const anchor=music||tools?.querySelector('.notification-wrap,.navbar-icon-button,.visitor-login-trigger');
-    let button=document.querySelector('body > .pire-language-toggle');
-    if(!tools||!anchor){
-      if(button){button.style.visibility='hidden';button.style.pointerEvents='none'}
-      return;
-    }
+    let button=document.querySelector('.pire-language-toggle');
+    if(!tools||!anchor)return;
     if(!button){
       button=document.createElement('button');button.type='button';button.className='pire-language-toggle navbar-icon-button';
       button.addEventListener('click',toggle);
-      document.body.appendChild(button);
     }
-    const rect=anchor.getBoundingClientRect();
-    const anchorVisible=rect.width>0&&rect.height>0&&rect.bottom>0&&rect.top<window.innerHeight;
-    button.style.visibility=anchorVisible?'visible':'hidden';
-    button.style.pointerEvents=anchorVisible?'auto':'none';
-    if(!anchorVisible)return;
-    const radius=getComputedStyle(anchor).borderRadius||'10px';
-    button.style.setProperty('--pire-language-width',`${rect.width}px`);
-    button.style.setProperty('--pire-language-height',`${rect.height}px`);
-    button.style.setProperty('--pire-language-radius',radius);
-    button.style.left=`${Math.max(8,rect.left-rect.width-8)}px`;
-    button.style.top=`${Math.max(8,rect.top)}px`;
+    if(button.parentElement!==tools)tools.insertBefore(button,music||anchor);
     updateButtons();
   }
 
@@ -197,10 +183,8 @@
     });
     observer.observe(document.body,{childList:true,subtree:true});
     window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
-    window.addEventListener('resize',queueSync,{passive:true});
-    window.addEventListener('scroll',queueSync,{passive:true});
-    document.addEventListener('scroll',queueSync,{passive:true,capture:true});
-    setTimeout(()=>{ready=true;sync()},3200);
+    const start=()=>requestAnimationFrame(()=>{ready=true;sync()});
+    document.readyState==='complete'?start():window.addEventListener('load',start,{once:true});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
