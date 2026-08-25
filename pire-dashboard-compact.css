@@ -26,7 +26,7 @@
   .app-shell.dashboard-mode .sidebar > .pire-nav-new-actions {
     z-index: 12 !important;
     position: absolute !important;
-    top: 190px !important;
+    top: 140px !important;
     right: clamp(36px, 3.8vw, 72px) !important;
     bottom: auto !important;
     transform: none !important;
