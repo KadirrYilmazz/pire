@@ -10,20 +10,22 @@
     padding: 10px clamp(16px, 1.8vw, 32px) 18px !important;
   }
 
-  /* “+ Yeni” ayrı bir satır kaplamaz; dashboard başlığıyla aynı hizada durur. */
+  /* “+ Yeni” JS tarafından İletişim öğesinin arkasına taşınır; boş başlık satırı kapanır. */
   .app-shell.dashboard-mode .content > .dashboard-page-header {
-    position: absolute !important;
-    z-index: 8 !important;
-    /* Üst navigasyondaki İletişim öğesinin hemen sağında görünür. */
-    top: -86px !important;
-    right: clamp(16px, 1.8vw, 32px) !important;
-    left: auto !important;
-    width: 190px !important;
-    min-height: 0 !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
+    display: none !important;
+  }
+
+  .app-shell.dashboard-mode .primary-nav > .pire-nav-new-actions {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin-left: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .app-shell.dashboard-mode .primary-nav > .pire-nav-new-actions .pire-new-trigger {
+    min-height: 46px !important;
+    padding-inline: 17px !important;
   }
 
   .dashboard-mode .premium-dashboard {
@@ -54,7 +56,7 @@
 
   .app-shell.dashboard-mode .content .premium-dashboard {
     grid-template-columns: minmax(0, 1fr) clamp(380px, 25vw, 440px) !important;
-    grid-template-rows: auto minmax(410px, calc(100vh - 370px)) !important;
+    grid-template-rows: auto minmax(410px, calc(100vh - 430px)) !important;
     column-gap: 14px !important;
   }
 
@@ -337,7 +339,7 @@
 
   .dashboard-mode .premium-dashboard { gap: 7px !important; }
   .dashboard-mode .dashboard-intro { min-height: 36px !important; padding-bottom: 5px !important; }
-  .app-shell.dashboard-mode .content .premium-dashboard { grid-template-rows:auto minmax(350px,calc(100vh - 340px)) !important; }
+  .app-shell.dashboard-mode .content .premium-dashboard { grid-template-rows:auto minmax(350px,calc(100vh - 410px)) !important; }
   .dashboard-mode .dashboard-bento { grid-template-rows:repeat(4,minmax(0,1fr)) !important;gap:8px !important; }
   .dashboard-mode .bento-card { min-height:0 !important;height:auto !important;padding:10px 13px !important; }
   .dashboard-mode .pire-dashboard-calendar { min-height:350px;grid-template-rows:52px 1fr 62px; }
