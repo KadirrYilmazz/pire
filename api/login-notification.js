@@ -36,6 +36,8 @@ async function verifiedAdministrator(token){
   const userResponse=await fetch(`${url}/auth/v1/user`,{headers});
   if(!userResponse.ok)throw Object.assign(new Error("Geçerli oturum gerekli."),{status:401});
   const user=await userResponse.json();
+  const loginStartedAt=Date.parse(user?.last_sign_in_at||"");
+  if(!user?.id||!Number.isFinite(loginStartedAt))throw Object.assign(new Error("Oturum başlangıcı doğrulanamadı."),{status:503});
   const profileResponse=await fetch(`${url}/rest/v1/pire_profiles?id=eq.${encodeURIComponent(user.id)}&select=id,role,roles,status,phone,last_login_at&limit=1`,{headers});
   if(!profileResponse.ok)throw Object.assign(new Error("Yönetici profili doğrulanamadı."),{status:403});
   const [profile]=await profileResponse.json();
@@ -43,22 +45,28 @@ async function verifiedAdministrator(token){
   if(profile?.status!=="Aktif"||!roles.includes("Yönetici"))throw Object.assign(new Error("Aktif yönetici hesabı gerekli."),{status:403});
   const phone=normalizeTurkishPhone(profile.phone);
   if(!phone)throw Object.assign(new Error("Yönetici hesabında geçerli telefon bulunmuyor."),{status:422});
-  return {url,key,headers,userId:user.id,phone,lastLoginAt:profile.last_login_at};
+  return {url,key,headers,userId:user.id,phone,lastLoginAt:profile.last_login_at,loginStartedAt};
 }
 
-async function markLogin(identity,at){
-  const response=await fetch(`${identity.url}/rest/v1/pire_profiles?id=eq.${encodeURIComponent(identity.userId)}`,{
-    method:"PATCH",headers:{...identity.headers,Prefer:"return=minimal"},body:JSON.stringify({last_login_at:at})
+async function claimLogin(identity,at){
+  const previousFilter=identity.lastLoginAt?`eq.${encodeURIComponent(identity.lastLoginAt)}`:"is.null";
+  const response=await fetch(`${identity.url}/rest/v1/pire_profiles?id=eq.${encodeURIComponent(identity.userId)}&last_login_at=${previousFilter}&select=id`,{
+    method:"PATCH",headers:{...identity.headers,Prefer:"return=representation"},body:JSON.stringify({last_login_at:at})
   });
   if(!response.ok)throw Object.assign(new Error("Giriş zamanı kaydedilemedi."),{status:503});
+  const rows=await response.json().catch(()=>[]);
+  return Array.isArray(rows)&&rows.length===1;
 }
 
-async function sendWhatsApp(phone,time){
+function whatsAppConfig(){
   const accessToken=env("WHATSAPP_ACCESS_TOKEN");
   const phoneNumberId=env("WHATSAPP_PHONE_NUMBER_ID");
-  const templateName=env("WHATSAPP_LOGIN_TEMPLATE_NAME")||"pire_login_alert";
-  const graphVersion=env("WHATSAPP_GRAPH_VERSION")||"v23.0";
   if(!accessToken||!phoneNumberId)throw Object.assign(new Error("WhatsApp Cloud API henüz yapılandırılmadı."),{status:503,code:"whatsapp_not_configured"});
+  return {accessToken,phoneNumberId,templateName:env("WHATSAPP_LOGIN_TEMPLATE_NAME")||"pire_login_alert",graphVersion:env("WHATSAPP_GRAPH_VERSION")||"v23.0"};
+}
+
+async function sendWhatsApp(phone,time,config=whatsAppConfig()){
+  const {accessToken,phoneNumberId,templateName,graphVersion}=config;
   const response=await fetch(`https://graph.facebook.com/${graphVersion}/${encodeURIComponent(phoneNumberId)}/messages`,{
     method:"POST",
     headers:{Authorization:`Bearer ${accessToken}`,"Content-Type":"application/json"},
@@ -79,15 +87,16 @@ async function handler(req,res){
   try{
     const identity=await verifiedAdministrator(token);
     const previous=identity.lastLoginAt?Date.parse(identity.lastLoginAt):0;
-    if(previous&&Date.now()-previous<WINDOW_MS)return send(res,200,{ok:true,duplicate:true});
+    if(previous>=identity.loginStartedAt)return send(res,200,{ok:true,duplicate:true});
+    const config=whatsAppConfig();
     const at=new Date().toISOString();
-    const messageId=await sendWhatsApp(identity.phone,loginTime());
-    await markLogin(identity,at);
+    if(!await claimLogin(identity,at))return send(res,200,{ok:true,duplicate:true});
+    const messageId=await sendWhatsApp(identity.phone,loginTime(),config);
     return send(res,200,{ok:true,messageId:Boolean(messageId)});
   }catch(error){
     return send(res,error?.status||500,{error:error?.message||"Bildirim gönderilemedi.",...(error?.code?{code:String(error.code)}:{})});
   }
 }
 
-handler._test={normalizeTurkishPhone,originAllowed,verifiedAdministrator,sendWhatsApp};
+handler._test={normalizeTurkishPhone,originAllowed,verifiedAdministrator,claimLogin,sendWhatsApp};
 module.exports=handler;

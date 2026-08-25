@@ -14,8 +14,16 @@
     }catch(_){}
     return '';
   }
+  function decodePayload(token){
+    try{
+      const value=(token.split('.')[1]||'').replace(/-/g,'+').replace(/_/g,'/');
+      return JSON.parse(atob(value.padEnd(Math.ceil(value.length/4)*4,'=')));
+    }catch(_){return {}}
+  }
   function tokenMarker(token){
-    const part=token.split('.')[1]||token.slice(-32);
+    const payload=decodePayload(token);
+    const fallback=payload.sub&&payload.iat?`${payload.sub}:${payload.iat}`:token.slice(-32);
+    const part=String(payload.session_id||fallback);
     let hash=2166136261;
     for(let index=0;index<part.length;index+=1){hash^=part.charCodeAt(index);hash=Math.imul(hash,16777619)}
     return String(hash>>>0);
@@ -33,8 +41,9 @@
     const remember=()=>{try{localStorage.setItem(LAST_SESSION_KEY,marker);sessionStorage.setItem(SESSION_KEY,marker)}catch(_){}};
     if(response.ok){remember();return true}
     const payload=await response.json().catch(()=>({}));
-    if(response.status===403||response.status===422){remember();return true}
+    if(response.status===401||response.status===403||response.status===422){remember();return true}
     if(payload?.code==='whatsapp_not_configured'){remember();return true}
+    if(payload?.code==='whatsapp_failed'){remember();return true}
     return false;
   }
   let attempts=0;
