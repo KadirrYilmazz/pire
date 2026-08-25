@@ -15,6 +15,10 @@
     display: none !important;
   }
 
+  .app-shell.dashboard-mode .content > header.pire-dashboard-actions-home {
+    display: none !important;
+  }
+
   .app-shell.dashboard-mode .sidebar {
     position: relative !important;
   }
@@ -22,8 +26,9 @@
   .app-shell.dashboard-mode .sidebar > .pire-nav-new-actions {
     z-index: 12 !important;
     position: absolute !important;
+    top: 190px !important;
     right: clamp(36px, 3.8vw, 72px) !important;
-    bottom: 18px !important;
+    bottom: auto !important;
     transform: none !important;
     width: auto !important;
     margin: 0 !important;
