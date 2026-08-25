@@ -75,7 +75,6 @@
       <header>
         <div><small>DERS PROGRAMI</small><h3 data-calendar-title></h3></div>
         <div class="pire-calendar-actions">
-          <button type="button" data-alerts-toggle>Akıllı uyarılar <i></i></button>
           <button type="button" data-calendar-prev aria-label="Önceki ay">←</button>
           <button type="button" data-calendar-today>Bugün</button>
           <button type="button" data-calendar-next aria-label="Sonraki ay">→</button>
@@ -98,7 +97,6 @@
       if(target.matches('[data-calendar-prev]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);selected='';render(panel);return}
       if(target.matches('[data-calendar-next]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);selected='';render(panel);return}
       if(target.matches('[data-calendar-today]')){viewDate=new Date();selected='';render(panel);return}
-      if(target.matches('[data-alerts-toggle]')){event.stopPropagation();dashboard.classList.toggle('compact-alerts-open');return}
       const day=target.closest('.pire-calendar-day');
       if(day){
         const key=day.dataset.date,items=lessons().filter(item=>item?.lessonDate===key);
@@ -128,11 +126,27 @@
     placeNewActions();
     document.querySelectorAll('.premium-dashboard').forEach(dashboard=>{
       const panel=makePanel(dashboard),badge=dashboard.querySelector('.dashboard-alerts .dashboard-section-head > span');
-      const alertButton=panel.querySelector('[data-alerts-toggle]');
-      if(alertButton&&badge){const count=badge.textContent||'';const indicator=alertButton.querySelector('i');if(indicator.textContent!==count)indicator.textContent=count;alertButton.setAttribute('aria-label',`Akıllı uyarılar, ${count||0} kayıt`)}
+      placeSmartAlertButton(dashboard,badge?.textContent||'');
     });
+    if(!document.querySelector('.premium-dashboard'))document.querySelectorAll('.pire-smart-alert-button').forEach(button=>button.remove());
   }
-  document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!dashboard.querySelector('[data-alerts-toggle]')?.contains(event.target))dashboard.classList.remove('compact-alerts-open')}));
+
+  function placeSmartAlertButton(dashboard,count){
+    const tools=document.querySelector('.app-shell.dashboard-mode .navbar-tools');
+    const notifications=tools?.querySelector('.notification-wrap');
+    if(!tools||!notifications)return;
+    let button=tools.querySelector('.pire-smart-alert-button');
+    if(!button){
+      button=document.createElement('button');button.type='button';button.className='pire-smart-alert-button navbar-icon-button';
+      button.innerHTML='<span aria-hidden="true">✦</span><b></b>';
+      notifications.insertAdjacentElement('afterend',button);
+    }
+    button.onclick=event=>{event.stopPropagation();dashboard.classList.toggle('compact-alerts-open')};
+    const badge=button.querySelector('b');if(badge.textContent!==count)badge.textContent=count;
+    badge.hidden=!count||count==='0';
+    button.setAttribute('aria-label',`Akıllı uyarılar, ${count||0} kayıt`);button.title='Akıllı uyarılar';
+  }
+  document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!event.target.closest?.('.pire-smart-alert-button'))dashboard.classList.remove('compact-alerts-open')}));
   document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(x=>x.classList.remove('compact-alerts-open'))});
   document.addEventListener('click',event=>{
     const nav=event.target.closest?.('.primary-nav');
