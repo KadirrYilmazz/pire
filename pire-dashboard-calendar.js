@@ -9,6 +9,7 @@
   const data=()=>{try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()||{}}catch(_){return {}}};
   const lessons=()=>Array.isArray(data()?.lessons?.lessons)?data().lessons.lessons:[];
   const trTime=value=>String(value||'').slice(0,5);
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
   function openFullCalendar(){
     const lessonMenu=[...document.querySelectorAll('.primary-nav details')].find(item=>item.querySelector('summary')?.textContent?.trim().startsWith('Dersler'));
@@ -39,7 +40,7 @@
       if(key===selected)button.classList.add('is-selected');
       button.setAttribute('aria-label',`${day} ${MONTHS[month]}${items.length?`, ${items.length} ders`:''}`);
       button.innerHTML=`<b>${day}</b>${items.length?`<span class="pire-calendar-dots">${items.slice(0,3).map(()=>'<i></i>').join('')}</span><small>${items.length} ders</small>`:''}`;
-      button.onclick=()=>{selected=key;render(panel)};
+      button.onclick=()=>{selected=key;render(panel);if(items.length)showDayDetails(panel,key,items)};
       grid.appendChild(button);
     }
     renderSelected(panel,byDate.get(selected)||[]);
@@ -52,6 +53,18 @@
     if(!items.length)area.innerHTML=`<div><small>${title}</small><b>Bu gün için ders planlanmamış</b></div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;
     else area.innerHTML=`<div><small>${title}</small><b>${items.length} ders planlandı</b></div><div class="pire-calendar-selected-lessons">${items.slice(0,2).map(item=>`<span><time>${trTime(item.startTime)}</time><b>${String(item.course||'Ders')}</b><small>${String(item.teacher||'')}</small></span>`).join('')}</div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;
     area.querySelector('[data-open-full-calendar]').onclick=openFullCalendar;
+  }
+
+  function showDayDetails(panel,key,items){
+    const popover=panel.querySelector('[data-calendar-popover]');
+    const date=new Date(`${key}T12:00:00`).toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});
+    popover.innerHTML=`
+      <header><div><small>${esc(date)}</small><h4>${items.length} ders planlandı</h4></div><button type="button" data-close-calendar-details aria-label="Ders ayrıntılarını kapat">×</button></header>
+      <div class="pire-calendar-detail-list">${items.map(item=>`<article><time>${esc(trTime(item.startTime))}</time><div><b>${esc(item.course||'Ders')}</b><small>${esc(item.teacher||'Eğitmen belirtilmemiş')}${item.room?` · ${esc(item.room)}`:''}</small></div></article>`).join('')}</div>
+      <footer><button type="button" data-open-full-calendar>Tam takvimde aç →</button></footer>`;
+    popover.hidden=false;
+    popover.querySelector('[data-close-calendar-details]').onclick=()=>{popover.hidden=true};
+    popover.querySelector('[data-open-full-calendar]').onclick=openFullCalendar;
   }
 
   function makePanel(dashboard){
@@ -69,7 +82,8 @@
         </div>
       </header>
       <div class="pire-calendar-grid" data-calendar-grid></div>
-      <footer data-calendar-selected></footer>`;
+      <footer data-calendar-selected></footer>
+      <aside class="pire-calendar-popover" data-calendar-popover hidden></aside>`;
     dashboard.appendChild(panel);
     panel.querySelector('[data-calendar-prev]').onclick=()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);selected='';render(panel)};
     panel.querySelector('[data-calendar-next]').onclick=()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);selected='';render(panel)};
