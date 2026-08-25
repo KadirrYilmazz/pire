@@ -42,3 +42,10 @@ Fix 42 — Bildirim ve Akıllı Uyarı Yönlendirmeleri
 - Ödeme bildirimleri Ödemeler, paket bildirimleri Öğrenciler modülünü açar.
 - Akıllı uyarılardaki paket, tahsilat ve yoklama satırları ilgili modüle kesin olarak yönlendirilir.
 - Bildirimin okundu olarak kaydedilmesi ve mevcut panel davranışları korunur.
+
+Fix 43 — Bildirim Tıklamalarında Siyah Ekran Düzeltmesi
+- Bildirim ve akıllı uyarı tıklamalarından önce taşınmış dashboard eylemleri React'in beklediği konuma geri alınır.
+- Sayfa geçişlerinde siyah ekrana neden olan tekrarlı yapay menü tıklamaları kaldırıldı.
+- Bildirim türleri mevcut API yanıtında doğru modüle eşlenir; kayıtlı kullanıcı verileri değiştirilmez.
+- Ödeme, paket, yoklama, ödev, telafi, ders iptali ve program değişikliği yönlendirmeleri korunur.
+- Mevcut bildirim okundu kaydı, kullanıcı verileri ve akıllı uyarıların özgün davranışı korunur.

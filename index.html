@@ -93,6 +93,11 @@ async function localApi(url,init={}){
    if(ep==='makeups'&&u.searchParams.has('suggestFor')){const date=u.searchParams.get('date')||new Date().toISOString().slice(0,10), lessons=db.lessons?.lessons||[], rooms=db.settings?.settings?.rooms||['Derslik 1','Derslik 2','Müzik Stüdyosu'];const starts=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];const slots=[];for(const startTime of starts){const hour=Number(startTime.slice(0,2)),endTime=String(hour+1).padStart(2,'0')+':00';for(const room of rooms){const busy=lessons.some(x=>x.lessonDate===date&&x.room===room&&x.status!=='İptal edildi'&&startTime<x.endTime&&endTime>x.startTime);if(!busy)slots.push({date,startTime,endTime,room});if(slots.length>=8)break}if(slots.length>=8)break}return json({slots})}
    if(ep==='backup'){return new Response(JSON.stringify({version:1,exportedAt:new Date().toISOString(),data:db}),{status:200,headers:{'content-type':'application/json;charset=utf-8','content-disposition':'attachment; filename="pire-kurum-yedegi-'+new Date().toISOString().slice(0,10)+'.json"','cache-control':'no-store'}})}
    if(ep==='earnings' && db.earnings) return json(db.earnings);
+   if(ep==='notifications' && db.notifications){
+     const notificationTargets={'Ders iptali':'calendar','Ders hatırlatması':'calendar','Program değişikliği':'calendar','Telafi':'makeups','Yoklama':'attendance','Ödev':'attendance','Devamsızlık':'attendance','Ödeme':'payments','Paket':'students'};
+     const notifications=(db.notifications.notifications||[]).map(item=>({...item,target:notificationTargets[item.type]||item.target}));
+     return json({...db.notifications,notifications});
+   }
    if(db[ep]!==undefined) return json(db[ep]);
    return json({error:'Unknown recovered endpoint: '+ep},404)
  }
