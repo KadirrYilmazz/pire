@@ -66,3 +66,10 @@ Fix 45 — Tüm Ziyaretçiler İçin Telifsiz Piyano Müziği
 - Sessize alma tercihi tarayıcıda saklanır; sekme ve sayfa geçişlerinde korunur.
 - Otomatik çalmanın engellendiği tarayıcılarda müzik ilk kullanıcı etkileşimiyle başlar.
 - Parça ve lisans bilgisi: https://mixkit.co/license/#musicFree
+
+Fix 46 — Classical Vibes 5 Piyano Parçası
+- Arka plan müziği Grigoriy Nuzhny'nin Classical Vibes 5 adlı parçasıyla değiştirildi.
+- 2 dakika 3 saniyelik melodik, yansıtıcı ve hafif hüzünlü piyano düşük sesle döngüde çalar.
+- Mixkit Stock Music Free License kapsamındaki web sitesi kullanım izni korunur.
+- Tüm ziyaretçi ve kullanıcı rollerindeki müzik düğmesi, ses seviyesi ve kalıcı sessize alma tercihi korunur.
+- Mevcut kullanıcı verileri, üst menü ve bildirim davranışları değiştirilmez.

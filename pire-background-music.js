@@ -1,8 +1,8 @@
 /*
  * Pİ-RE site geneli arka plan müziği.
- * Parça: Staring at the Night Sky — Alejandro Magaña (A. M.), 2:22.
+ * Parça: Classical Vibes 5 — Grigoriy Nuzhny, 2:03.
  * Lisans: Mixkit Stock Music Free License, https://mixkit.co/license/#musicFree
- * Kaynak: https://mixkit.co/free-stock-music/tag/documentary/
+ * Kaynak: https://mixkit.co/free-stock-music/instrument/piano/
  */
 (()=>{
   const STORAGE_KEY='pire-background-music-muted';
