@@ -114,6 +114,7 @@
     display: grid;
     grid-template-rows: 58px 1fr 74px;
     overflow: hidden;
+    position: relative;
     box-shadow: 0 12px 32px #00000021, inset 0 1px #ffffff06;
   }
 
@@ -135,7 +136,7 @@
   .pire-calendar-actions [data-alerts-toggle] { margin-right:5px; }
   .pire-calendar-actions [data-alerts-toggle] i { background:#d4b66f1f;border:1px solid #d4b66f40;border-radius:99px;margin-left:5px;padding:2px 6px;font-size:9px;font-style:normal; }
 
-  .pire-calendar-grid { grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:24px repeat(6,minmax(0,1fr));gap:4px;padding:9px 12px 7px;display:grid; }
+  .pire-calendar-grid { grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:24px repeat(6,minmax(0,1fr));gap:4px;padding:9px 12px 7px;min-height:0;display:grid; }
   .pire-calendar-weekday { color:#c5c0b7;text-align:center;align-self:center;font-size:11px;font-weight:650;letter-spacing:.08em; }
   .pire-calendar-blank { min-width:0; }
   .pire-calendar-day { color:#e2ded5;cursor:pointer;background:#ffffff04;border:1px solid #ffffff0d;border-radius:8px;min-width:0;padding:6px 7px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;align-items:start;text-align:left;transition:.18s ease; }
@@ -162,6 +163,22 @@
   .pire-calendar-selected-lessons small { color:#aaa59b;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
   .pire-dashboard-calendar footer [data-open-full-calendar] { color:#17140e;cursor:pointer;background:#dfc374;border:1px solid #ead38d;border-radius:8px;min-height:32px;padding:0 11px;font-size:10px;font-weight:750;white-space:nowrap; }
   .pire-dashboard-calendar footer [data-open-full-calendar]:hover { background:#efd58a; }
+
+  .pire-calendar-popover[hidden] { display:none !important; }
+  .pire-calendar-popover { z-index:20;position:absolute;top:68px;right:18px;width:min(390px,calc(100% - 36px));max-height:calc(100% - 86px);color:#eee8dc;background:#111412f5;border:1px solid #d4b66f55;border-radius:12px;overflow:auto;box-shadow:0 24px 70px #000c,inset 0 1px #ffffff0a;backdrop-filter:blur(15px); }
+  .pire-calendar-popover > header { border-bottom:1px solid #ffffff12;padding:14px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px; }
+  .pire-calendar-popover header small { color:#bca76f;font-size:9px;text-transform:capitalize; }
+  .pire-calendar-popover h4 { margin:4px 0 0;font-size:16px; }
+  .pire-calendar-popover [data-close-calendar-details] { color:#d8d0c2;cursor:pointer;background:#ffffff08;border:1px solid #ffffff14;border-radius:7px;width:30px;height:30px;font-size:18px; }
+  .pire-calendar-detail-list { padding:5px 14px;display:grid; }
+  .pire-calendar-detail-list article { border-bottom:1px solid #ffffff0e;padding:11px 2px;display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center; }
+  .pire-calendar-detail-list article:last-child { border-bottom:0; }
+  .pire-calendar-detail-list time { color:#e0c270;font-size:13px;font-weight:700; }
+  .pire-calendar-detail-list article div { min-width:0;display:grid;gap:3px; }
+  .pire-calendar-detail-list b { color:#f0ebe2;font-size:11px; }
+  .pire-calendar-detail-list small { color:#aaa49a;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .pire-calendar-popover > footer { border-top:1px solid #ffffff12;padding:12px 14px;display:flex;justify-content:flex-end; }
+  .pire-calendar-popover > footer button { color:#17140e;cursor:pointer;background:#dfc374;border:1px solid #ead38d;border-radius:8px;min-height:34px;padding:0 12px;font-size:10px;font-weight:750; }
 
   /* Eski iki kartlık alt bölüm görünmez; uyarılar yalnız düğmeyle açılır. */
   .dashboard-mode .dashboard-detail-grid { display:contents !important; }
@@ -416,6 +433,19 @@
   html[data-theme="light"] .pire-calendar-selected-lessons small {
     color: #716b61 !important;
   }
+
+  html[data-theme="light"] .pire-calendar-popover {
+    color:#2b2822 !important;background:#fffdf9f5 !important;border-color:#b9974f88 !important;box-shadow:0 24px 60px #65533430,inset 0 1px #fff !important;
+  }
+  html[data-theme="light"] .pire-calendar-popover > header,
+  html[data-theme="light"] .pire-calendar-popover > footer,
+  html[data-theme="light"] .pire-calendar-detail-list article { border-color:#ded7ca !important; }
+  html[data-theme="light"] .pire-calendar-popover header small,
+  html[data-theme="light"] .pire-calendar-detail-list time { color:#7d5e17 !important; }
+  html[data-theme="light"] .pire-calendar-popover h4,
+  html[data-theme="light"] .pire-calendar-detail-list b { color:#28241d !important; }
+  html[data-theme="light"] .pire-calendar-detail-list small { color:#6d675d !important; }
+  html[data-theme="light"] .pire-calendar-popover [data-close-calendar-details] { color:#514b41 !important;background:#f4efe5 !important;border-color:#d8cfbd !important; }
 
   html[data-theme="light"] .dashboard-mode .bento-card {
     background-color: #fffdf9 !important;
