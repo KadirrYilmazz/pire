@@ -4,6 +4,7 @@
   const DAYS=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
   let viewDate=new Date(),selected='';
   let movedActions=null,actionsHome=null,syncQueued=false;
+  const boundPanels=new WeakSet();
 
   const iso=(year,month,day)=>`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
   const data=()=>{try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()||{}}catch(_){return {}}};
@@ -40,7 +41,6 @@
       if(key===selected)button.classList.add('is-selected');
       button.setAttribute('aria-label',`${day} ${MONTHS[month]}${items.length?`, ${items.length} ders`:''}`);
       button.innerHTML=`<b>${day}</b>${items.length?`<span class="pire-calendar-dots">${items.slice(0,3).map(()=>'<i></i>').join('')}</span><small>${items.length} ders</small>`:''}`;
-      button.onclick=()=>{selected=key;render(panel);if(items.length)showDayDetails(panel,key,items)};
       grid.appendChild(button);
     }
     renderSelected(panel,byDate.get(selected)||[]);
@@ -69,7 +69,7 @@
 
   function makePanel(dashboard){
     let panel=dashboard.querySelector(':scope > .pire-dashboard-calendar');
-    if(panel)return panel;
+    if(panel){bindPanel(panel,dashboard);return panel}
     panel=document.createElement('section');panel.className='pire-dashboard-calendar';panel.setAttribute('aria-label','Aylık ders takvimi');
     panel.innerHTML=`
       <header>
@@ -85,11 +85,26 @@
       <footer data-calendar-selected></footer>
       <aside class="pire-calendar-popover" data-calendar-popover hidden></aside>`;
     dashboard.appendChild(panel);
-    panel.querySelector('[data-calendar-prev]').onclick=()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);selected='';render(panel)};
-    panel.querySelector('[data-calendar-next]').onclick=()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);selected='';render(panel)};
-    panel.querySelector('[data-calendar-today]').onclick=()=>{viewDate=new Date();selected='';render(panel)};
-    panel.querySelector('[data-alerts-toggle]').onclick=event=>{event.stopPropagation();dashboard.classList.toggle('compact-alerts-open')};
+    bindPanel(panel,dashboard);
     render(panel);return panel;
+  }
+
+  function bindPanel(panel,dashboard){
+    if(boundPanels.has(panel))return;
+    boundPanels.add(panel);
+    panel.addEventListener('click',event=>{
+      const target=event.target.closest('button');
+      if(!target||!panel.contains(target))return;
+      if(target.matches('[data-calendar-prev]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);selected='';render(panel);return}
+      if(target.matches('[data-calendar-next]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);selected='';render(panel);return}
+      if(target.matches('[data-calendar-today]')){viewDate=new Date();selected='';render(panel);return}
+      if(target.matches('[data-alerts-toggle]')){event.stopPropagation();dashboard.classList.toggle('compact-alerts-open');return}
+      const day=target.closest('.pire-calendar-day');
+      if(day){
+        const key=day.dataset.date,items=lessons().filter(item=>item?.lessonDate===key);
+        selected=key;render(panel);if(items.length)showDayDetails(panel,key,items);
+      }
+    });
   }
 
   function restoreNewActions(){
