@@ -232,6 +232,18 @@
     font-size: 9px !important;
   }
 
+  .dashboard-mode .kpi-lessons .card-corner-note {
+    z-index: 2;
+    top: auto !important;
+    right: 14px !important;
+    bottom: 10px !important;
+    padding: 3px 6px;
+    color: #d7bd75;
+    background: #0b0d0ccc;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
   .dashboard-mode .lesson-rhythm,
   .dashboard-mode .revenue-curve {
     bottom: 8px !important;
@@ -521,6 +533,10 @@ html[data-theme="light"] .app-shell .navbar-tools .pire-music-toggle.is-muted {
   html[data-theme="light"] .dashboard-mode .student-reveal,
   html[data-theme="light"] .dashboard-mode .card-corner-note {
     color: #80621e !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .kpi-lessons .card-corner-note {
+    background: #fffdf9e8;
   }
 }
 

@@ -81,3 +81,9 @@ Fix 47 — Güvenli Yönetici Giriş Bildirimi
 - Mesaj gönderilmeden önce tekrar kaydı oluşturulur; kayıt hatasında WhatsApp çağrısı yapılmaz.
 - Supabase token yenilemeleri aynı oturum kimliğiyle tanınır ve yeni giriş sayılmaz.
 - Yetki, aktif hesap ve telefon doğrulaması sunucu tarafında korunur.
+
+Fix 49 — Bu Ay Ders Kartından Takvime Güvenli Geçiş
+- Genel Bakış ekranındaki Bu ay ders kartı, takvim modülünü açmadan önce taşınan üst menü öğelerini React düzenine geri yerleştirir.
+- Kartın fare tıklaması ile Enter ve Boşluk klavye kullanımları aynı güvenli geçişi uygular.
+- Kartın üzerine gelince görünen Takvime git metni sağ alt köşeye alınarak ders sayısıyla çakışması engellenir.
+- Takvim verileri, sabit üst menü görünümü ve diğer modül yönlendirmeleri korunur.
