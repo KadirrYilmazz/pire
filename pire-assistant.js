@@ -5,6 +5,8 @@
   const ROOT_ID="pire-guide-root";
   const HIGHLIGHT_CLASS="pire-guide-highlight";
   const state={guide:null,suggestedGuide:null,step:0,pending:false,lastIntent:"",lastTask:null};
+  const interfaceLanguage=()=>{try{return localStorage.getItem('pire-interface-language')==='en'?'en':'tr'}catch(_){return 'tr'}};
+  const ui=(tr,en)=>interfaceLanguage()==='en'?en:tr;
 
   const guides=[
     {
@@ -444,12 +446,12 @@
   async function askAI(query){
     const token=accessToken();
     if(!token){
-      addMessage("Bu soru hazır rehberlerin dışında. Güvenli AI yanıtı için gerçek Pİ-RE/Supabase oturumuyla giriş yapmanız gerekiyor; yerel kurtarma oturumu AI erişimi vermez.");
+      addMessage(ui("Bu soru hazır rehberlerin dışında. Güvenli AI yanıtı için gerçek Pİ-RE/Supabase oturumuyla giriş yapmanız gerekiyor; yerel kurtarma oturumu AI erişimi vermez.","This question is outside the built-in guides. Sign in with a real Pİ-RE/Supabase session for a secure AI answer; a local recovery session does not grant AI access."));
       return;
     }
     const summary=isMonthlyExpenseQuestion(query)?await monthlyExpenseSummary():(role()==="Yönetici"?await institutionSummary():undefined);
-    const payload=await requestAI(token,{question:query,page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(state.lastTask?{previousTask:{intent:state.lastTask.intent,targetModule:state.lastTask.targetModule}}:{}),...(summary?{summary}:{})});
-    const answer=payload.answer||"Bu soru için yanıt üretilemedi.";
+    const payload=await requestAI(token,{question:query,language:interfaceLanguage(),page:document.querySelector(".primary-nav .active")?.textContent?.trim()||"",...(state.lastTask?{previousTask:{intent:state.lastTask.intent,targetModule:state.lastTask.targetModule}}:{}),...(summary?{summary}:{})});
+    const answer=payload.answer||ui("Bu soru için yanıt üretilemedi.","No answer could be generated for this question.");
     addMessage(answer);
     const intentGuides={"student.create":"student","teacher.create":"teacher","lesson.create":"lesson","payment.create":"payment","finance.receivables":"view-receivables","self.payment.view":"view-own-payments"};
     const moduleGuides={teachers:"view-teachers",students:"view-students",expenses:"view-expenses",payments:"payment",lessons:"today-lessons",attendance:"attendance",makeups:"makeup",reports:"report",accounts:"account",settings:"settings"};
@@ -460,11 +462,11 @@
     if(relatedGuide&&relatedGuide.roles.includes(role())){
       state.lastIntent=relatedGuide.id;
       if(payload.task?.needsGuide){
-        addMessage("Bu işlemi gerçek panel üzerinde gösterebilirim. Aşağıdaki “Adım adım göster” düğmesine basın.");
+        addMessage(ui("Bu işlemi gerçek panel üzerinde gösterebilirim. Aşağıdaki “Adım adım göster” düğmesine basın.","I can show this action in the actual panel. Select “Show step by step” below."));
         offerGuide(relatedGuide);
       }
     }else if(/adım\s+adım|yönlendir|göster/i.test(query)){
-      addMessage("Bu işlem için güvenilir bir panel rehberi henüz tanımlı değil. Yanlış bir alanı göstermemek için otomatik yönlendirme başlatamıyorum.");
+      addMessage(ui("Bu işlem için güvenilir bir panel rehberi henüz tanımlı değil. Yanlış bir alanı göstermemek için otomatik yönlendirme başlatamıyorum.","A verified panel guide is not available for this action yet, so I cannot start automatic guidance without risking a wrong direction."));
     }
   }
 
@@ -558,7 +560,7 @@
     if(isAuth&&!lastAuth){
       const messages=root.querySelector(".pire-guide-messages");
       messages.innerHTML="";
-      addMessage(`Merhabalar ${salutation()}. Bugün ne yapmak istiyorsunuz? Yapmak istediğiniz işlemi yazın; size adım adım göstereyim.`);
+      addMessage(ui(`Merhabalar ${salutation()}. Bugün ne yapmak istiyorsunuz? Yapmak istediğiniz işlemi yazın; size adım adım göstereyim.`,`Hello ${salutation()}. What would you like to do today? Describe the action and I will guide you step by step.`));
       root.querySelector(".pire-guide-panel").classList.add("open");
     }
     if(!isAuth){removeHighlight();root.querySelector(".pire-guide-panel")?.classList.remove("open")}
