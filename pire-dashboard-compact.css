@@ -17,7 +17,8 @@
     /* Üst navigasyondaki İletişim öğesinin hemen sağında görünür. */
     top: -86px !important;
     right: clamp(16px, 1.8vw, 32px) !important;
-    width: auto !important;
+    left: auto !important;
+    width: 190px !important;
     min-height: 0 !important;
     height: auto !important;
     margin: 0 !important;
@@ -29,7 +30,7 @@
     width: 100%;
     max-width: 1840px !important;
     gap: 10px !important;
-    margin-top: -68px !important;
+    margin-top: 0 !important;
     margin-inline: auto;
   }
 
@@ -53,7 +54,7 @@
 
   .app-shell.dashboard-mode .content .premium-dashboard {
     grid-template-columns: minmax(0, 1fr) clamp(380px, 25vw, 440px) !important;
-    grid-template-rows: auto minmax(500px, calc(100vh - 330px)) !important;
+    grid-template-rows: auto minmax(410px, calc(100vh - 370px)) !important;
     column-gap: 14px !important;
   }
 
