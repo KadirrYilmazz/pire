@@ -162,8 +162,11 @@
     const tools=document.querySelector('.app-shell .navbar-tools');
     const music=tools?.querySelector('.pire-music-toggle');
     const anchor=music||tools?.querySelector('.notification-wrap,.navbar-icon-button,.visitor-login-trigger');
-    if(!tools||!anchor)return;
     let button=document.querySelector('body > .pire-language-toggle');
+    if(!tools||!anchor){
+      if(button){button.style.visibility='hidden';button.style.pointerEvents='none'}
+      return;
+    }
     if(!button){
       button=document.createElement('button');button.type='button';button.className='pire-language-toggle navbar-icon-button';
       button.addEventListener('click',toggle);
@@ -189,7 +192,7 @@
     addStyle();updateButtons();
     ['pointerdown','keydown','submit','change'].forEach(type=>document.addEventListener(type,protectReact,true));
     observer=new MutationObserver(records=>{
-      const relevant=records.some(record=>[...record.addedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
+      const relevant=records.some(record=>[...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
       if(relevant)queueSync();
     });
     observer.observe(document.body,{childList:true,subtree:true});
