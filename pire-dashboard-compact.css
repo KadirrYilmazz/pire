@@ -342,6 +342,107 @@
   .dashboard-mode .recent-payment-row small { font-size: 7px !important; }
 }
 
+/* Açık tema: kompakt dashboard için bağımsız ve yüksek kontrastlı renk sistemi. */
+@media (min-width: 1180px) {
+  html[data-theme="light"] .dashboard-mode .pire-dashboard-calendar {
+    color: #2a2721 !important;
+    background: radial-gradient(circle at 76% 28%, #c9a95118, transparent 42%), linear-gradient(145deg, #fffdf8, #f3efe6) !important;
+    border-color: #d8cfbd !important;
+    box-shadow: 0 14px 32px #68573418, inset 0 1px #fff !important;
+  }
+
+  html[data-theme="light"] .pire-dashboard-calendar > header,
+  html[data-theme="light"] .pire-dashboard-calendar > footer {
+    border-color: #d8cfbd !important;
+  }
+
+  html[data-theme="light"] .pire-dashboard-calendar header small,
+  html[data-theme="light"] .pire-dashboard-calendar footer > div:first-child small {
+    color: #786b51 !important;
+  }
+
+  html[data-theme="light"] .pire-dashboard-calendar header h3,
+  html[data-theme="light"] .pire-dashboard-calendar footer > div:first-child b,
+  html[data-theme="light"] .pire-calendar-selected-lessons b {
+    color: #28241d !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-actions button {
+    color: #614c1e !important;
+    background: #caa74f17 !important;
+    border-color: #b8943f55 !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-actions button:hover {
+    background: #caa74f2b !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-weekday {
+    color: #665f54 !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-day {
+    color: #302d27 !important;
+    background: #fffdf9 !important;
+    border-color: #ddd6c9 !important;
+    box-shadow: 0 2px 8px #594b3010;
+  }
+
+  html[data-theme="light"] .pire-calendar-day:hover {
+    color: #201c15 !important;
+    background: #f7efdc !important;
+    border-color: #b9974f !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-day small {
+    color: #85691f !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-day.is-selected {
+    color: #18140d !important;
+    background: linear-gradient(135deg, #ead17f, #c7a04a) !important;
+    border-color: #9b782d !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-dots i {
+    background: #9c7829 !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-selected-lessons time,
+  html[data-theme="light"] .pire-dashboard-calendar footer > span {
+    color: #7d5e17 !important;
+  }
+
+  html[data-theme="light"] .pire-calendar-selected-lessons small {
+    color: #716b61 !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .bento-card {
+    background-color: #fffdf9 !important;
+    border-color: #ded7ca !important;
+    box-shadow: 0 10px 24px #65533412 !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .bento-card .kpi-copy small {
+    color: #625d54 !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .bento-card .kpi-copy strong,
+  html[data-theme="light"] .dashboard-mode .kpi-lessons .kpi-copy > strong,
+  html[data-theme="light"] .dashboard-mode .kpi-revenue .kpi-copy > strong {
+    color: #24211c !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .bento-card .kpi-copy p {
+    color: #6d675d !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .student-reveal,
+  html[data-theme="light"] .dashboard-mode .card-corner-note {
+    color: #80621e !important;
+  }
+}
+
 /* Kısa dizüstü ekranlarında içerik hâlâ okunabilir kalarak biraz daha sıkışır. */
 @media (min-width: 1180px) and (max-height: 820px) {
   .app-shell.dashboard-mode .content {
