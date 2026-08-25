@@ -170,6 +170,10 @@
       document.body.appendChild(button);
     }
     const rect=anchor.getBoundingClientRect();
+    const anchorVisible=rect.width>0&&rect.height>0&&rect.bottom>0&&rect.top<window.innerHeight;
+    button.style.visibility=anchorVisible?'visible':'hidden';
+    button.style.pointerEvents=anchorVisible?'auto':'none';
+    if(!anchorVisible)return;
     const radius=getComputedStyle(anchor).borderRadius||'10px';
     button.style.setProperty('--pire-language-width',`${rect.width}px`);
     button.style.setProperty('--pire-language-height',`${rect.height}px`);
@@ -191,6 +195,8 @@
     observer.observe(document.body,{childList:true,subtree:true});
     window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
     window.addEventListener('resize',queueSync,{passive:true});
+    window.addEventListener('scroll',queueSync,{passive:true});
+    document.addEventListener('scroll',queueSync,{passive:true,capture:true});
     setTimeout(()=>{ready=true;sync()},3200);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
