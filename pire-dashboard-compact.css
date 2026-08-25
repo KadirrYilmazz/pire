@@ -112,38 +112,38 @@
     align-items: center !important;
     justify-content: space-between !important;
   }
-  .pire-dashboard-calendar header small { color:#827e74;font-size:7px;letter-spacing:.13em; }
-  .pire-dashboard-calendar header h3 { margin:2px 0 0;color:#f4efe5;font-size:15px;font-weight:560; }
+  .pire-dashboard-calendar header small { color:#b1aa9b;font-size:9px;letter-spacing:.13em;font-weight:600; }
+  .pire-dashboard-calendar header h3 { margin:2px 0 0;color:#fffaf0;font-size:18px;font-weight:650; }
   .pire-calendar-actions { display:flex;align-items:center;gap:5px; }
-  .pire-calendar-actions button { color:#bda461;cursor:pointer;background:#d4b66f08;border:1px solid #d4b66f22;border-radius:7px;height:28px;padding:0 9px;font-size:8px; }
+  .pire-calendar-actions button { color:#e0c474;cursor:pointer;background:#d4b66f0d;border:1px solid #d4b66f35;border-radius:7px;height:30px;padding:0 10px;font-size:10px;font-weight:600; }
   .pire-calendar-actions button:hover { background:#d4b66f12; }
   .pire-calendar-actions [data-alerts-toggle] { margin-right:5px; }
-  .pire-calendar-actions [data-alerts-toggle] i { background:#d4b66f18;border:1px solid #d4b66f30;border-radius:99px;margin-left:5px;padding:2px 5px;font-size:7px;font-style:normal; }
+  .pire-calendar-actions [data-alerts-toggle] i { background:#d4b66f1f;border:1px solid #d4b66f40;border-radius:99px;margin-left:5px;padding:2px 6px;font-size:9px;font-style:normal; }
 
   .pire-calendar-grid { grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:24px repeat(6,minmax(0,1fr));gap:4px;padding:9px 12px 7px;display:grid; }
-  .pire-calendar-weekday { color:#77746d;text-align:center;align-self:center;font-size:7px;letter-spacing:.08em; }
+  .pire-calendar-weekday { color:#aaa59b;text-align:center;align-self:center;font-size:9px;font-weight:600;letter-spacing:.08em; }
   .pire-calendar-blank { min-width:0; }
-  .pire-calendar-day { color:#bdb9af;cursor:pointer;background:#ffffff02;border:1px solid #ffffff08;border-radius:8px;min-width:0;padding:5px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;align-items:start;text-align:left;transition:.18s ease; }
+  .pire-calendar-day { color:#e2ded5;cursor:pointer;background:#ffffff04;border:1px solid #ffffff0d;border-radius:8px;min-width:0;padding:6px 7px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;align-items:start;text-align:left;transition:.18s ease; }
   .pire-calendar-day:hover { color:#eee7d8;background:#d4b66f0a;border-color:#d4b66f25; }
-  .pire-calendar-day b { font-size:10px;font-weight:540; }
-  .pire-calendar-day small { color:#8e825f;align-self:end;font-size:6px; }
+  .pire-calendar-day b { font-size:13px;font-weight:650; }
+  .pire-calendar-day small { color:#bba66c;align-self:end;font-size:9px;font-weight:500; }
   .pire-calendar-day.is-today { border-color:#d4b66f62;box-shadow:inset 0 0 0 1px #d4b66f12; }
   .pire-calendar-day.is-selected { color:#17140e;background:linear-gradient(135deg,#e0c678,#b8913d);border-color:#e6cf8e; }
   .pire-calendar-day.is-selected small { color:#3f3520; }
   .pire-calendar-dots { justify-self:end;display:flex;gap:2px; }
-  .pire-calendar-dots i { background:#d3b568;border-radius:99px;width:3px;height:3px; }
+  .pire-calendar-dots i { background:#e1c46e;border-radius:99px;width:4px;height:4px; }
   .pire-calendar-day.is-selected .pire-calendar-dots i { background:#3f3420; }
 
   .pire-dashboard-calendar > footer { border-top:1px solid #ffffff0d;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:16px; }
   .pire-dashboard-calendar footer > div:first-child small,.pire-dashboard-calendar footer > div:first-child b { display:block; }
-  .pire-dashboard-calendar footer > div:first-child small { color:#837f76;text-transform:capitalize;font-size:7px; }
-  .pire-dashboard-calendar footer > div:first-child b { color:#e8e1d4;margin-top:4px;font-size:10px;font-weight:540; }
-  .pire-dashboard-calendar footer > span { color:#7c7258;font-size:7px; }
+  .pire-dashboard-calendar footer > div:first-child small { color:#aaa59b;text-transform:capitalize;font-size:9px; }
+  .pire-dashboard-calendar footer > div:first-child b { color:#f2ece0;margin-top:4px;font-size:12px;font-weight:600; }
+  .pire-dashboard-calendar footer > span { color:#b5a273;font-size:9px; }
   .pire-calendar-selected-lessons { display:flex;align-items:center;gap:8px;min-width:0; }
   .pire-calendar-selected-lessons > span { border-left:2px solid #c6a85d;padding-left:7px;display:grid;grid-template-columns:auto 1fr;gap:1px 6px;min-width:130px; }
-  .pire-calendar-selected-lessons time { color:#d7bb72;grid-row:1/3;font-size:10px;font-weight:600; }
-  .pire-calendar-selected-lessons b { color:#e7e1d7;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-  .pire-calendar-selected-lessons small { color:#77746e;font-size:6.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .pire-calendar-selected-lessons time { color:#e2c475;grid-row:1/3;font-size:12px;font-weight:650; }
+  .pire-calendar-selected-lessons b { color:#f1ece2;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .pire-calendar-selected-lessons small { color:#aaa59b;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 
   /* Eski iki kartlık alt bölüm görünmez; uyarılar yalnız düğmeyle açılır. */
   .dashboard-mode .dashboard-detail-grid { display:contents !important; }
@@ -164,7 +164,8 @@
   }
 
   .dashboard-mode .bento-card .kpi-copy small {
-    font-size: 9px !important;
+    color: #c0bbb1 !important;
+    font-size: 11px !important;
     line-height: 1.2 !important;
   }
 
@@ -172,13 +173,15 @@
   .dashboard-mode .kpi-lessons .kpi-copy > strong,
   .dashboard-mode .kpi-revenue .kpi-copy > strong {
     margin-top: 4px !important;
-    font-size: clamp(23px, 1.8vw, 31px) !important;
+    color: #fffaf0 !important;
+    font-size: clamp(27px, 2vw, 34px) !important;
     line-height: 1 !important;
   }
 
   .dashboard-mode .bento-card .kpi-copy p {
     margin-top: 5px !important;
-    font-size: 8.5px !important;
+    color: #bcb6aa !important;
+    font-size: 10px !important;
     line-height: 1.25 !important;
   }
 
@@ -189,7 +192,7 @@
 
   .dashboard-mode .student-reveal,
   .dashboard-mode .card-corner-note {
-    font-size: 7px !important;
+    font-size: 9px !important;
   }
 
   .dashboard-mode .lesson-rhythm,
