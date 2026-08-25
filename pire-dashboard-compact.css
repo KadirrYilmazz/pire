@@ -56,7 +56,7 @@
 
   .app-shell.dashboard-mode .content .premium-dashboard {
     grid-template-columns: minmax(0, 1fr) clamp(380px, 25vw, 440px) !important;
-    grid-template-rows: auto minmax(410px, calc(100vh - 430px)) !important;
+    grid-template-rows: auto minmax(470px, calc(100vh - 380px)) !important;
     column-gap: 14px !important;
   }
 
@@ -135,6 +135,7 @@
   .pire-calendar-day small { color:#d1b974;align-self:end;font-size:11px;font-weight:550; }
   .pire-calendar-day.is-today { border-color:#d4b66f62;box-shadow:inset 0 0 0 1px #d4b66f12; }
   .pire-calendar-day.is-selected { color:#17140e;background:linear-gradient(135deg,#e0c678,#b8913d);border-color:#e6cf8e; }
+  .pire-calendar-day.is-selected { box-shadow:0 0 0 2px #f0d58355,0 8px 22px #0005; }
   .pire-calendar-day.is-selected small { color:#3f3520; }
   .pire-calendar-dots { justify-self:end;display:flex;gap:2px; }
   .pire-calendar-dots i { background:#e1c46e;border-radius:99px;width:4px;height:4px; }
@@ -150,6 +151,8 @@
   .pire-calendar-selected-lessons time { color:#e2c475;grid-row:1/3;font-size:12px;font-weight:650; }
   .pire-calendar-selected-lessons b { color:#f1ece2;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
   .pire-calendar-selected-lessons small { color:#aaa59b;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .pire-dashboard-calendar footer [data-open-full-calendar] { color:#17140e;cursor:pointer;background:#dfc374;border:1px solid #ead38d;border-radius:8px;min-height:32px;padding:0 11px;font-size:10px;font-weight:750;white-space:nowrap; }
+  .pire-dashboard-calendar footer [data-open-full-calendar]:hover { background:#efd58a; }
 
   /* Eski iki kartlık alt bölüm görünmez; uyarılar yalnız düğmeyle açılır. */
   .dashboard-mode .dashboard-detail-grid { display:contents !important; }
@@ -339,7 +342,7 @@
 
   .dashboard-mode .premium-dashboard { gap: 7px !important; }
   .dashboard-mode .dashboard-intro { min-height: 36px !important; padding-bottom: 5px !important; }
-  .app-shell.dashboard-mode .content .premium-dashboard { grid-template-rows:auto minmax(350px,calc(100vh - 410px)) !important; }
+  .app-shell.dashboard-mode .content .premium-dashboard { grid-template-rows:auto minmax(410px,calc(100vh - 365px)) !important; }
   .dashboard-mode .dashboard-bento { grid-template-rows:repeat(4,minmax(0,1fr)) !important;gap:8px !important; }
   .dashboard-mode .bento-card { min-height:0 !important;height:auto !important;padding:10px 13px !important; }
   .dashboard-mode .pire-dashboard-calendar { min-height:350px;grid-template-rows:52px 1fr 62px; }
