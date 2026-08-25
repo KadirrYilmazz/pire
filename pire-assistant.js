@@ -272,7 +272,13 @@
   }
   function role(){
     const text=document.querySelector(".brand-user-identity span")?.textContent||document.querySelector(".authenticated-user-chip")?.textContent||"";
-    return ["Yönetici","Eğitmen","Öğrenci","Veli"].find(item=>text.includes(item))||"";
+    const aliases=[
+      ["Yönetici",/\b(?:Yönetici|Administrator|Admin)\b/i],
+      ["Eğitmen",/\b(?:Eğitmen|Instructor|Teacher)\b/i],
+      ["Öğrenci",/\b(?:Öğrenci|Student)\b/i],
+      ["Veli",/\b(?:Veli|Parent|Guardian)\b/i]
+    ];
+    return aliases.find(([,pattern])=>pattern.test(text))?.[0]||"";
   }
   function fullName(){return document.querySelector(".brand-user-identity b")?.textContent?.trim()||""}
   function authenticated(){return Boolean(role()&&fullName())}
