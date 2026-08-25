@@ -47,10 +47,20 @@
     'Matematik ve müziğin\naynı ritimde buluştuğu yer.':'Where mathematics and music\nmeet in the same rhythm.',
     'Panel kullanım asistanı':'Panel assistant','Ne yapmak istiyorsunuz?':'What would you like to do?',
     'Bu adımı göster':'Show This Step','Sonraki adım':'Next Step','İlk adımı ekranda göster':'Show the First Step',
-    'Rehber adımlarını tamamladınız.':'You have completed the guide steps.'
+    'Adım adım göster':'Show step by step','Pİ-RE kullanım rehberi':'Pİ-RE User Guide','Rehberi kapat':'Close Guide',
+    'Gönder':'Send','Pİ-RE Rehberi aç':'Open Pİ-RE Guide','Pİ-RE Rehber':'Pİ-RE Guide',
+    'Size nasıl yardımcı olabilirim?':'How can I help you?','Rehber adımlarını tamamladınız.':'You have completed the guide steps.',
+    'Kendi ödeme durumunu görüntüleme':'View Your Payment Status','Kendi derslerini görüntüleme':'View Your Lessons',
+    'Üst menüden kendi panelinizi açın.':'Open your panel from the top menu.',
+    'Ödeme durumu alanında bu ayın borç, tahsilat ve kalan bakiye bilgilerini inceleyin.':'Review this month’s balance due, payments received, and remaining balance in the Payment Status section.',
+    'Ders alanında son ve yaklaşan derslerin tarih, saat ve branş bilgilerini inceleyin.':'Review the date, time, and subject of recent and upcoming lessons in the Lessons section.',
+    'Öğrenci Panelim':'My Student Panel','Veli Panelim':'My Parent Panel','Ödeme durumu':'Payment Status',
+    'Ödeme bekleniyor':'Payment Pending','Borcunuz bulunmuyor':'No Outstanding Balance','Yaklaşan dersler':'Upcoming Lessons',
+    'Son dersler':'Recent Lessons','Ders programı':'Lesson Schedule'
   }));
   const originalText=new WeakMap(),originalAttrs=new WeakMap();
-  let queued=false,observer=null;
+  const trackedText=new Set(),trackedElements=new Set();
+  let queued=false,observer=null,resumeTimer=null,ready=false;
 
   const language=()=>{try{return localStorage.getItem(STORAGE_KEY)==='en'?'en':'tr'}catch(_){return 'tr'}};
   const saveLanguage=value=>{try{localStorage.setItem(STORAGE_KEY,value)}catch(_){}};
@@ -74,7 +84,7 @@
 
   function applyText(node,toEnglish){
     if(!eligibleText(node))return;
-    if(!originalText.has(node))originalText.set(node,node.nodeValue);
+    if(!originalText.has(node)){originalText.set(node,node.nodeValue);trackedText.add(node)}
     const source=originalText.get(node),trimmed=source.trim();
     node.nodeValue=toEnglish?preserveWhitespace(source,translatePhrase(trimmed)):source;
   }
@@ -82,7 +92,7 @@
   function applyAttributes(element,toEnglish){
     if(!(element instanceof Element)||element.closest('.pire-language-toggle'))return;
     let originals=originalAttrs.get(element);
-    if(!originals){originals={};originalAttrs.set(element,originals)}
+    if(!originals){originals={};originalAttrs.set(element,originals);trackedElements.add(element)}
     ATTRIBUTE_NAMES.forEach(name=>{
       if(!element.hasAttribute(name))return;
       if(!(name in originals))originals[name]=element.getAttribute(name);
@@ -100,10 +110,30 @@
     updateButtons();
   }
 
+  function restoreOriginals(){
+    trackedText.forEach(node=>{
+      if(!node.isConnected){trackedText.delete(node);return}
+      const source=originalText.get(node);if(source!==undefined)node.nodeValue=source;
+    });
+    trackedElements.forEach(element=>{
+      if(!element.isConnected){trackedElements.delete(element);return}
+      const originals=originalAttrs.get(element)||{};
+      Object.entries(originals).forEach(([name,value])=>value===null?element.removeAttribute(name):element.setAttribute(name,value));
+    });
+    document.documentElement.lang='tr';
+  }
+
+  function protectReact(event){
+    if(language()!=='en'||event.target?.closest?.('.pire-language-toggle'))return;
+    clearTimeout(resumeTimer);
+    restoreOriginals();
+    resumeTimer=setTimeout(()=>{if(language()==='en')translate(document)},180);
+  }
+
   function updateButtons(){
     const current=language();
     document.querySelectorAll('.pire-language-toggle').forEach(button=>{
-      button.innerHTML=`<span class="pire-language-current">${current==='tr'?'TR':'ENG'}</span><span class="pire-language-next">${current==='tr'?'ENG':'TR'}</span>`;
+      button.textContent=current==='tr'?'TR':'ENG';
       button.setAttribute('aria-label',current==='tr'?'Switch site language to English':'Site dilini Türkçe yap');
       button.title=current==='tr'?'English':'Türkçe';
     });
@@ -111,20 +141,18 @@
 
   function toggle(event){
     event.stopPropagation();
-    saveLanguage(language()==='tr'?'en':'tr');
-    translate(document);
+    const next=language()==='tr'?'en':'tr';
+    saveLanguage(next);
+    if(next==='tr'||ready)translate(document);else updateButtons();
   }
 
   function addStyle(){
     if(document.querySelector('style[data-pire-language]'))return;
     const style=document.createElement('style');style.dataset.pireLanguage='true';
     style.textContent=`
-      .pire-language-toggle{width:auto!important;min-width:72px!important;padding:0 9px!important;gap:5px!important;font-size:9px!important;font-weight:750!important;letter-spacing:.04em!important}
-      .pire-language-toggle .pire-language-current{color:#e4c676}
-      .pire-language-toggle .pire-language-next{color:#77736b;border-left:1px solid #ffffff1a;padding-left:5px}
-      html[data-theme="light"] .pire-language-toggle .pire-language-current{color:#765b20}
-      html[data-theme="light"] .pire-language-toggle .pire-language-next{color:#8b867d;border-left-color:#29261f22}
-      @media(max-width:700px){.pire-language-toggle{min-width:60px!important;padding:0 7px!important}.pire-language-toggle .pire-language-next{display:none}}
+      .pire-language-toggle{width:46px!important;min-width:46px!important;padding:0!important;color:#e4c676!important;font-size:10px!important;font-weight:800!important;letter-spacing:.05em!important}
+      html[data-theme="light"] .pire-language-toggle{color:#765b20!important}
+      @media(max-width:700px){.pire-language-toggle{width:42px!important;min-width:42px!important}}
     `;
     document.head.appendChild(style);
   }
@@ -143,16 +171,18 @@
     updateButtons();
   }
 
-  function sync(){placeButtons();translate(document)}
-  function queueSync(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;sync()})}
+  function sync(){placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
+  function queueSync(){if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},90)}
   function boot(){
-    addStyle();sync();
+    addStyle();placeButtons();updateButtons();
+    ['pointerdown','keydown','submit','change'].forEach(type=>document.addEventListener(type,protectReact,true));
     observer=new MutationObserver(records=>{
       const relevant=records.some(record=>[...record.addedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
       if(relevant)queueSync();
     });
     observer.observe(document.body,{childList:true,subtree:true});
     window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
+    setTimeout(()=>{ready=true;sync()},2200);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
