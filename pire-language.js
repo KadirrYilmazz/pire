@@ -150,7 +150,8 @@
     if(document.querySelector('style[data-pire-language]'))return;
     const style=document.createElement('style');style.dataset.pireLanguage='true';
     style.textContent=`
-      .pire-language-toggle{width:46px!important;min-width:46px!important;padding:0!important;color:#e4c676!important;font-size:10px!important;font-weight:800!important;letter-spacing:.05em!important}
+      body > .pire-language-toggle{z-index:2147482500!important;position:fixed!important;width:46px!important;min-width:46px!important;height:46px!important;padding:0!important;color:#e4c676!important;background:#151616!important;border:1px solid #d4b66f42!important;border-radius:10px!important;font-size:10px!important;font-weight:800!important;letter-spacing:.05em!important}
+      body > .pire-language-toggle:hover{background:#1d1c18!important}
       html[data-theme="light"] .pire-language-toggle{color:#765b20!important}
       @media(max-width:700px){.pire-language-toggle{width:42px!important;min-width:42px!important}}
     `;
@@ -158,23 +159,26 @@
   }
 
   function placeButtons(){
-    document.querySelectorAll('.app-shell .navbar-tools').forEach(tools=>{
-      if(tools.querySelector('.pire-language-toggle'))return;
-      const button=document.createElement('button');button.type='button';button.className='pire-language-toggle navbar-icon-button';
+    const tools=document.querySelector('.app-shell .navbar-tools');
+    const music=tools?.querySelector('.pire-music-toggle');
+    const anchor=music||tools?.querySelector('.notification-wrap,.navbar-icon-button,.visitor-login-trigger');
+    if(!tools||!anchor)return;
+    let button=document.querySelector('body > .pire-language-toggle');
+    if(!button){
+      button=document.createElement('button');button.type='button';button.className='pire-language-toggle navbar-icon-button';
       button.addEventListener('click',toggle);
-      const music=tools.querySelector('.pire-music-toggle');
-      const notifications=tools.querySelector('.notification-wrap');
-      if(music)music.insertAdjacentElement('afterend',button);
-      else if(notifications)notifications.insertAdjacentElement('beforebegin',button);
-      else tools.appendChild(button);
-    });
+      document.body.appendChild(button);
+    }
+    const rect=anchor.getBoundingClientRect();
+    button.style.left=`${Math.max(8,rect.left-52)}px`;
+    button.style.top=`${Math.max(8,rect.top)}px`;
     updateButtons();
   }
 
-  function sync(){placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
+  function sync(){if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
   function queueSync(){if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},90)}
   function boot(){
-    addStyle();placeButtons();updateButtons();
+    addStyle();updateButtons();
     ['pointerdown','keydown','submit','change'].forEach(type=>document.addEventListener(type,protectReact,true));
     observer=new MutationObserver(records=>{
       const relevant=records.some(record=>[...record.addedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
@@ -182,7 +186,8 @@
     });
     observer.observe(document.body,{childList:true,subtree:true});
     window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
-    setTimeout(()=>{ready=true;sync()},2200);
+    window.addEventListener('resize',queueSync,{passive:true});
+    setTimeout(()=>{ready=true;sync()},3200);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
