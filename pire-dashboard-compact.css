@@ -500,3 +500,181 @@
   .dashboard-mode .lesson-empty-signature { min-height: 144px !important; }
   .dashboard-mode .recent-payment-row button { min-height: 46px !important; }
 }
+
+/* Akıllı Uyarılar: uygulamanın Bildirimler açılır paneliyle aynı iç tasarım. */
+@media (min-width: 1180px) {
+  .dashboard-mode .premium-dashboard.compact-alerts-open .dashboard-alerts {
+    width: min(390px, calc(100vw - 40px)) !important;
+    max-height: min(620px, calc(100vh - 170px)) !important;
+    color: #eeeae1 !important;
+    background: #111212 !important;
+    border: 1px solid #343536 !important;
+    border-radius: 17px !important;
+    overflow: hidden !important;
+    box-shadow: 0 22px 60px #00000070 !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-section-head {
+    min-height: 70px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 15px 18px !important;
+    border-bottom: 1px solid #343536 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-section-head small {
+    color: #8f908b !important;
+    margin: 0 0 3px !important;
+    font-size: 9px !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-section-head h3 {
+    color: #f0ece4 !important;
+    margin: 0 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-section-head > span {
+    color: #fff !important;
+    background: #b74945 !important;
+    border: 2px solid #111212 !important;
+    border-radius: 999px !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    padding: 0 6px !important;
+    font-size: 9px !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .alert-stream {
+    max-height: 390px !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    display: block !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .alert-stream > button {
+    color: #eeeae1 !important;
+    cursor: pointer !important;
+    background: #111212 !important;
+    border: 0 !important;
+    border-bottom: 1px solid #292a2b !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    min-height: 72px !important;
+    margin: 0 !important;
+    padding: 13px 16px !important;
+    grid-template-columns: 8px minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+    align-items: start !important;
+    text-align: left !important;
+    box-shadow: none !important;
+    transition: background .2s ease, padding-left .2s ease !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .alert-stream > button:hover {
+    background: #191a1a !important;
+    padding-left: 19px !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .alert-stream .severity {
+    width: 8px !important;
+    height: 8px !important;
+    min-height: 8px !important;
+    margin-top: 5px !important;
+    border-radius: 50% !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .alert-stream .severity.amber { background: #e78e42 !important; }
+  .dashboard-mode .dashboard-alerts .alert-stream .severity.red { background: #e5484d !important; }
+  .dashboard-mode .dashboard-alerts .alert-stream .severity.blue { background: #478cca !important; }
+
+  .dashboard-mode .dashboard-alerts .alert-stream b {
+    color: #eeeae1 !important;
+    margin: 0 !important;
+    font-size: 11px !important;
+    display: block !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .alert-stream small {
+    color: #9a9993 !important;
+    margin: 4px 0 0 !important;
+    font-size: 9px !important;
+    line-height: 1.45 !important;
+    display: block !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .alert-stream button > span {
+    color: #d8ba72 !important;
+    align-self: center !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-clear {
+    min-height: 100px !important;
+    padding: 18px !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-finance-foot {
+    min-height: 58px !important;
+    margin: 0 !important;
+    padding: 11px 16px !important;
+    border: 0 !important;
+    border-top: 1px solid #343536 !important;
+    border-radius: 0 !important;
+    background: #d4b66f08 !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    align-items: center !important;
+    gap: 2px 10px !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-finance-foot small {
+    color: #8f8a81 !important;
+    font-size: 8px !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-finance-foot strong {
+    color: #e4c675 !important;
+    grid-row: 2 !important;
+    font-size: 15px !important;
+  }
+
+  .dashboard-mode .dashboard-alerts .dashboard-finance-foot span {
+    color: #8f8a81 !important;
+    grid-column: 2 !important;
+    grid-row: 1 / 3 !important;
+    font-size: 9px !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .premium-dashboard.compact-alerts-open .dashboard-alerts {
+    color: #2c2d30 !important;
+    background: #fff !important;
+    border-color: #ddd8ce !important;
+    box-shadow: 0 22px 60px #211a3626 !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-section-head,
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-finance-foot {
+    border-color: #e4dfd6 !important;
+  }
+
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-section-head h3,
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .alert-stream b { color: #2c2d30 !important; }
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-section-head small,
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .alert-stream small,
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-finance-foot small,
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-finance-foot span { color: #6f6c66 !important; }
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .alert-stream > button { color:#2c2d30 !important;background:#fff !important;border-color:#ece7df !important; }
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .alert-stream > button:hover { background:#faf7f1 !important; }
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-finance-foot { background:#faf8f3 !important; }
+  html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-section-head > span { border-color:#fff !important; }
+}
