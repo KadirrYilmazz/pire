@@ -174,8 +174,16 @@
 
   function sync(){if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
   function queueSync(){if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},90)}
+  function loadLoginNotification(){
+    if(document.querySelector('script[data-pire-login-notification]'))return;
+    const script=document.createElement('script');
+    script.src='/pire-login-notification.js';
+    script.defer=true;
+    script.dataset.pireLoginNotification='true';
+    document.head.appendChild(script);
+  }
   function boot(){
-    addStyle();updateButtons();
+    addStyle();updateButtons();loadLoginNotification();
     ['pointerdown','keydown','submit','change'].forEach(type=>document.addEventListener(type,protectReact,true));
     observer=new MutationObserver(records=>{
       const relevant=records.some(record=>[...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
