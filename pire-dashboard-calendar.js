@@ -85,9 +85,12 @@
   function placeNewActions(){
     const dashboard=document.querySelector('.premium-dashboard');
     const sidebar=document.querySelector('.app-shell.dashboard-mode .sidebar');
-    const actions=document.querySelector('.dashboard-page-header .top-actions')||movedActions;
+    const header=document.querySelector('.app-shell.dashboard-mode .content > header');
+    const actions=header?.querySelector(':scope > .top-actions')||sidebar?.querySelector(':scope > .pire-nav-new-actions')||movedActions;
     if(!dashboard||!sidebar||!actions){if(!dashboard)restoreNewActions();return}
+    if(movedActions&&movedActions!==actions&&movedActions.parentElement===sidebar)movedActions.remove();
     if(!movedActions||movedActions!==actions){movedActions=actions;actionsHome=actions.parentElement}
+    if(header)header.classList.add('pire-dashboard-actions-home');
     if(actions.parentElement!==sidebar)sidebar.appendChild(actions);
     actions.classList.add('pire-nav-new-actions');
   }
