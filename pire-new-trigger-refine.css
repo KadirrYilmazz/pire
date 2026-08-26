@@ -16,6 +16,8 @@
   line-height:1!important;
   letter-spacing:.01em!important;
   box-shadow:0 0 0 1px rgba(239,207,125,.18),0 7px 22px rgba(203,164,83,.34),0 0 22px rgba(218,187,105,.12)!important;
+  position:relative!important;
+  top:14px!important;
   transform:none!important;
 }
 .app-shell .pire-new-trigger:hover,
@@ -29,7 +31,7 @@
 .app-shell .pire-new-chevron{margin-left:2px!important;font-size:13px!important}
 
 @media(max-width:720px){
-  .app-shell .pire-new-trigger{height:42px!important;min-height:42px!important;min-width:112px!important;padding-inline:13px!important;font-size:12px!important}
+  .app-shell .pire-new-trigger{height:42px!important;min-height:42px!important;min-width:112px!important;padding-inline:13px!important;font-size:12px!important;top:0!important}
 }
 
 @media(prefers-reduced-motion:reduce){
