@@ -197,8 +197,14 @@
     link.dataset.pireNewTriggerRefine='true';
     document.head.appendChild(link);
   }
+  function loadAccountHonorific(){
+    if(document.querySelector('script[data-pire-account-honorific]'))return;
+    const script=document.createElement('script');
+    script.src='/pire-account-honorific.js';script.defer=true;script.dataset.pireAccountHonorific='true';
+    document.head.appendChild(script);
+  }
   function boot(){
-    addStyle();updateButtons();loadLoginNotification();loadCustomerRoleCleanup();loadNewTriggerStyle();
+    addStyle();updateButtons();loadLoginNotification();loadCustomerRoleCleanup();loadNewTriggerStyle();loadAccountHonorific();
     ['pointerdown','keydown','submit','change'].forEach(type=>document.addEventListener(type,protectReact,true));
     observer=new MutationObserver(records=>{
       const relevant=records.some(record=>[...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
