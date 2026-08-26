@@ -37,3 +37,18 @@ test('student and parent tasks use private payment and lesson guides', () => {
   assert.match(source, /"self\.payment\.view":"view-own-payments"/);
   assert.match(source, /\["Öğrenci","Veli"\]\.includes\(role\(\)\)/);
 });
+
+test('safe assistant actions open forms but never submit destructive controls', () => {
+  assert.match(source, /const safeActions=/);
+  assert.match(source, /student:\{label:"Öğrenci formunu hazırla"/);
+  assert.match(source, /teacher:\{label:"Eğitmen formunu hazırla"/);
+  assert.match(source, /lesson:\{label:"Ders formunu hazırla"/);
+  assert.match(source, /data-guide-action="prepare"/);
+  assert.match(source, /Kaydet düğmesine yalnızca siz basabilirsiniz/);
+  assert.match(source, /kaydet\|sil\|onayla\|öde\|tamamla/);
+});
+
+test('safe actions remain limited by the verified visible role', () => {
+  assert.match(source, /!guide\.roles\.includes\(role\(\)\)/);
+  assert.match(source, /const action=safeActions\[guide\?\.id\]/);
+});
