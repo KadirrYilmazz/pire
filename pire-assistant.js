@@ -357,18 +357,33 @@
     return name?`${name}${suffix}`:"";
   }
 
+  function localProfileGender(){
+    try{
+      const identity=document.querySelector(".brand-user-identity span")?.textContent||"";
+      const institutionId=identity.match(/\b(?:YON|EGT|OGR|VEL)-\d+\b/i)?.[0]?.toLocaleUpperCase("tr-TR")||"";
+      if(!institutionId)return "";
+      const sources=["pire-local-admin-accounts-v2","pire-user-accounts-cache-v1"];
+      for(const key of sources){
+        const records=JSON.parse(localStorage.getItem(key)||"[]");
+        const profile=Array.isArray(records)&&records.find(item=>String(item?.institution_id||"").toLocaleUpperCase("tr-TR")===institutionId);
+        if(["Erkek","Kadın"].includes(profile?.gender))return profile.gender;
+      }
+    }catch(_){}
+    return "";
+  }
+
   function requestProfileGender(){
     const token=accessToken();
-    if(!token)return Promise.resolve("");
+    if(!token)return Promise.resolve(localProfileGender());
     return new Promise(resolve=>{
       const xhr=new XMLHttpRequest();
       xhr.open("GET","/api/assistant-profile",true);
       xhr.setRequestHeader("Authorization",`Bearer ${token}`);
       xhr.timeout=10_000;
       xhr.onload=()=>{
-        try{const value=JSON.parse(xhr.responseText||"{}").gender;resolve(["Erkek","Kadın"].includes(value)?value:"")}catch(_){resolve("")}
+        try{const value=JSON.parse(xhr.responseText||"{}").gender;resolve(["Erkek","Kadın"].includes(value)?value:localProfileGender())}catch(_){resolve(localProfileGender())}
       };
-      xhr.onerror=()=>resolve("");xhr.ontimeout=()=>resolve("");xhr.send();
+      xhr.onerror=()=>resolve(localProfileGender());xhr.ontimeout=()=>resolve(localProfileGender());xhr.send();
     });
   }
 
