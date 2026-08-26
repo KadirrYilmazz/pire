@@ -52,3 +52,27 @@ test('safe actions remain limited by the verified visible role', () => {
   assert.match(source, /!guide\.roles\.includes\(role\(\)\)/);
   assert.match(source, /const action=safeActions\[guide\?\.id\]/);
 });
+
+test('assistant exposes a role-specific capabilities section', () => {
+  assert.match(source, /const roleCapabilities=/);
+  assert.match(source, /"Yönetici":\{/);
+  assert.match(source, /"Eğitmen":\{/);
+  assert.match(source, /"Öğrenci":\{/);
+  assert.match(source, /"Veli":\{/);
+  assert.match(source, /class="pire-guide-capabilities-toggle"/);
+  assert.match(source, /function renderCapabilities\(\)/);
+});
+
+test('capability choices are rendered only from the current verified role', () => {
+  assert.match(source, /const currentRole=role\(\),capability=roleCapabilities\[currentRole\]/);
+  assert.match(source, /if\(!box\|\|!capability\)return/);
+  assert.match(source, /capability\.items\.forEach/);
+  assert.match(source, /data-capability-prompt/);
+});
+
+test('capabilities explain information, navigation and preparation levels', () => {
+  assert.match(source, /kind:"info"/);
+  assert.match(source, /kind:"open"/);
+  assert.match(source, /kind:"prepare"/);
+  assert.match(source, /Kaydet/);
+});
