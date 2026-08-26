@@ -190,8 +190,15 @@
     script.dataset.pireCustomerRoleCleanup='true';
     document.head.appendChild(script);
   }
+  function loadNewTriggerStyle(){
+    if(document.querySelector('link[data-pire-new-trigger-refine]'))return;
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='/pire-new-trigger-refine.css';
+    link.dataset.pireNewTriggerRefine='true';
+    document.head.appendChild(link);
+  }
   function boot(){
-    addStyle();updateButtons();loadLoginNotification();loadCustomerRoleCleanup();
+    addStyle();updateButtons();loadLoginNotification();loadCustomerRoleCleanup();loadNewTriggerStyle();
     ['pointerdown','keydown','submit','change'].forEach(type=>document.addEventListener(type,protectReact,true));
     observer=new MutationObserver(records=>{
       const relevant=records.some(record=>[...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
