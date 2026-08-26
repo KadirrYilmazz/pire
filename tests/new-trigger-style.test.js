@@ -7,9 +7,9 @@ const css=fs.readFileSync(path.join(__dirname,'..','pire-new-trigger-refine.css'
 const loader=fs.readFileSync(path.join(__dirname,'..','pire-language.js'),'utf8');
 
 test('new action matches navigation scale without losing emphasis',()=>{
-  assert.match(css,/height:40px!important/);
-  assert.match(css,/min-width:0!important/);
-  assert.match(css,/padding:0 14px!important/);
+  assert.match(css,/height:46px!important/);
+  assert.match(css,/min-width:132px!important/);
+  assert.match(css,/padding:0 18px!important/);
   assert.match(css,/background:linear-gradient/);
   assert.match(css,/box-shadow/);
   assert.match(css,/:focus-visible/);
