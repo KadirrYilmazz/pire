@@ -4,7 +4,7 @@
   const STYLE_ID="pire-guide-style";
   const ROOT_ID="pire-guide-root";
   const HIGHLIGHT_CLASS="pire-guide-highlight";
-  const state={guide:null,suggestedGuide:null,step:0,pending:false,lastIntent:"",lastTask:null};
+  const state={guide:null,suggestedGuide:null,step:0,pending:false,lastIntent:"",lastTask:null,profileGender:""};
   const interfaceLanguage=()=>{try{return localStorage.getItem('pire-interface-language')==='en'?'en':'tr'}catch(_){return 'tr'}};
   const ui=(tr,en)=>interfaceLanguage()==='en'?en:tr;
 
@@ -353,8 +353,29 @@
   function authenticated(){return Boolean(role()&&fullName())}
   function salutation(){
     const name=fullName().split(/\s+/)[0]||"";
-    const suffix=role()==="Yönetici"?" Bey":"";
+    const suffix=state.profileGender==="Erkek"?" Bey":state.profileGender==="Kadın"?" Hanım":"";
     return name?`${name}${suffix}`:"";
+  }
+
+  function requestProfileGender(){
+    const token=accessToken();
+    if(!token)return Promise.resolve("");
+    return new Promise(resolve=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open("GET","/api/assistant-profile",true);
+      xhr.setRequestHeader("Authorization",`Bearer ${token}`);
+      xhr.timeout=10_000;
+      xhr.onload=()=>{
+        try{const value=JSON.parse(xhr.responseText||"{}").gender;resolve(["Erkek","Kadın"].includes(value)?value:"")}catch(_){resolve("")}
+      };
+      xhr.onerror=()=>resolve("");xhr.ontimeout=()=>resolve("");xhr.send();
+    });
+  }
+
+  async function initializeGreeting(root){
+    state.profileGender=await requestProfileGender();
+    if(!authenticated()||root.querySelector(".pire-guide-message.user"))return;
+    const messages=root.querySelector(".pire-guide-messages");messages.innerHTML="";addMessage(welcomeMessage());
   }
 
   function addMessage(text,type="bot"){
@@ -751,10 +772,10 @@
     if(isAuth&&!lastAuth){
       const messages=root.querySelector(".pire-guide-messages");
       messages.innerHTML="";
-      addMessage(welcomeMessage());
       root.querySelector(".pire-guide-panel").classList.add("open");
+      void initializeGreeting(root);
     }
-    if(!isAuth){removeHighlight();root.querySelector(".pire-guide-panel")?.classList.remove("open")}
+    if(!isAuth){state.profileGender="";removeHighlight();root.querySelector(".pire-guide-panel")?.classList.remove("open")}
     lastAuth=isAuth;
   }
 
