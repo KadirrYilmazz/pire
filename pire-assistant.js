@@ -291,7 +291,7 @@
       .pire-guide-head{display:flex;align-items:center;gap:11px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(100deg,rgba(218,181,92,.13),transparent)}
       .pire-guide-mark{display:grid;place-items:center;width:39px;height:39px;padding:3px;border-radius:12px;background:#0d0e0d;border:1px solid rgba(218,181,92,.4);overflow:hidden}.pire-guide-mark img{width:100%;height:100%;border-radius:9px;object-fit:cover}
       .pire-guide-head div{display:grid;gap:2px;min-width:0}.pire-guide-head b{font-size:15px}.pire-guide-head small{color:#a9a296;font-size:11px}
-      .pire-guide-close{margin-left:auto;border:0;background:transparent;color:#aaa39a;font-size:20px;cursor:pointer;padding:5px}
+      .pire-guide-reset,.pire-guide-close{border:0;background:transparent;color:#aaa39a;cursor:pointer;padding:5px}.pire-guide-reset{margin-left:auto;font-size:17px}.pire-guide-close{font-size:20px}.pire-guide-reset:hover,.pire-guide-reset:focus-visible,.pire-guide-close:hover,.pire-guide-close:focus-visible{color:#dabb6e}
       .pire-guide-messages{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:11px}
       .pire-guide-message{max-width:94%;padding:12px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;white-space:pre-line}
       .pire-guide-message.bot{align-self:flex-start;background:#20211f;border:1px solid rgba(218,181,92,.18);color:#eee9df;border-bottom-left-radius:4px}
@@ -391,6 +391,25 @@
       button.append(kind,name,description);list.appendChild(button);
     });
     card.appendChild(list);box.appendChild(card);box.scrollTop=box.scrollHeight;
+  }
+
+  function welcomeMessage(){
+    return ui(`Merhabalar ${salutation()}. Bugün ne yapmak istiyorsunuz? Yapmak istediğiniz işlemi yazın; size adım adım göstereyim.`,`Hello ${salutation()}. What would you like to do today? Describe the action and I will guide you step by step.`);
+  }
+
+  function resetConversation(){
+    const confirmed=window.confirm(ui("Mevcut asistan sohbeti ve devam eden rehber temizlenecek. Yeni sohbet başlatılsın mı?","The current assistant conversation and active guide will be cleared. Start a new conversation?"));
+    if(!confirmed)return;
+    removeHighlight();
+    state.guide=null;state.suggestedGuide=null;state.step=0;state.pending=false;state.lastIntent="";state.lastTask=null;
+    const root=document.getElementById(ROOT_ID),messages=root?.querySelector(".pire-guide-messages");
+    if(messages)messages.innerHTML="";
+    root?.querySelector(".pire-guide-quick")?.classList.remove("visible");
+    const input=root?.querySelector(".pire-guide-form input"),submit=root?.querySelector(".pire-guide-form button");
+    if(input){input.value="";input.disabled=false}if(submit)submit.disabled=false;
+    addMessage(welcomeMessage());
+    root?.querySelector(".pire-guide-panel")?.classList.add("open");
+    input?.focus();
   }
 
   function removeHighlight(){
@@ -687,10 +706,11 @@
     if(document.getElementById(ROOT_ID))return;
     injectStyle();
     const root=document.createElement("div");root.id=ROOT_ID;root.hidden=true;
-    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark"><img src="/pire-logo-clean.png" alt=""></span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><button type="button" class="pire-guide-quick">Adım adım göster</button><button type="button" class="pire-guide-capabilities-toggle">Neler Yapabilirim?</button><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><span class="pire-guide-nudge" aria-hidden="true">Size nasıl yardımcı olabilirim?</span><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber"><img src="/pire-logo-clean.png" alt=""></button>`;
+    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark"><img src="/pire-logo-clean.png" alt=""></span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-reset" aria-label="Yeni sohbet başlat" title="Yeni sohbet">↻</button><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><button type="button" class="pire-guide-quick">Adım adım göster</button><button type="button" class="pire-guide-capabilities-toggle">Neler Yapabilirim?</button><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><span class="pire-guide-nudge" aria-hidden="true">Size nasıl yardımcı olabilirim?</span><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber"><img src="/pire-logo-clean.png" alt=""></button>`;
     document.body.appendChild(root);
     root.querySelector(".pire-guide-launcher").addEventListener("click",()=>root.querySelector(".pire-guide-panel").classList.toggle("open"));
     root.querySelector(".pire-guide-close").addEventListener("click",()=>{root.querySelector(".pire-guide-panel").classList.remove("open");removeHighlight()});
+    root.querySelector(".pire-guide-reset").addEventListener("click",resetConversation);
     root.querySelector(".pire-guide-capabilities-toggle").addEventListener("click",renderCapabilities);
     root.querySelector(".pire-guide-messages").addEventListener("click",event=>{
       const prompt=event.target.closest("[data-capability-prompt]")?.dataset.capabilityPrompt;
@@ -731,7 +751,7 @@
     if(isAuth&&!lastAuth){
       const messages=root.querySelector(".pire-guide-messages");
       messages.innerHTML="";
-      addMessage(ui(`Merhabalar ${salutation()}. Bugün ne yapmak istiyorsunuz? Yapmak istediğiniz işlemi yazın; size adım adım göstereyim.`,`Hello ${salutation()}. What would you like to do today? Describe the action and I will guide you step by step.`));
+      addMessage(welcomeMessage());
       root.querySelector(".pire-guide-panel").classList.add("open");
     }
     if(!isAuth){removeHighlight();root.querySelector(".pire-guide-panel")?.classList.remove("open")}
