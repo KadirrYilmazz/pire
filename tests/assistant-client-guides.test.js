@@ -76,3 +76,14 @@ test('capabilities explain information, navigation and preparation levels', () =
   assert.match(source, /kind:"prepare"/);
   assert.match(source, /Kaydet/);
 });
+
+test('conversation can be reset without affecting the authenticated session', () => {
+  assert.match(source, /class="pire-guide-reset"/);
+  assert.match(source, /function resetConversation\(\)/);
+  assert.match(source, /window\.confirm/);
+  assert.match(source, /state\.guide=null;state\.suggestedGuide=null;state\.step=0/);
+  assert.match(source, /state\.lastIntent="";state\.lastTask=null/);
+  assert.match(source, /messages\.innerHTML=""/);
+  assert.match(source, /addMessage\(welcomeMessage\(\)\)/);
+  assert.doesNotMatch(source, /resetConversation[\s\S]{0,900}(?:signOut|localStorage\.clear|sessionStorage\.clear)/);
+});
