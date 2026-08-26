@@ -230,6 +230,49 @@
     settings:{label:"Ayarlar ekranını aç",path:[["Kurum Ayarları","Ayarlar"]]}
   };
 
+  const roleCapabilities={
+    "Yönetici":{
+      intro:"Kurum yönetimi için öğrenci, eğitmen, ders, finans ve rapor işlemlerinde yardımcı olabilirim.",
+      items:[
+        {kind:"prepare",title:"Öğrenci kaydı",description:"Yeni öğrenci formunu açıp ilk alanı hazırlayabilirim.",prompt:"Yeni öğrenci eklemek istiyorum."},
+        {kind:"prepare",title:"Eğitmen kaydı",description:"Yeni eğitmen formunu güvenli biçimde açabilirim.",prompt:"Yeni eğitmen eklemek istiyorum."},
+        {kind:"prepare",title:"Ders oluşturma",description:"Ders oluşturma formunu açabilirim; son kaydı siz onaylarsınız.",prompt:"Yeni ders oluşturmak istiyorum."},
+        {kind:"prepare",title:"Ödeme ve gider",description:"Ödeme veya gider kayıt ekranını ve ilgili formu açabilirim.",prompt:"Ödeme kaydı girmek istiyorum."},
+        {kind:"open",title:"Öğrenci ve eğitmenler",description:"Kayıt listelerini, program ve paket bilgilerini bulmanıza yardım edebilirim.",prompt:"Öğrencileri görüntülemek istiyorum."},
+        {kind:"open",title:"Yoklama ve telafi",description:"Yoklama ya da telafi ekranına götürüp adımları gösterebilirim.",prompt:"Yoklama girmek istiyorum."},
+        {kind:"info",title:"Finans özeti",description:"Yetkili kurum özetlerinden tahsilat, alacak ve gider bilgilerini açıklayabilirim.",prompt:"Bu ayın finans durumunu nasıl incelerim?"},
+        {kind:"open",title:"Raporlar ve hesaplar",description:"Rapor, kullanıcı hesabı ve kurum ayarları ekranlarını açabilirim.",prompt:"Raporlar ekranını açmak istiyorum."}
+      ]
+    },
+    "Eğitmen":{
+      intro:"Yalnızca size atanmış dersler ve öğrenciler kapsamında program ve yoklama işlemlerinde yardımcı olabilirim.",
+      items:[
+        {kind:"info",title:"Bugünkü program",description:"Bugünkü derslerin nereden görüntüleneceğini gösterebilirim.",prompt:"Bugün hangi derslerim var?"},
+        {kind:"open",title:"Öğrencilerim",description:"Yetkiniz kapsamındaki öğrenci listesini açabilirim.",prompt:"Öğrencilerimi görüntülemek istiyorum."},
+        {kind:"open",title:"Yoklama",description:"Ders yoklaması ekranına götürüp adımları gösterebilirim.",prompt:"Yoklama girmek istiyorum."},
+        {kind:"info",title:"Ders programı",description:"Kendi ders programınızı ve yaklaşan dersleri bulmanıza yardım edebilirim.",prompt:"Ders programımı nasıl görebilirim?"}
+      ]
+    },
+    "Öğrenci":{
+      intro:"Yalnızca kendi ders, yoklama, paket ve ödeme bilgilerinizi bulmanıza yardımcı olabilirim.",
+      items:[
+        {kind:"info",title:"Yaklaşan dersler",description:"Bir sonraki ve bu haftaki derslerinizi nereden göreceğinizi gösterebilirim.",prompt:"Bir sonraki dersim ne zaman?"},
+        {kind:"info",title:"Ders geçmişi",description:"Son derslerinizi ve ders durumlarınızı bulmanıza yardımcı olabilirim.",prompt:"Son derslerimi göster."},
+        {kind:"info",title:"Ödeme durumu",description:"Kendi borç, tahsilat ve kalan bakiye alanınızı gösterebilirim.",prompt:"Ödeme durumumu nasıl görebilirim?"},
+        {kind:"info",title:"Bugünkü dersler",description:"Bugünkü ders alanına adım adım yönlendirebilirim.",prompt:"Bugün dersim var mı?"}
+      ]
+    },
+    "Veli":{
+      intro:"Yalnızca hesabınıza bağlı öğrencilerin ders, yoklama, paket ve ödeme bilgilerini bulmanıza yardımcı olabilirim.",
+      items:[
+        {kind:"info",title:"Çocuğumun dersleri",description:"Bağlı öğrencinin yaklaşan ve geçmiş derslerini gösterebilirim.",prompt:"Çocuğumun bir sonraki dersi ne zaman?"},
+        {kind:"info",title:"Ödeme durumu",description:"Bağlı öğrencinin borç, tahsilat ve kalan bakiye alanını gösterebilirim.",prompt:"Çocuğumun ödeme durumunu göster."},
+        {kind:"info",title:"Bugünkü program",description:"Bugünkü dersleri nereden inceleyeceğinizi gösterebilirim.",prompt:"Çocuğumun bugün dersi var mı?"},
+        {kind:"info",title:"Ders ve paket özeti",description:"Ders programı ve kalan hak bilgilerinin bulunduğu bölüme yönlendirebilirim.",prompt:"Çocuğumun ders ve paket bilgilerini nasıl görürüm?"}
+      ]
+    }
+  };
+
   function injectStyle(){
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement("style");
@@ -260,6 +303,12 @@
       .pire-guide-controls{display:flex;gap:7px}.pire-guide-controls button{flex:1;border:1px solid rgba(218,181,92,.3);border-radius:9px;background:#24241f;color:#e8dfca;padding:10px 9px;font-size:12px;font-weight:800;cursor:pointer}.pire-guide-controls button.primary{background:#dabb6e;color:#17130c}
       .pire-guide-prepare{width:100%;border:1px solid rgba(86,194,124,.5);border-radius:9px;background:rgba(57,151,91,.16);color:#b9f1cb;padding:11px 10px;font-size:12px;font-weight:900;cursor:pointer}.pire-guide-prepare:disabled{cursor:wait;opacity:.6}
       .pire-guide-form{display:flex;gap:8px;padding:13px;border-top:1px solid rgba(255,255,255,.08);background:#121312}
+      .pire-guide-capabilities-toggle{margin:0 13px 10px;border:1px solid rgba(218,181,92,.34);border-radius:11px;background:rgba(218,181,92,.08);color:#e8dfca;padding:10px 13px;font-size:12px;font-weight:900;cursor:pointer}
+      .pire-guide-capabilities{display:grid;gap:10px;padding:13px;border:1px solid rgba(218,181,92,.25);border-radius:14px;background:rgba(218,181,92,.05)}
+      .pire-guide-capabilities h3{margin:0;color:#dabb6e;font-size:14px}.pire-guide-capabilities>p{margin:0;color:#bdb6aa;font-size:12px;line-height:1.5}
+      .pire-guide-capability-list{display:grid;gap:7px}.pire-guide-capability{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;width:100%;padding:10px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:#1b1c1a;color:#eee9df;text-align:left;cursor:pointer}
+      .pire-guide-capability:hover,.pire-guide-capability:focus-visible{border-color:rgba(218,181,92,.55);background:#22221e}.pire-guide-capability b{font-size:12px}.pire-guide-capability small{grid-column:2;color:#aaa399;font-size:10.5px;line-height:1.4}
+      .pire-guide-capability-kind{grid-row:1/3;align-self:start;border-radius:999px;padding:3px 6px;background:rgba(218,181,92,.14);color:#dabb6e;font-size:9px;font-weight:950;text-transform:uppercase}
       .pire-guide-quick{display:none;margin:0 13px 10px;border:1px solid rgba(218,181,92,.52);border-radius:11px;background:#dabb6e;color:#17130c;padding:11px 14px;font-size:12px;font-weight:900;cursor:pointer}.pire-guide-quick.visible{display:block}
       .pire-guide-form input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#1c1d1b;color:#fff;outline:none;padding:12px;font-size:13px}.pire-guide-form input:focus{border-color:#dabb6e}
       .pire-guide-form button{border:0;border-radius:11px;background:#dabb6e;color:#17130c;padding:0 14px;font-weight:950;cursor:pointer}
@@ -269,6 +318,7 @@
       .pire-guide-tip{position:fixed;z-index:2147483000;max-width:260px;padding:9px 11px;border-radius:10px;background:#dabb6e;color:#17130c;font:800 11px/1.35 Inter,system-ui,sans-serif;box-shadow:0 12px 35px rgba(0,0,0,.45);pointer-events:none}
       html[data-theme="light"] .pire-guide-panel{background:rgba(255,253,248,.98);color:#231f18;border-color:rgba(143,101,20,.28)}
       html[data-theme="light"] .pire-guide-message.bot{background:#f2eee5;color:#29251e}html[data-theme="light"] .pire-guide-card ol{color:#5d564b}html[data-theme="light"] .pire-guide-form{background:#f7f3eb}html[data-theme="light"] .pire-guide-form input{background:#fff;color:#211d16;border-color:#d9d1c3}
+      html[data-theme="light"] .pire-guide-capabilities-toggle{color:#5b4518;background:#fbf3df}html[data-theme="light"] .pire-guide-capabilities>p{color:#655e53}html[data-theme="light"] .pire-guide-capability{background:#fff;color:#29251e;border-color:#ddd5c8}html[data-theme="light"] .pire-guide-capability small{color:#6d655a}
       @media(max-width:600px){#${ROOT_ID}{right:14px;bottom:14px}.pire-guide-panel{position:fixed;left:12px;right:12px;bottom:78px;width:auto;max-height:68vh}.pire-guide-launcher{width:55px;height:55px}.pire-guide-nudge{display:none}}
       @media(prefers-reduced-motion:reduce){.${HIGHLIGHT_CLASS},.pire-guide-panel.open{animation:none!important}}
     `;
@@ -315,6 +365,32 @@
     item.textContent=text;
     box.appendChild(item);
     box.scrollTop=box.scrollHeight;
+  }
+
+  function capabilityKindLabel(kind){
+    const labels={info:ui("Bilgi","Info"),open:ui("Ekran","Open"),prepare:ui("Hazırla","Prepare")};
+    return labels[kind]||labels.info;
+  }
+
+  function renderCapabilities(){
+    const currentRole=role(),capability=roleCapabilities[currentRole];
+    const box=document.querySelector(`#${ROOT_ID} .pire-guide-messages`);
+    if(!box||!capability)return;
+    box.querySelector(".pire-guide-capabilities")?.remove();
+    const card=document.createElement("section");
+    card.className="pire-guide-capabilities";
+    card.setAttribute("aria-label",ui(`${currentRole} rolü için asistan özellikleri`,`${currentRole} assistant capabilities`));
+    const title=document.createElement("h3");title.textContent=ui("Neler Yapabilirim?","What Can I Do?");card.appendChild(title);
+    const intro=document.createElement("p");intro.textContent=capability.intro;card.appendChild(intro);
+    const list=document.createElement("div");list.className="pire-guide-capability-list";
+    capability.items.forEach(item=>{
+      const button=document.createElement("button");button.type="button";button.className="pire-guide-capability";button.dataset.capabilityPrompt=item.prompt;
+      const kind=document.createElement("span");kind.className="pire-guide-capability-kind";kind.textContent=capabilityKindLabel(item.kind);
+      const name=document.createElement("b");name.textContent=item.title;
+      const description=document.createElement("small");description.textContent=item.description;
+      button.append(kind,name,description);list.appendChild(button);
+    });
+    card.appendChild(list);box.appendChild(card);box.scrollTop=box.scrollHeight;
   }
 
   function removeHighlight(){
@@ -611,10 +687,17 @@
     if(document.getElementById(ROOT_ID))return;
     injectStyle();
     const root=document.createElement("div");root.id=ROOT_ID;root.hidden=true;
-    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark"><img src="/pire-logo-clean.png" alt=""></span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><button type="button" class="pire-guide-quick">Adım adım göster</button><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><span class="pire-guide-nudge" aria-hidden="true">Size nasıl yardımcı olabilirim?</span><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber"><img src="/pire-logo-clean.png" alt=""></button>`;
+    root.innerHTML=`<section class="pire-guide-panel" aria-label="Pİ-RE kullanım rehberi"><header class="pire-guide-head"><span class="pire-guide-mark"><img src="/pire-logo-clean.png" alt=""></span><div><b>Pİ-RE Rehber</b><small>Panel kullanım asistanı</small></div><button type="button" class="pire-guide-close" aria-label="Rehberi kapat">×</button></header><div class="pire-guide-messages" aria-live="polite"></div><button type="button" class="pire-guide-quick">Adım adım göster</button><button type="button" class="pire-guide-capabilities-toggle">Neler Yapabilirim?</button><form class="pire-guide-form"><input type="text" aria-label="Ne yapmak istiyorsunuz?" placeholder="Ne yapmak istiyorsunuz?" autocomplete="off"><button type="submit" aria-label="Gönder">➜</button></form></section><span class="pire-guide-nudge" aria-hidden="true">Size nasıl yardımcı olabilirim?</span><button type="button" class="pire-guide-launcher" aria-label="Pİ-RE Rehberi aç" title="Pİ-RE Rehber"><img src="/pire-logo-clean.png" alt=""></button>`;
     document.body.appendChild(root);
     root.querySelector(".pire-guide-launcher").addEventListener("click",()=>root.querySelector(".pire-guide-panel").classList.toggle("open"));
     root.querySelector(".pire-guide-close").addEventListener("click",()=>{root.querySelector(".pire-guide-panel").classList.remove("open");removeHighlight()});
+    root.querySelector(".pire-guide-capabilities-toggle").addEventListener("click",renderCapabilities);
+    root.querySelector(".pire-guide-messages").addEventListener("click",event=>{
+      const prompt=event.target.closest("[data-capability-prompt]")?.dataset.capabilityPrompt;
+      if(!prompt||state.pending)return;
+      const input=root.querySelector(".pire-guide-form input");input.value=prompt;
+      root.querySelector(".pire-guide-form").requestSubmit();
+    });
     root.querySelector(".pire-guide-quick").addEventListener("click",()=>{
       const guide=state.suggestedGuide;if(!guide)return;
       if(state.guide!==guide)renderGuide(guide);
