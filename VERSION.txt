@@ -1,3 +1,9 @@
+
+Fix 64 — Çoklu Kullanıcı Kimlikleri
+- Aynı hesaba Yönetici, Eğitmen, Öğrenci ve Veli kimliklerinden birden fazlası atanabilir.
+- Her hesap için ana rol seçilir; diğer yetkili kimliklere Görünüm menüsünden geçilir.
+- Rol bağlantıları sunucuda doğrulanır; son aktif yönetici kimliği korunur.
+- Çoklu kimlik regresyon testleri eklendi; mevcut kullanıcı verileri değiştirilmez.
 Pİ-RE — Fix 36 / F5 Oturum Stabilizasyonu
 Taban: Fix 35.
 

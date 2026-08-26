@@ -7,17 +7,24 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-type Role = "Eğitmen" | "Öğrenci" | "Veli";
+type Role = "Yönetici" | "Eğitmen" | "Öğrenci" | "Veli";
+type CreateRole = Exclude<Role, "Yönetici">;
 type Gender = "Erkek" | "Kadın" | "Belirtilmedi";
 const allowedRelationships = ["Kendi", "Anne", "Baba", "Vasi", "Diğer"];
-const allowedRoles: Role[] = ["Eğitmen", "Öğrenci", "Veli"];
-const prefixes: Record<Role, string> = { "Eğitmen": "EGT", "Öğrenci": "OGR", "Veli": "VEL" };
+const allowedRoles: Role[] = ["Yönetici", "Eğitmen", "Öğrenci", "Veli"];
+const createRoles: CreateRole[] = ["Eğitmen", "Öğrenci", "Veli"];
+const prefixes: Record<CreateRole, string> = { "Eğitmen": "EGT", "Öğrenci": "OGR", "Veli": "VEL" };
 
 function reply(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json; charset=utf-8" },
   });
+}
+
+function normalizeRoles(value: unknown): Role[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map(String))].filter((role): role is Role => allowedRoles.includes(role as Role));
 }
 
 function normalizePhone(value: unknown) {
@@ -75,21 +82,20 @@ Deno.serve(async (req: Request) => {
     if (action === "list") {
       const { data, error } = await admin
         .from("pire_profiles")
-        .select("id,institution_id,email,phone,full_name,role,status,must_change_password,linked_student_id,linked_teacher_id,gender,last_login_at,created_at")
-        .neq("role", "Yönetici")
+        .select("id,institution_id,email,phone,full_name,role,roles,status,must_change_password,linked_student_id,linked_teacher_id,gender,last_login_at,created_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return reply(200, { accounts: data || [] });
+      return reply(200, { accounts: (data || []).map((account) => ({ ...account, is_current: account.id === userData.user.id })) });
     }
 
     if (action === "create") {
-      const role = String(payload.role || "") as Role;
+      const role = String(payload.role || "") as CreateRole;
       const phone = normalizePhone(payload.phone);
       const password = String(payload.password || "");
       const fullName = String(payload.full_name || "").trim();
       const gender = String(payload.gender || "Belirtilmedi") as Gender;
       const relationship = role === "Öğrenci" ? "Kendi" : String(payload.relationship || "Diğer");
-      if (!allowedRoles.includes(role)) return reply(400, { error: "Geçersiz kullanıcı rolü." });
+      if (!createRoles.includes(role)) return reply(400, { error: "Geçersiz kullanıcı rolü." });
       if (!phone) return reply(400, { error: "Geçerli bir Türkiye telefon numarası girin." });
       if (password.length < 8) return reply(400, { error: "Geçici şifre en az 8 karakter olmalıdır." });
       if (!fullName) return reply(400, { error: "Ad soyad zorunludur." });
@@ -111,7 +117,7 @@ Deno.serve(async (req: Request) => {
         if (existingLink) return reply(409, { error: `Bu eğitmen zaten ${existingLink.institution_id} kimliğiyle kayıtlı.` });
       }
       if (Number.isFinite(linkedStudentId) && role === "Öğrenci") {
-        const { data: existingLinks, error: linkError } = await admin.from("pire_profiles").select("institution_id,role").eq("linked_student_id", linkedStudentId).eq("role", role);
+        const { data: existingLinks, error: linkError } = await admin.from("pire_profiles").select("institution_id,roles").eq("linked_student_id", linkedStudentId).contains("roles", ["Öğrenci"]);
         if (linkError) throw linkError;
         if (existingLinks?.length) return reply(409, { error: `Bu kişi zaten ${existingLinks[0].institution_id} kimliğiyle kayıtlı.` });
       }
@@ -132,7 +138,7 @@ Deno.serve(async (req: Request) => {
         phone,
         password,
         phone_confirm: true,
-        app_metadata: { pire_role: role, pire_institution_id: institutionId },
+        app_metadata: { pire_role: role, pire_roles: [role], pire_institution_id: institutionId },
         user_metadata: { full_name: fullName },
       });
       if (createError || !created.user) throw createError || new Error("Hesap oluşturulamadı.");
@@ -167,9 +173,51 @@ Deno.serve(async (req: Request) => {
     }
 
     const targetId = String(payload.user_id || "");
-    if (!targetId || targetId === userData.user.id) return reply(400, { error: "Geçersiz hedef hesap." });
-    const { data: target, error: targetError } = await admin.from("pire_profiles").select("id,role").eq("id", targetId).single();
-    if (targetError || !target || target.role === "Yönetici") return reply(400, { error: "Bu hesap üzerinde işlem yapılamaz." });
+    if (!targetId) return reply(400, { error: "Geçersiz hedef hesap." });
+    const { data: target, error: targetError } = await admin.from("pire_profiles").select("id,role,roles,status").eq("id", targetId).single();
+    if (targetError || !target) return reply(400, { error: "Bu hesap üzerinde işlem yapılamaz." });
+    const targetRoles = Array.isArray(target.roles) ? target.roles : [target.role];
+
+    if (action === "update_roles") {
+      const roles = normalizeRoles(payload.roles);
+      const primaryRole = String(payload.primary_role || "") as Role;
+      if (!roles.length || !roles.includes(primaryRole)) return reply(400, { error: "En az bir kimlik ve bu kimliklerden bir ana rol seçin." });
+      if (targetId === userData.user.id && !roles.includes("Yönetici")) return reply(400, { error: "Açık yönetici oturumundan Yönetici kimliği kaldırılamaz." });
+      if (targetRoles.includes("Yönetici") && !roles.includes("Yönetici")) {
+        const { data: managers, error: managerError } = await admin.from("pire_profiles").select("id").contains("roles", ["Yönetici"]).eq("status", "Aktif").neq("id", targetId).limit(1);
+        if (managerError) throw managerError;
+        if (!managers?.length) return reply(400, { error: "Kurumun son aktif Yönetici kimliği kaldırılamaz." });
+      }
+      const linkedStudentId = payload.linked_student_id ? Number(payload.linked_student_id) : null;
+      const linkedTeacherId = payload.linked_teacher_id ? String(payload.linked_teacher_id) : null;
+      if (roles.includes("Eğitmen") && !linkedTeacherId) return reply(400, { error: "Eğitmen kimliği için bağlı eğitmen kaydı zorunludur." });
+      if ((roles.includes("Öğrenci") || roles.includes("Veli")) && !Number.isFinite(linkedStudentId)) return reply(400, { error: "Öğrenci veya Veli kimliği için bağlı öğrenci kaydı zorunludur." });
+      if (Number.isFinite(linkedStudentId)) {
+        const { data: student, error: studentError } = await admin.from("pire_ai_students").select("id").eq("id", linkedStudentId).maybeSingle();
+        if (studentError) throw studentError;
+        if (!student) return reply(400, { error: "Seçilen öğrenci kaydı bulunamadı." });
+      }
+      if (linkedTeacherId) {
+        const { data: existingLink, error: linkError } = await admin.from("pire_profiles").select("institution_id").eq("linked_teacher_id", linkedTeacherId).neq("id", targetId).neq("status", "Pasif").maybeSingle();
+        if (linkError) throw linkError;
+        if (existingLink) return reply(409, { error: "Bu eğitmen zaten " + existingLink.institution_id + " kimliğiyle kayıtlı." });
+      }
+      if (roles.includes("Öğrenci") && Number.isFinite(linkedStudentId)) {
+        const { data: existingLinks, error: linkError } = await admin.from("pire_profiles").select("institution_id").eq("linked_student_id", linkedStudentId).contains("roles", ["Öğrenci"]).neq("id", targetId).limit(1);
+        if (linkError) throw linkError;
+        if (existingLinks?.length) return reply(409, { error: "Bu öğrenci zaten " + existingLinks[0].institution_id + " kimliğiyle kayıtlı." });
+      }
+      const { error: profileError } = await admin.from("pire_profiles").update({ role: primaryRole, roles, linked_student_id: Number.isFinite(linkedStudentId) ? linkedStudentId : null, linked_teacher_id: linkedTeacherId || null, updated_at: new Date().toISOString() }).eq("id", targetId);
+      if (profileError) throw profileError;
+      await admin.from("pire_profile_students").delete().eq("profile_id", targetId);
+      if (Number.isFinite(linkedStudentId)) {
+        const relationship = roles.includes("Öğrenci") ? "Kendi" : "Diğer";
+        const { error: relationError } = await admin.from("pire_profile_students").upsert({ profile_id: targetId, student_id: linkedStudentId, relationship }, { onConflict: "profile_id,student_id" });
+        if (relationError) throw relationError;
+      }
+      return reply(200, { ok: true, role: primaryRole, roles });
+    }
+    if (targetId === userData.user.id || targetRoles.includes("Yönetici")) return reply(400, { error: "Bu hesap üzerinde bu işlem yapılamaz." });
 
     if (action === "set_status") {
       const status = String(payload.status || "");
