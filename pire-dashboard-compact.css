@@ -739,3 +739,20 @@ html[data-theme="light"] .app-shell .navbar-tools .pire-music-toggle.is-muted {
   html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-finance-foot { background:#faf8f3 !important; }
   html[data-theme="light"] .dashboard-mode .dashboard-alerts .dashboard-section-head > span { border-color:#fff !important; }
 }
+
+/* Fix 62 — Okunmamış bildirim ve akıllı uyarı göstergeleri */
+@keyframes pire-unread-icon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 0 rgba(228,198,118,0)); }
+  50% { opacity: .28; transform: scale(.82); filter: drop-shadow(0 0 7px rgba(228,198,118,.9)); }
+}
+
+.app-shell .navbar-tools .notification-bell:has(> b) > span,
+.app-shell .navbar-tools .pire-smart-alert-button:has(> b:not([hidden])) > span {
+  transform-origin: center;
+  animation: pire-unread-icon-pulse 1.25s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .navbar-tools .notification-bell:has(> b) > span,
+  .app-shell .navbar-tools .pire-smart-alert-button:has(> b:not([hidden])) > span { animation: none; }
+}

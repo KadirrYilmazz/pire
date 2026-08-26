@@ -94,3 +94,11 @@ Fix 61 — Rol Duyarlı Genel Arama
 - Sonuca tıklanınca ilgili mevcut React sekmesi güvenli biçimde açılır; öğrenci sonucunda modül içi arama da doldurulur.
 - Türkçe karakter normalizasyonu, sonuç bulunamadı durumu, klavye kullanımı, mobil görünüm ve açık/koyu tema desteği eklendi.
 - Arama bağlayıcısı React yüklenmesi tamamlandıktan sonra çalışır; mevcut kullanıcı verileri ve son Fix59-Fix60 geliştirmeleri değiştirilmez.
+
+
+Fix 62 — Okunmamış Bildirim ve Uyarı İkonları
+- Okunmamış bildirim sayısı sıfırdan büyükse bildirim ikonu sakin bir ritimle yanıp söner.
+- Akıllı uyarı sayısı sıfırdan büyükse akıllı uyarı ikonu aynı şekilde yanıp söner.
+- Sayaç kalmadığında animasyon otomatik olarak durur.
+- Hareket azaltma tercihi bulunan cihazlarda animasyon uygulanmaz.
+- Bildirim, uyarı, kullanıcı verileri ve mevcut yönlendirme davranışları değiştirilmez.
