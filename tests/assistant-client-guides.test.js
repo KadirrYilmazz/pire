@@ -87,3 +87,11 @@ test('conversation can be reset without affecting the authenticated session', ()
   assert.match(source, /addMessage\(welcomeMessage\(\)\)/);
   assert.doesNotMatch(source, /resetConversation[\s\S]{0,900}(?:signOut|localStorage\.clear|sessionStorage\.clear)/);
 });
+
+test('salutation uses verified profile gender for every role', () => {
+  assert.match(source, /profileGender/);
+  assert.match(source, /state\.profileGender==="Erkek"\?" Bey":state\.profileGender==="Kadın"\?" Hanım"/);
+  assert.match(source, /xhr\.open\("GET","\/api\/assistant-profile"/);
+  assert.match(source, /\["Erkek","Kadın"\]\.includes\(value\)/);
+  assert.doesNotMatch(source, /role\(\)==="Yönetici"\?" Bey"/);
+});
