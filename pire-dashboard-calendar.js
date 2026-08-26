@@ -169,7 +169,8 @@
     const notification=event.target.closest?.('.notification-list > button');
     const smartAlert=event.target.closest?.('.dashboard-alerts .alert-stream > button');
     const lessonCalendarCard=event.target.closest?.('.premium-dashboard .kpi-lessons');
-    if((nav&&!event.target.closest('.pire-nav-new-actions'))||notification||smartAlert||lessonCalendarCard)restoreNewActions();
+    const previewStart=event.target.closest?.('.admin-preview-actions .start');
+    if((nav&&!event.target.closest('.pire-nav-new-actions'))||notification||smartAlert||lessonCalendarCard||previewStart)restoreNewActions();
   },true);
   document.addEventListener('keydown',event=>{
     if((event.key==='Enter'||event.key===' ')&&event.target.closest?.('.premium-dashboard .kpi-lessons'))restoreNewActions();

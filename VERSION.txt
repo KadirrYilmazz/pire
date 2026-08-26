@@ -102,3 +102,10 @@ Fix 62 — Okunmamış Bildirim ve Uyarı İkonları
 - Sayaç kalmadığında animasyon otomatik olarak durur.
 - Hareket azaltma tercihi bulunan cihazlarda animasyon uygulanmaz.
 - Bildirim, uyarı, kullanıcı verileri ve mevcut yönlendirme davranışları değiştirilmez.
+
+Fix 63 — Görünüm Önizleme Siyah Ekran Düzeltmesi
+- Öğrenci, veli veya eğitmen önizlemesi açılmadan hemen önce taşınmış üst menü eylemleri React ağacındaki özgün konumuna geri alınır.
+- Görünümü aç geçişinde React DOM çakışmasının siyah ekran oluşturması engellenir.
+- Rol ve kişi seçimi, salt okunur önizleme ve yönetici görünümüne dönüş davranışları korunur.
+- Önizleme geçişi için regresyon testi eklendi.
+- Kullanıcı, ders, ödeme ve yoklama verileri değiştirilmez.
