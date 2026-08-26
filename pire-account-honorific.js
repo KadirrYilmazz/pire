@@ -19,6 +19,29 @@
     label.innerHTML='<span>Hitap</span><select name="gender" required><option value="Belirtilmedi">Belirtilmedi</option><option value="Erkek">Bey</option><option value="Kadın">Hanım</option></select><small>Asistan kullanıcıya bu seçime göre hitap eder.</small>';
     const name=form.querySelector('input[name="full_name"]')?.closest("label");
     if(name?.parentNode)name.parentNode.insertBefore(label,name);
+    if(!form.querySelector('[data-pire-relationship]')){
+      const relationship=document.createElement("label");
+      relationship.setAttribute("data-pire-relationship","1");
+      relationship.innerHTML='<span>Öğrenciyle yakınlığı</span><select name="relationship"><option>Anne</option><option>Baba</option><option>Vasi</option><option>Diğer</option></select><small>Yalnızca veli hesabında kullanılır.</small>';
+      label.parentNode?.insertBefore(relationship,label.nextSibling);
+    }
+    syncGuardian(form);
+  }
+
+  function studentRecord(id){
+    try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()?.students?.students?.find(item=>String(item.id)===String(id))||null}catch(_){return null}
+  }
+  function syncGuardian(form){
+    if(!accountForm(form))return;
+    const role=form.querySelector('select[name="role"]')?.value,relationship=form.querySelector('[data-pire-relationship]');
+    if(relationship)relationship.style.display=role==="Veli"?"grid":"none";
+    const fullName=form.querySelector('input[name="full_name"]'),linked=form.querySelector('select[name="linked_record"]');
+    if(!fullName||!linked)return;
+    const student=role==="Veli"?studentRecord(linked.value):null;
+    if(student?.guardianName){fullName.value=student.guardianName;fullName.readOnly=true;fullName.dispatchEvent(new Event("input",{bubbles:true}));}
+    else if(fullName.readOnly){fullName.readOnly=false;fullName.value="";fullName.dispatchEvent(new Event("input",{bubbles:true}));}
+    const relation=form.querySelector('select[name="relationship"]');
+    if(relation&&["Anne","Baba","Vasi","Diğer"].includes(student?.guardianRelation))relation.value=student.guardianRelation;
   }
 
   function read(key){try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[]}catch(_){return []}}
@@ -54,6 +77,7 @@
     const data=new FormData(form),gender=String(data.get("gender")||"");
     if(allowed.has(gender))pending={gender};
   },true);
+  document.addEventListener("change",event=>{const form=event.target?.closest?.("form");if(form&&accountForm(form))queueMicrotask(()=>syncGuardian(form))},true);
   function boot(){seedApprovedHonorifics();scan();new MutationObserver(queue).observe(document.documentElement,{childList:true,subtree:true})}
   document.readyState==="loading"?document.addEventListener("DOMContentLoaded",boot,{once:true}):boot();
 })();
