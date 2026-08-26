@@ -87,3 +87,10 @@ Fix 49 — Bu Ay Ders Kartından Takvime Güvenli Geçiş
 - Kartın fare tıklaması ile Enter ve Boşluk klavye kullanımları aynı güvenli geçişi uygular.
 - Kartın üzerine gelince görünen Takvime git metni sağ alt köşeye alınarak ders sayısıyla çakışması engellenir.
 - Takvim verileri, sabit üst menü görünümü ve diğer modül yönlendirmeleri korunur.
+
+Fix 61 — Rol Duyarlı Genel Arama
+- Üst menüdeki arama çubuğu öğrenci, eğitmen, ders, ödeme ve telafi kayıtlarında gerçek arama yapar.
+- Sonuçlar yalnızca giriş yapan kullanıcının erişebildiği modüllerden gösterilir.
+- Sonuca tıklanınca ilgili mevcut React sekmesi güvenli biçimde açılır; öğrenci sonucunda modül içi arama da doldurulur.
+- Türkçe karakter normalizasyonu, sonuç bulunamadı durumu, klavye kullanımı, mobil görünüm ve açık/koyu tema desteği eklendi.
+- Arama bağlayıcısı React yüklenmesi tamamlandıktan sonra çalışır; mevcut kullanıcı verileri ve son Fix59-Fix60 geliştirmeleri değiştirilmez.

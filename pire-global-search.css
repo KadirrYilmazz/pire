@@ -1,0 +1,34 @@
+.navbar-search { position: relative; }
+.pire-global-search-results[hidden] { display: none !important; }
+.pire-global-search-results {
+  z-index: 120;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(430px, calc(100vw - 32px));
+  max-height: min(540px, calc(100vh - 150px));
+  overflow: auto;
+  color: #eee8dc;
+  background: #111312f7;
+  border: 1px solid #d4b66f3d;
+  border-radius: 12px;
+  box-shadow: 0 24px 70px #000c, inset 0 1px #ffffff08;
+  backdrop-filter: blur(16px);
+}
+.pire-search-group { padding: 7px; border-bottom: 1px solid #ffffff0e; }
+.pire-search-group:last-child { border-bottom: 0; }
+.pire-search-group h4 { margin: 3px 7px 5px; color: #b99a50; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+.pire-search-group button { cursor: pointer; width: 100%; min-height: 52px; padding: 8px 9px; color: inherit; background: transparent; border: 0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
+.pire-search-group button:hover,.pire-search-group button:focus-visible { background: #d4b66f12; outline: 1px solid #d4b66f32; }
+.pire-search-group button span { min-width: 0; display: grid; gap: 3px; }
+.pire-search-group button b { overflow: hidden; color: #f1ece2; font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
+.pire-search-group button small { overflow: hidden; color: #918c83; font-size: 9px; white-space: nowrap; text-overflow: ellipsis; }
+.pire-search-group button i { color: #d7bb70; font-size: 14px; font-style: normal; }
+.pire-search-empty { padding: 22px; text-align: center; display: grid; gap: 5px; }
+.pire-search-empty b { color: #e7dfd1; font-size: 12px; }
+.pire-search-empty small { color: #8d887f; font-size: 9px; }
+html[data-theme="light"] .pire-global-search-results { color: #29261f; background: #fffdf9f7; border-color: #d9cba9; box-shadow: 0 20px 55px #4c3b1d2b; }
+html[data-theme="light"] .pire-search-group { border-color: #e9e2d5; }
+html[data-theme="light"] .pire-search-group button b,html[data-theme="light"] .pire-search-empty b { color: #29261f; }
+html[data-theme="light"] .pire-search-group button small,html[data-theme="light"] .pire-search-empty small { color: #6f685d; }
+@media (max-width: 760px) { .pire-global-search-results { position: fixed; top: 92px; left: 16px; right: 16px; width: auto; } }
