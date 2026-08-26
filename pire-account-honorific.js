@@ -35,9 +35,11 @@
     const access=token();
     if(!local&&access)fetch("/api/account-gender",{method:"POST",headers:{Authorization:`Bearer ${access}`,"Content-Type":"application/json"},body:JSON.stringify({institutionId,gender})}).catch(()=>{});
   }
-  function seedBurak(){
-    const records=read(ADMIN_KEY),burak=records.find(item=>item?.institution_id==="YON-0002"&&/^burak(?:\s|$)/i.test(String(item?.full_name||"")));
-    if(burak&&!allowed.has(burak.gender)){burak.gender="Erkek";write(ADMIN_KEY,records)}
+  function seedApprovedHonorifics(){
+    const records=read(ADMIN_KEY),approved=new Map([["YON-0002",/^burak(?:\s|$)/i],["YON-0003",/^mustafa(?:\s|$)/i]]);
+    let changed=false;
+    records.forEach(item=>{const namePattern=approved.get(item?.institution_id);if(namePattern?.test(String(item?.full_name||""))&&!allowed.has(item.gender)){item.gender="Erkek";changed=true}});
+    if(changed)write(ADMIN_KEY,records);
   }
   function scan(){
     queued=false;document.querySelectorAll("form").forEach(addField);
@@ -52,6 +54,6 @@
     const data=new FormData(form),gender=String(data.get("gender")||"");
     if(allowed.has(gender))pending={gender};
   },true);
-  function boot(){seedBurak();scan();new MutationObserver(queue).observe(document.documentElement,{childList:true,subtree:true})}
+  function boot(){seedApprovedHonorifics();scan();new MutationObserver(queue).observe(document.documentElement,{childList:true,subtree:true})}
   document.readyState==="loading"?document.addEventListener("DOMContentLoaded",boot,{once:true}):boot();
 })();
