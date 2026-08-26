@@ -10,6 +10,7 @@ test('new action matches navigation scale without losing emphasis',()=>{
   assert.match(css,/height:46px!important/);
   assert.match(css,/min-width:132px!important/);
   assert.match(css,/padding:0 18px!important/);
+  assert.match(css,/top:14px!important/);
   assert.match(css,/background:linear-gradient/);
   assert.match(css,/box-shadow/);
   assert.match(css,/:focus-visible/);
