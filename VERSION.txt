@@ -1,4 +1,11 @@
 
+Fix 65 — Rol Hedefli Duyuru Bildirimleri
+- Yayındaki kurum duyuruları hedef rolün veya seçilen kullanıcının bildirim merkezine eklenir.
+- Tüm kullanıcılar, belirli rol ve tek kullanıcı hedefleri aktif rol ve hesap kimliğiyle doğrulanır.
+- Duyurunun başlangıç ve geçerlilik sonu tarihleri bildirim görünürlüğünde uygulanır.
+- Duyuru okundu durumu her kullanıcı için ayrı tutulur ve okunmamış sayacına dahil edilir.
+- Mevcut ders, ödeme, yoklama, paket ve telafi bildirimleri korunur.
+
 Fix 64 — Çoklu Kullanıcı Kimlikleri
 - Aynı hesaba Yönetici, Eğitmen, Öğrenci ve Veli kimliklerinden birden fazlası atanabilir.
 - Her hesap için ana rol seçilir; diğer yetkili kimliklere Görünüm menüsünden geçilir.

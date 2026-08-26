@@ -85,6 +85,30 @@ function json(data,status=200){return new Response(JSON.stringify(data),{status,
 function bodyObj(init){if(!init||!init.body)return {}; try{return typeof init.body==='string'?JSON.parse(init.body):init.body}catch(e){return {}}}
 function nextId(items,floor=100000){let m=floor; for(const x of items||[]) if(Number(x?.id)>m)m=Number(x.id); return m+1}
 function arr(ep,key){db[ep]??={}; db[ep][key]??=[]; return db[ep][key]}
+function notificationRecipient(init={}){
+  const headers=new Headers(init.headers||{}),encodedRole=headers.get('X-Pire-Role')||'',role=(()=>{try{return decodeURIComponent(encodedRole)}catch(e){return encodedRole}})()||'Ziyaretçi',accountId=headers.get('X-Pire-Account')||'';
+  return {role,accountId,key:accountId||'role:'+role};
+}
+function visibleAnnouncements(init={}){
+  const recipient=notificationRecipient(init),now=Date.now();
+  return (db.announcements?.announcements||[]).filter(item=>{
+    if(item.status!=='Yayında')return false;
+    const starts=Date.parse(item.startsAt||item.createdAt||0),ends=item.endsAt?Date.parse(item.endsAt):Infinity;
+    if((Number.isFinite(starts)&&starts>now)||(Number.isFinite(ends)&&ends<now))return false;
+    if(item.targetType==='role')return item.targetValue===recipient.role;
+    if(item.targetType==='user')return Boolean(recipient.accountId)&&String(item.targetValue)===String(recipient.accountId);
+    return item.targetType==='all'||!item.targetType;
+  });
+}
+function announcementNotifications(init={}){
+  const recipient=notificationRecipient(init),reads=db.announcementReads?.[recipient.key]||[];
+  const roleTargets={Yönetici:'accounts',Eğitmen:'teacherPanel',Öğrenci:'studentPanel',Veli:'parentPanel'};
+  return visibleAnnouncements(init).map(item=>({
+    key:'announcement:'+item.id,type:'Duyuru',title:item.title,detail:item.message,
+    time:new Date(item.createdAt||item.startsAt||Date.now()).toLocaleString('tr-TR'),
+    priority:item.priority||'medium',read:reads.includes(String(item.id)),target:roleTargets[recipient.role]||'contact'
+  }));
+}
 function recomputeFinance(){
   const students=db.students?.students||[], payments=db.students?.payments||[], packages=db.packages?.packages||[], lessons=db.lessons?.lessons||[];
   const tx=(db.finance?.transactions||[]); const ledgers=students.map(s=>{const p=packages.filter(x=>Number(x.studentId)===Number(s.id)); const paid=tx.filter(x=>Number(x.studentId)===Number(s.id)).reduce((a,x)=>a+Number(x.amount||0),0); const monthly=Number(s.fee||0); const per=0; const total=monthly+per; const remaining=p.reduce((a,x)=>a+Number(x.remainingLessons??x.totalLessons??0),0); return {studentId:s.id,student:s.name,monthlyCharges:monthly,perLessonCharges:per,totalDebt:total,paid,balance:Math.max(0,total-paid),packageLessons:0,packageRemaining:remaining||null,freeLessons:0,lessonCount:lessons.filter(l=>String(l.studentIds||'').includes(String(s.id))).length}});
@@ -97,15 +121,23 @@ async function localApi(url,init={}){
    if(ep==='makeups'&&u.searchParams.has('suggestFor')){const date=u.searchParams.get('date')||new Date().toISOString().slice(0,10), lessons=db.lessons?.lessons||[], rooms=db.settings?.settings?.rooms||['Derslik 1','Derslik 2','Müzik Stüdyosu'];const starts=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];const slots=[];for(const startTime of starts){const hour=Number(startTime.slice(0,2)),endTime=String(hour+1).padStart(2,'0')+':00';for(const room of rooms){const busy=lessons.some(x=>x.lessonDate===date&&x.room===room&&x.status!=='İptal edildi'&&startTime<x.endTime&&endTime>x.startTime);if(!busy)slots.push({date,startTime,endTime,room});if(slots.length>=8)break}if(slots.length>=8)break}return json({slots})}
    if(ep==='backup'){return new Response(JSON.stringify({version:1,exportedAt:new Date().toISOString(),data:db}),{status:200,headers:{'content-type':'application/json;charset=utf-8','content-disposition':'attachment; filename="pire-kurum-yedegi-'+new Date().toISOString().slice(0,10)+'.json"','cache-control':'no-store'}})}
    if(ep==='earnings' && db.earnings) return json(db.earnings);
-   if(ep==='notifications' && db.notifications){
+   if(ep==='notifications'){
+     db.notifications??={notifications:[],preferences:{}};
      const notificationTargets={'Ders iptali':'calendar','Ders hatırlatması':'calendar','Program değişikliği':'calendar','Telafi':'makeups','Yoklama':'attendance','Ödev':'attendance','Devamsızlık':'attendance','Ödeme':'payments','Paket':'students'};
-     const notifications=(db.notifications.notifications||[]).map(item=>({...item,target:notificationTargets[item.type]||item.target}));
-     return json({...db.notifications,notifications});
+     const notifications=[...announcementNotifications(init),...(db.notifications.notifications||[]).map(item=>({...item,target:notificationTargets[item.type]||item.target}))];
+     return json({...db.notifications,notifications,unread:notifications.filter(item=>!item.read).length});
    }
    if(db[ep]!==undefined) return json(db[ep]);
    return json({error:'Unknown recovered endpoint: '+ep},404)
  }
- if(ep==='notifications'&&method==='POST'){const list=arr('notifications','notifications');if(b.all)list.forEach(x=>x.read=true);else{const n=list.find(x=>x.key===b.key);if(n)n.read=true}db.notifications.unread=list.filter(x=>!x.read).length;persist();return json({ok:true,unread:db.notifications.unread})}
+ if(ep==='notifications'&&method==='POST'){
+   const list=arr('notifications','notifications'),recipient=notificationRecipient(init),announcements=visibleAnnouncements(init);
+   db.announcementReads??={};db.announcementReads[recipient.key]??=[];
+   if(b.all){list.forEach(x=>x.read=true);for(const item of announcements)if(!db.announcementReads[recipient.key].includes(String(item.id)))db.announcementReads[recipient.key].push(String(item.id))}
+   else if(String(b.key||'').startsWith('announcement:')){const id=String(b.key).slice('announcement:'.length);if(announcements.some(item=>String(item.id)===id)&&!db.announcementReads[recipient.key].includes(id))db.announcementReads[recipient.key].push(id)}
+   else{const n=list.find(x=>x.key===b.key);if(n)n.read=true}
+   const unread=[...announcementNotifications(init),...list].filter(x=>!x.read).length;db.notifications.unread=unread;persist();return json({ok:true,unread})
+ }
  if(ep==='notifications'&&method==='PATCH'){db.notifications??={notifications:[],preferences:{}};db.notifications.preferences??={};if(b.type)db.notifications.preferences[b.type]=b.enabled!==false;persist();return json({preferences:db.notifications.preferences})}
  if(ep==='settings'&&method==='PUT'){db.settings={settings:{...b,updatedAt:new Date().toISOString()}}; persist(); return json(db.settings)}
  if(ep==='security-audit'&&method==='POST'){const logs=arr('security-audit','logs'); logs.unshift({id:nextId(logs,0),actorId:null,actorInstitutionId:'YON-0001',actorRole:'Yönetici',action:b.action||'İşlem',targetType:b.targetType||'Kayıt',targetId:b.targetId??null,detail:b.detail||'',createdAt:new Date().toISOString()}); persist(); return json({ok:true},201)}
@@ -156,7 +188,7 @@ async function localApi(url,init={}){
  return json({error:'Recovered backend: '+method+' '+ep+' henüz uygulanmadı'},501)
 }
 const realFetch=window.fetch.bind(window);
-window.fetch=function(input,init){try{const url=typeof input==='string'?input:input?.url||String(input);const u=new URL(url,location.origin);if(u.origin===location.origin&&u.pathname.startsWith('/api/')){const method=String(init?.method||'GET').toUpperCase();return Promise.resolve(localApi(url,init||{})).then(response=>{if(response.ok&&!['GET','HEAD'].includes(method)&&!['notifications','security-audit'].includes(u.pathname.replace(/^\/api\//,'').split('/')[0]))scheduleAiSync();return response})}}catch(e){}return realFetch(input,init)};
+window.fetch=function(input,init){try{const url=typeof input==='string'?input:input?.url||String(input);const u=new URL(url,location.origin);if(u.origin===location.origin&&u.pathname.startsWith('/api/')){const requestInit={...(init||{}),headers:new Headers(init?.headers||{})},activeRole=localStorage.getItem('pire-active-role'),localAccount=(()=>{try{return JSON.parse(sessionStorage.getItem('pire-local-admin-session-v1')||localStorage.getItem('pire-local-admin-session-v1')||'null')}catch(e){return null}})();if(activeRole)requestInit.headers.set('X-Pire-Role',encodeURIComponent(activeRole));if(localAccount?.id)requestInit.headers.set('X-Pire-Account',localAccount.id);const method=String(requestInit.method||'GET').toUpperCase();return Promise.resolve(localApi(url,requestInit)).then(response=>{if(response.ok&&!['GET','HEAD'].includes(method)&&!['notifications','security-audit'].includes(u.pathname.replace(/^\/api\//,'').split('/')[0]))scheduleAiSync();return response})}}catch(e){}return realFetch(input,init)};
 window.__PIRE_RECOVERED_BACKEND__={reset(){localStorage.removeItem(DBKEY);location.reload()},exportData(){return JSON.parse(JSON.stringify(db))},syncAi(){scheduleAiSync(0)}};
 scheduleAiSync(1800);
 })();
