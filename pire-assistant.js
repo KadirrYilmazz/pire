@@ -212,6 +212,24 @@
     }
   ];
 
+  const safeActions={
+    "view-teachers":{label:"Eğitmenler ekranını aç",path:[["Eğitmenler"]]},
+    "view-students":{label:"Öğrenciler ekranını aç",path:[["Öğrenciler"]]},
+    "view-expenses":{label:"Giderler ekranını aç",path:[["Finans"],["Gider Takibi","Giderler"]]},
+    "view-receivables":{label:"Ödemeler ekranını aç",path:[["Finans"],["Ödeme Takibi","Ödemeler"]]},
+    "today-lessons":{label:"Genel Bakış ekranını aç",path:[["Genel Bakış","Ana Sayfa"]]},
+    student:{label:"Öğrenci formunu hazırla",path:[["Yeni"],["Öğrenci ekle"]],form:true},
+    teacher:{label:"Eğitmen formunu hazırla",path:[["Yeni"],["Eğitmen ekle"]],form:true},
+    lesson:{label:"Ders formunu hazırla",path:[["Yeni"],["Ders oluştur"]],form:true},
+    payment:{label:"Ödeme formunu hazırla",path:[["Finans"],["Ödeme Takibi","Ödemeler"],["Ödeme ekle","Tahsilat ekle"]],form:true},
+    "invoice-expense":{label:"Gider formunu hazırla",path:[["Finans"],["Gider Takibi","Giderler"],["Gider ekle","Yeni gider","Gider Ekle"]],form:true},
+    attendance:{label:"Yoklama ekranını aç",path:[["Yoklama","Yoklama ve Ders Notları"]]},
+    makeup:{label:"Telafi ekranını aç",path:[["Telafi","Telafi ve Ders Değişiklikleri"]]},
+    report:{label:"Raporlar ekranını aç",path:[["Raporlar","Raporlar ve Analiz"]]},
+    account:{label:"Kullanıcılar ekranını aç",path:[["Kullanıcı Hesapları","Kullanıcılar"]]},
+    settings:{label:"Ayarlar ekranını aç",path:[["Kurum Ayarları","Ayarlar"]]}
+  };
+
   function injectStyle(){
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement("style");
@@ -240,6 +258,7 @@
       .pire-guide-card b{font-size:14px;color:#dabb6e}.pire-guide-card ol{margin:0;padding-left:20px;display:grid;gap:9px;color:#ccc6bb;font-size:12.5px;line-height:1.5}
       .pire-guide-card li.active{color:#fff;font-weight:800}
       .pire-guide-controls{display:flex;gap:7px}.pire-guide-controls button{flex:1;border:1px solid rgba(218,181,92,.3);border-radius:9px;background:#24241f;color:#e8dfca;padding:10px 9px;font-size:12px;font-weight:800;cursor:pointer}.pire-guide-controls button.primary{background:#dabb6e;color:#17130c}
+      .pire-guide-prepare{width:100%;border:1px solid rgba(86,194,124,.5);border-radius:9px;background:rgba(57,151,91,.16);color:#b9f1cb;padding:11px 10px;font-size:12px;font-weight:900;cursor:pointer}.pire-guide-prepare:disabled{cursor:wait;opacity:.6}
       .pire-guide-form{display:flex;gap:8px;padding:13px;border-top:1px solid rgba(255,255,255,.08);background:#121312}
       .pire-guide-quick{display:none;margin:0 13px 10px;border:1px solid rgba(218,181,92,.52);border-radius:11px;background:#dabb6e;color:#17130c;padding:11px 14px;font-size:12px;font-weight:900;cursor:pointer}.pire-guide-quick.visible{display:block}
       .pire-guide-form input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#1c1d1b;color:#fff;outline:none;padding:12px;font-size:13px}.pire-guide-form input:focus{border-color:#dabb6e}
@@ -317,6 +336,67 @@
     return null;
   }
 
+  const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
+  async function waitForTarget(names,timeout=2600){
+    const started=Date.now();
+    while(Date.now()-started<timeout){
+      const target=findTarget(names);
+      if(target)return target;
+      await wait(100);
+    }
+    return null;
+  }
+
+  function preparedField(){
+    const scopes=[...document.querySelectorAll('[role="dialog"],.modal,.drawer,form')].filter(visible).reverse();
+    for(const scope of scopes){
+      const field=[...scope.querySelectorAll('input:not([type="hidden"]):not([disabled]),select:not([disabled]),textarea:not([disabled])')].find(visible);
+      if(field)return field;
+    }
+    return null;
+  }
+
+  async function executeSafeAction(guide,button){
+    const action=safeActions[guide?.id];
+    if(!action||!guide.roles.includes(role()))return;
+    button.disabled=true;
+    removeHighlight();
+    let keepPanelClosed=false;
+    try{
+      document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.remove('open');
+      for(const names of action.path){
+        const target=await waitForTarget(names);
+        if(!target)throw new Error(`“${names[0]}” düğmesini ekranda bulamadım.`);
+        if(/kaydet|sil|onayla|öde|tamamla/i.test(normalized(target.textContent||target.getAttribute('aria-label'))))throw new Error('Son onay düğmesine güvenlik nedeniyle otomatik basılmadı.');
+        target.click();
+        await wait(420);
+      }
+      state.step=Math.min(action.path.length,guide.steps.length-1);
+      if(action.form){
+        const field=await waitForTarget(["Ad Soyad","Öğrenci","Tarih","Tutar","Açıklama"],1200)||preparedField();
+        if(field){
+          field.scrollIntoView({behavior:'smooth',block:'center'});
+          field.classList.add(HIGHLIGHT_CLASS);
+          const rect=field.getBoundingClientRect(),tip=document.createElement('div');
+          tip.className='pire-guide-tip';
+          tip.textContent=ui('Form hazır. Bilgileri doldurun; son kaydı siz onaylayın.','Form ready. Complete the fields and confirm the final save yourself.');
+          tip.style.left=`${Math.max(10,Math.min(window.innerWidth-270,rect.left))}px`;
+          tip.style.top=`${Math.min(window.innerHeight-55,rect.bottom+13)}px`;
+          document.body.appendChild(tip);
+        }
+        keepPanelClosed=true;
+      }
+      addMessage(action.form
+        ?ui('✓ Form hazırlandı. Bilgileri kontrol ederek doldurun; Kaydet düğmesine yalnızca siz basabilirsiniz.','✓ The form is ready. Review and complete the fields; only you can select Save.')
+        :ui('✓ İlgili ekran açıldı. Kayıtları burada inceleyebilirsiniz.','✓ The requested screen is open. You can review the records here.'),'success');
+    }catch(error){
+      addMessage(`${error.message} İsterseniz “Bu adımı göster” ile manuel rehberi sürdürebilirsiniz.`);
+    }finally{
+      button.disabled=false;
+      if(!keepPanelClosed)document.querySelector(`#${ROOT_ID} .pire-guide-panel`)?.classList.add('open');
+    }
+  }
+
   function showStep(){
     removeHighlight();
     if(!state.guide)return;
@@ -367,7 +447,8 @@
     const box=document.querySelector(`#${ROOT_ID} .pire-guide-messages`);
     const card=document.createElement("div");
     card.className="pire-guide-card";
-    card.innerHTML=`<b>${guide.title}</b><ol>${guide.steps.map((s,i)=>`<li class="${i===0?"active":""}">${s.text}</li>`).join("")}</ol><div class="pire-guide-controls"><button type="button" data-guide-action="show" class="primary">Bu adımı göster</button><button type="button" data-guide-action="next">Sonraki adım</button></div>`;
+    const action=safeActions[guide.id];
+    card.innerHTML=`<b>${guide.title}</b><ol>${guide.steps.map((s,i)=>`<li class="${i===0?"active":""}">${s.text}</li>`).join("")}</ol>${action?`<button type="button" class="pire-guide-prepare" data-guide-action="prepare">${action.label}</button>`:""}<div class="pire-guide-controls"><button type="button" data-guide-action="show" class="primary">Bu adımı göster</button><button type="button" data-guide-action="next">Sonraki adım</button></div>`;
     box.appendChild(card);box.scrollTop=box.scrollHeight;
   }
 
@@ -551,6 +632,7 @@
       const action=event.target.closest("[data-guide-action]")?.dataset.guideAction;
       if(action==="show")showStep();
       if(action==="next"&&state.guide)advanceStep();
+      if(action==="prepare"&&state.guide)executeSafeAction(state.guide,event.target.closest('[data-guide-action]'));
     });
     document.addEventListener("click",event=>{
       if(!state.guide||!event.target.closest(`.${HIGHLIGHT_CLASS}`))return;
