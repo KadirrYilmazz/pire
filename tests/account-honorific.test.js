@@ -13,11 +13,12 @@ test('account form adds an explicit honorific without guessing from the name',()
   assert.doesNotMatch(client,/Ayşe|Mehmet|isimden|nameGender/);
 });
 
-test('local accounts retain gender and the approved Burak account is migrated',()=>{
+test('local accounts retain gender and approved Burak and Mustafa accounts are migrated',()=>{
   assert.match(client,/pire-local-admin-accounts-v2/);
   assert.match(client,/record\.gender=gender/);
-  assert.match(client,/institution_id==="YON-0002"/);
-  assert.match(client,/burak\.gender="Erkek"/);
+  assert.match(client,/\["YON-0002",\/\^burak/);
+  assert.match(client,/\["YON-0003",\/\^mustafa/);
+  assert.match(client,/item\.gender="Erkek"/);
 });
 
 test('assistant falls back to the local account profile only for honorific',()=>{
