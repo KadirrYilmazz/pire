@@ -182,8 +182,16 @@
     script.dataset.pireLoginNotification='true';
     document.head.appendChild(script);
   }
+  function loadCustomerRoleCleanup(){
+    if(document.querySelector('script[data-pire-customer-role-cleanup]'))return;
+    const script=document.createElement('script');
+    script.src='/pire-customer-role-cleanup.js';
+    script.defer=true;
+    script.dataset.pireCustomerRoleCleanup='true';
+    document.head.appendChild(script);
+  }
   function boot(){
-    addStyle();updateButtons();loadLoginNotification();
+    addStyle();updateButtons();loadLoginNotification();loadCustomerRoleCleanup();
     ['pointerdown','keydown','submit','change'].forEach(type=>document.addEventListener(type,protectReact,true));
     observer=new MutationObserver(records=>{
       const relevant=records.some(record=>[...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE));
