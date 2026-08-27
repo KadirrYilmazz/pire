@@ -13,7 +13,9 @@ test('veli paneli React içinde beş bilgi sekmesi sunar',()=>{
   assert.match(bundle,/\[\`progress\`,\`Gelişim\`\]/);
   assert.match(bundle,/\[\`payments\`,\`Ödemeler\`\]/);
   assert.match(bundle,/\[\`info\`,\`Bilgiler\`\]/);
+  assert.match(bundle,/className:\`parent-nav-tabs\`/);
   assert.match(bundle,/Veli paneli bölümleri/);
+  assert.doesNotMatch(bundle,/className:\`portal-parent-tabs\`/);
 });
 
 test('veli sekmesi yenilemede korunur ve yalnızca veli görünümüne uygulanır',()=>{
@@ -32,5 +34,6 @@ test('kartlar dersler, gelişim, ödemeler ve bilgiler sekmelerine dağıtılır
 });
 
 test('sekme çubuğu ekran koordinatına sabitlenmez',()=>{
-  assert.doesNotMatch(css,/\.portal-parent-tabs\s*\{[^}]*position:\s*fixed/);
+  assert.match(css,/\.primary-nav \.parent-nav-tabs/);
+  assert.doesNotMatch(css,/\.parent-nav-tabs\s*\{[^}]*position:\s*fixed/);
 });
