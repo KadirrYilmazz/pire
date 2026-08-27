@@ -1,3 +1,10 @@
+Fix 71 — Eğitmen Paneli Bilgi Sekmeleri
+- Eğitmen Panelim yanına Genel Bakış, Programım, Öğrencilerim, Hakedişim ve Yetkilerim sekmeleri eklendi.
+- Programım bölümü Bugünkü Program ve Haftalık Program alt sekmelerine ayrıldı.
+- Aynı anda yalnızca seçilen bilgi grubu gösterilir; uzun sayfa kaydırması kaldırıldı.
+- Eğitmen kimlik kartı üstte sabit kalır; sekme ve alt sekme seçimi yenilemede korunur.
+- Mobil yatay sekme kullanımı ve açık/koyu tema desteği eklendi.
+
 Fix 70 — Çoklu Kimlik Rol Geçişinde Siyah Ekran Düzeltmesi
 - Yönetici üstündeki Görünüm seçiminden Eğitmen, Öğrenci veya Veli kimliğine geçmeden önce taşınmış React menü eylemleri özgün yerine döndürülür.
 - Rol değişimi React arayüz ağacını bozmadan gerçekleşir; siyah ekran engellenir.
