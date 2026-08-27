@@ -153,6 +153,12 @@
     style.textContent=`
       .navbar-tools > .pire-language-toggle{color:#e4c676!important;font-size:12px!important;font-weight:800!important;letter-spacing:.05em!important}
       html[data-theme="light"] .pire-language-toggle{color:#765b20!important}
+      button:not(:disabled),a[href],select,summary,label[for],[role="button"],[tabindex]:not([tabindex="-1"]),input[type="checkbox"],input[type="radio"],input[type="button"],input[type="submit"],input[type="reset"]{cursor:pointer!important}
+      button:disabled,select:disabled,input:disabled{cursor:not-allowed!important}
+      .role-view-switch,.role-view-switch select{cursor:pointer!important}
+      a.pire-social-icon.facebook-icon{cursor:pointer!important;pointer-events:auto!important;text-decoration:none!important}
+      a.pire-social-icon.facebook-icon:hover{transform:translateY(-1px);filter:brightness(1.18)}
+      a.pire-social-icon.facebook-icon:focus-visible{outline:2px solid #d5b15e;outline-offset:4px;border-radius:4px}
       @media(max-width:700px){.pire-language-toggle{font-size:10px!important}}
     `;
     document.head.appendChild(style);
