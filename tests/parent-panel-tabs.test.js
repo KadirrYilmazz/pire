@@ -33,6 +33,31 @@ test('kartlar dersler, gelişim, ödemeler ve bilgiler sekmelerine dağıtılır
   assert.match(css,/@media \(max-width: 760px\)/);
 });
 
+test('dersler ve gelişim bilgileri kalıcı alt sekmelere ayrılır',()=>{
+  assert.match(bundle,/pire-parent-sub-tab/);
+  assert.match(bundle,/parent-sub-tabs/);
+  assert.match(bundle,/\[\`upcoming\`,\`Yaklaşan Dersler\`\]/);
+  assert.match(bundle,/\[\`makeups\`,\`Telafiler\`\]/);
+  assert.match(bundle,/\[\`changes\`,\`Değişiklikler\`\]/);
+  assert.match(bundle,/\[\`package\`,\`Paket\`\]/);
+  assert.match(bundle,/\[\`homework\`,\`Ödevler\`\]/);
+  assert.match(bundle,/\[\`notes\`,\`Değerlendirmeler\`\]/);
+  assert.match(bundle,/\[\`attendance\`,\`Katılım\`\]/);
+  assert.match(bundle,/\[\`history\`,\`Yoklama\`\]/);
+  assert.match(bundle,/sessionStorage\.setItem\(\`pire-parent-sub-tab\`,parentSubTab\)/);
+});
+
+test('her veli alt sekmesinde yalnızca ilgili kart görünür',()=>{
+  assert.match(css,/parent-sub-upcoming[\s\S]*portal-parent-grid/);
+  assert.match(css,/parent-sub-makeups[\s\S]*portal-makeup-card/);
+  assert.match(css,/parent-sub-changes[\s\S]*portal-changes-card/);
+  assert.match(css,/parent-sub-package[\s\S]*portal-package-card/);
+  assert.match(css,/parent-sub-homework[\s\S]*portal-homework-card/);
+  assert.match(css,/parent-sub-notes[\s\S]*portal-notes-card/);
+  assert.match(css,/parent-sub-attendance[\s\S]*portal-attendance-card/);
+  assert.match(css,/parent-sub-history[\s\S]*portal-history-card/);
+});
+
 test('sekme çubuğu ekran koordinatına sabitlenmez',()=>{
   assert.match(css,/\.primary-nav \.parent-nav-tabs/);
   assert.doesNotMatch(css,/\.parent-nav-tabs\s*\{[^}]*position:\s*fixed/);
