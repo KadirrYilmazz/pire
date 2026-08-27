@@ -172,7 +172,20 @@
     updateButtons();
   }
 
-  function sync(){if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
+  function linkFacebookIcon(){
+    document.querySelectorAll('.pire-social-icon.facebook-icon:not(a)').forEach(icon=>{
+      const link=document.createElement('a');
+      link.className=icon.className;
+      link.href='https://www.facebook.com/profile.php?id=61593800193545';
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      link.setAttribute('aria-label','Pİ-RE Facebook sayfasını aç');
+      link.title='Facebook';
+      link.innerHTML=icon.innerHTML;
+      icon.replaceWith(link);
+    });
+  }
+  function sync(){linkFacebookIcon();if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
   function queueSync(){if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},90)}
   function loadLoginNotification(){
     if(document.querySelector('script[data-pire-login-notification]'))return;
