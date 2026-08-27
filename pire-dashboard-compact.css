@@ -988,3 +988,39 @@ body.light .teacher-sub-tabs{background:rgba(129,91,22,.04)}
   .teacher-panel-page.teacher-tab-students .teacher-panel-grid,
   .teacher-panel-page.teacher-tab-earnings .teacher-panel-secondary-grid{grid-template-columns:1fr}
 }
+
+
+/* Fix 74 — Öğrenci paneli ana ve alt sekmeleri */
+.primary-nav .student-nav-tabs{display:flex;align-items:stretch;gap:5px;min-width:0}
+.primary-nav .student-nav-tab{min-width:auto;padding:0 13px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--muted,#aaa59d);white-space:nowrap}
+.primary-nav .student-nav-tab:hover{color:var(--text,#f5f1e8);border-color:rgba(213,177,94,.2)}
+.primary-nav .student-nav-tab.active{color:var(--text,#f5f1e8);background:rgba(213,177,94,.11);border-color:rgba(213,177,94,.38);box-shadow:inset 0 -2px 0 var(--gold,#d5b15e)}
+.student-sub-tabs{display:flex;align-items:center;gap:8px;margin:14px 0 18px;padding:5px;width:max-content;max-width:100%;border:1px solid rgba(213,177,94,.2);border-radius:14px;background:rgba(255,255,255,.025)}
+.student-sub-tabs button{border:0;border-radius:10px;padding:10px 16px;color:var(--muted,#aaa59d);background:transparent;cursor:pointer;font:inherit;font-weight:650}
+.student-sub-tabs button.active{color:#14110a;background:var(--gold,#d5b15e);box-shadow:0 8px 22px rgba(213,177,94,.2)}
+.portal-workspace[class*="student-tab-"] .portal-stats,
+.portal-workspace[class*="student-tab-"] .portal-grid,
+.portal-workspace[class*="student-tab-"] .portal-learning-grid,
+.portal-workspace[class*="student-tab-"] .portal-parent-grid,
+.portal-workspace[class*="student-tab-"] .portal-privacy-note{display:none}
+.portal-workspace.student-tab-overview .portal-stats{display:grid}
+.portal-workspace.student-tab-lessons.student-sub-upcoming .portal-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.portal-workspace.student-tab-lessons.student-sub-upcoming .portal-grid>section:not(.portal-program){display:none}
+.portal-workspace.student-tab-lessons.student-sub-history .portal-learning-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.portal-workspace.student-tab-lessons.student-sub-history .portal-learning-grid>section:not(.portal-history-card){display:none}
+.portal-workspace.student-tab-learning.student-sub-homework .portal-learning-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.portal-workspace.student-tab-learning.student-sub-homework .portal-learning-grid>section:not(.portal-homework-card){display:none}
+.portal-workspace.student-tab-learning.student-sub-notes .portal-learning-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.portal-workspace.student-tab-learning.student-sub-notes .portal-learning-grid>section:not(.portal-notes-card){display:none}
+.portal-workspace.student-tab-package .portal-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.portal-workspace.student-tab-package .portal-grid>section:not(.portal-package-card){display:none}
+.portal-workspace.student-tab-payments .portal-learning-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.portal-workspace.student-tab-payments .portal-learning-grid>section:not(.portal-payment-card){display:none}
+.portal-workspace.student-tab-info .portal-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.portal-workspace.student-tab-info .portal-grid>section:not(.portal-info-card){display:none}
+.portal-workspace.student-tab-info .portal-privacy-note{display:flex}
+.portal-workspace[class*="student-tab-"]{min-height:calc(100vh - 250px)}
+body.light .primary-nav .student-nav-tab.active{color:#2a2111;background:rgba(178,132,40,.13)}
+body.light .student-sub-tabs{background:rgba(129,91,22,.04)}
+@media(max-width:1180px){.primary-nav .student-nav-tabs{overflow-x:auto;scrollbar-width:none}.primary-nav .student-nav-tabs::-webkit-scrollbar{display:none}.primary-nav .student-nav-tab{padding-inline:11px}}
+@media(max-width:760px){.student-sub-tabs{overflow-x:auto;width:100%;scrollbar-width:none}.student-sub-tabs::-webkit-scrollbar{display:none}}
