@@ -759,3 +759,77 @@ html[data-theme="light"] .app-shell .navbar-tools .pire-music-toggle.is-muted {
   .app-shell .navbar-tools .notification-bell:has(> b) > span,
   .app-shell .navbar-tools .pire-smart-alert-button:has(> b:not([hidden])) > span { animation: none; }
 }
+
+
+/* Fix 67 — Veli paneli bilgi sekmeleri */
+.portal-parent-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 18px 0;
+  padding: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border: 1px solid rgba(212,182,111,.22);
+  border-radius: 12px;
+  background: rgba(17,18,17,.72);
+}
+.portal-parent-tabs::-webkit-scrollbar { display: none; }
+.portal-parent-tabs button {
+  flex: 1 0 auto;
+  min-height: 42px;
+  padding: 9px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #aaa69d;
+  font: 800 11px/1.2 Inter,system-ui,sans-serif;
+  letter-spacing: .01em;
+  cursor: pointer;
+  transition: color .18s ease,background .18s ease,border-color .18s ease;
+}
+.portal-parent-tabs button:hover,
+.portal-parent-tabs button:focus-visible {
+  color: #eee9df;
+  border-color: rgba(212,182,111,.3);
+  outline: none;
+}
+.portal-parent-tabs button.active {
+  color: #17130c;
+  border-color: #e1c77f;
+  background: #d4b66f;
+  box-shadow: 0 6px 18px rgba(212,182,111,.18);
+}
+.portal-workspace.parent-tab-overview .portal-grid,
+.portal-workspace.parent-tab-overview .portal-parent-grid,
+.portal-workspace.parent-tab-payments .portal-grid,
+.portal-workspace.parent-tab-info .portal-parent-grid { display: none !important; }
+.portal-workspace.parent-tab-lessons .portal-stats,
+.portal-workspace.parent-tab-progress .portal-stats,
+.portal-workspace.parent-tab-payments .portal-stats,
+.portal-workspace.parent-tab-info .portal-stats { display: none !important; }
+.portal-workspace.parent-tab-lessons .portal-grid > :not(.portal-program),
+.portal-workspace.parent-tab-lessons .portal-parent-grid > :not(.portal-makeup-card):not(.portal-changes-card),
+.portal-workspace.parent-tab-progress .portal-grid > :not(.portal-package-card):not(.portal-attendance-card),
+.portal-workspace.parent-tab-progress .portal-parent-grid > :not(.portal-homework-card):not(.portal-notes-card):not(.portal-history-card),
+.portal-workspace.parent-tab-payments .portal-parent-grid > :not(.portal-payment-card),
+.portal-workspace.parent-tab-info .portal-grid > :not(.portal-info-card) { display: none !important; }
+.portal-workspace.parent-tab-lessons .portal-grid,
+.portal-workspace.parent-tab-progress .portal-grid,
+.portal-workspace.parent-tab-payments .portal-parent-grid,
+.portal-workspace.parent-tab-info .portal-grid { grid-template-columns: minmax(0,1fr) !important; }
+.portal-workspace.parent-tab-lessons .portal-parent-grid,
+.portal-workspace.parent-tab-progress .portal-parent-grid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+html[data-theme="light"] .portal-parent-tabs {
+  border-color: #d9cba9;
+  background: #f7f3e9;
+}
+html[data-theme="light"] .portal-parent-tabs button { color: #6b6458; }
+html[data-theme="light"] .portal-parent-tabs button:hover,
+html[data-theme="light"] .portal-parent-tabs button:focus-visible { color: #29251e; border-color: #c9b47f; }
+html[data-theme="light"] .portal-parent-tabs button.active { color: #211b10; background: #d4b66f; }
+@media (max-width: 760px) {
+  .portal-parent-tabs { margin: 14px 0; justify-content: flex-start; }
+  .portal-parent-tabs button { flex: 0 0 auto; min-width: 112px; }
+  .portal-workspace.parent-tab-lessons .portal-parent-grid,
+  .portal-workspace.parent-tab-progress .portal-parent-grid { grid-template-columns: minmax(0,1fr) !important; }
+}
