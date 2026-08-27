@@ -829,3 +829,73 @@ html[data-theme="light"] .primary-nav .parent-nav-tab.active { color: #6c5013; b
   .portal-workspace.parent-tab-lessons .portal-parent-grid,
   .portal-workspace.parent-tab-progress .portal-parent-grid { grid-template-columns: minmax(0,1fr) !important; }
 }
+
+
+/* Fix 69 — Veli paneli alt sekmeleri ve tek kart görünümü */
+.parent-sub-tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 14px 0;
+  padding: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid rgba(212,182,111,.2);
+}
+.parent-sub-tabs::-webkit-scrollbar { display: none; }
+.parent-sub-tabs button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 8px 15px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #959189;
+  font: 750 11px/1.2 Inter,system-ui,sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.parent-sub-tabs button:hover,
+.parent-sub-tabs button:focus-visible { color: #eee9df; outline: none; }
+.parent-sub-tabs button.active {
+  color: #e4c675;
+  border-bottom-color: #d4b66f;
+  background: rgba(212,182,111,.06);
+}
+.portal-workspace.parent-tab-lessons .portal-privacy-note,
+.portal-workspace.parent-tab-progress .portal-privacy-note,
+.portal-workspace.parent-tab-payments .portal-privacy-note { display: none !important; }
+
+.portal-workspace.parent-tab-lessons.parent-sub-upcoming .portal-parent-grid,
+.portal-workspace.parent-tab-lessons.parent-sub-makeups .portal-grid,
+.portal-workspace.parent-tab-lessons.parent-sub-changes .portal-grid { display: none !important; }
+.portal-workspace.parent-tab-lessons.parent-sub-makeups .portal-parent-grid > :not(.portal-makeup-card),
+.portal-workspace.parent-tab-lessons.parent-sub-changes .portal-parent-grid > :not(.portal-changes-card) { display: none !important; }
+.portal-workspace.parent-tab-lessons.parent-sub-makeups .portal-parent-grid,
+.portal-workspace.parent-tab-lessons.parent-sub-changes .portal-parent-grid { grid-template-columns: minmax(0,1fr) !important; }
+
+.portal-workspace.parent-tab-progress.parent-sub-package .portal-parent-grid,
+.portal-workspace.parent-tab-progress.parent-sub-attendance .portal-parent-grid,
+.portal-workspace.parent-tab-progress.parent-sub-homework .portal-grid,
+.portal-workspace.parent-tab-progress.parent-sub-notes .portal-grid,
+.portal-workspace.parent-tab-progress.parent-sub-history .portal-grid { display: none !important; }
+.portal-workspace.parent-tab-progress.parent-sub-package .portal-grid > :not(.portal-package-card),
+.portal-workspace.parent-tab-progress.parent-sub-attendance .portal-grid > :not(.portal-attendance-card),
+.portal-workspace.parent-tab-progress.parent-sub-homework .portal-parent-grid > :not(.portal-homework-card),
+.portal-workspace.parent-tab-progress.parent-sub-notes .portal-parent-grid > :not(.portal-notes-card),
+.portal-workspace.parent-tab-progress.parent-sub-history .portal-parent-grid > :not(.portal-history-card) { display: none !important; }
+.portal-workspace.parent-tab-progress.parent-sub-package .portal-grid,
+.portal-workspace.parent-tab-progress.parent-sub-attendance .portal-grid,
+.portal-workspace.parent-tab-progress.parent-sub-homework .portal-parent-grid,
+.portal-workspace.parent-tab-progress.parent-sub-notes .portal-parent-grid,
+.portal-workspace.parent-tab-progress.parent-sub-history .portal-parent-grid { grid-template-columns: minmax(0,1fr) !important; }
+
+html[data-theme="light"] .parent-sub-tabs { border-color: #d9cba9; }
+html[data-theme="light"] .parent-sub-tabs button { color: #716b61; }
+html[data-theme="light"] .parent-sub-tabs button:hover,
+html[data-theme="light"] .parent-sub-tabs button:focus-visible { color: #29251e; }
+html[data-theme="light"] .parent-sub-tabs button.active { color: #735619; border-bottom-color: #b28c37; background: #f7f1e3; }
+@media (max-width: 760px) {
+  .parent-sub-tabs { margin: 10px 0; }
+  .parent-sub-tabs button { min-height: 36px; padding: 7px 13px; }
+}
