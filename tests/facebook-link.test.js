@@ -14,3 +14,11 @@ test('Facebook ikonu gerçek Pİ-RE sayfasına güvenli bağlantı verir',()=>{
   assert.match(source,/Pİ-RE Facebook sayfasını aç/);
   assert.match(source,/function sync\(\)\{linkFacebookIcon\(\)/);
 });
+
+
+test('site genelindeki etkileşimli kontroller el imleci kullanır',()=>{
+  assert.match(source,/button:not\(:disabled\),a\[href\],select,summary/);
+  assert.match(source,/\.role-view-switch,\.role-view-switch select\{cursor:pointer!important\}/);
+  assert.match(source,/button:disabled,select:disabled,input:disabled\{cursor:not-allowed!important\}/);
+  assert.match(source,/a\.pire-social-icon\.facebook-icon\{cursor:pointer!important/);
+});
