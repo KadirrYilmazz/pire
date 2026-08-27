@@ -899,3 +899,92 @@ html[data-theme="light"] .parent-sub-tabs button.active { color: #735619; border
   .parent-sub-tabs { margin: 10px 0; }
   .parent-sub-tabs button { min-height: 36px; padding: 7px 13px; }
 }
+
+
+/* Fix 71 — Eğitmen paneli ana ve alt sekmeleri */
+.primary-nav .teacher-nav-tabs{
+  display:flex;
+  align-items:stretch;
+  gap:6px;
+  min-width:0;
+}
+.primary-nav .teacher-nav-tab{
+  min-width:auto;
+  padding:0 15px;
+  border:1px solid transparent;
+  border-radius:12px;
+  background:transparent;
+  color:var(--muted,#aaa59d);
+  white-space:nowrap;
+}
+.primary-nav .teacher-nav-tab:hover{
+  color:var(--text,#f5f1e8);
+  border-color:rgba(213,177,94,.2);
+}
+.primary-nav .teacher-nav-tab.active{
+  color:var(--text,#f5f1e8);
+  background:rgba(213,177,94,.11);
+  border-color:rgba(213,177,94,.38);
+  box-shadow:inset 0 -2px 0 var(--gold,#d5b15e);
+}
+.teacher-sub-tabs{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:14px 0 18px;
+  padding:5px;
+  width:max-content;
+  max-width:100%;
+  border:1px solid rgba(213,177,94,.2);
+  border-radius:14px;
+  background:rgba(255,255,255,.025);
+}
+.teacher-sub-tabs button{
+  border:0;
+  border-radius:10px;
+  padding:10px 16px;
+  color:var(--muted,#aaa59d);
+  background:transparent;
+  cursor:pointer;
+  font:inherit;
+  font-weight:650;
+}
+.teacher-sub-tabs button.active{
+  color:#14110a;
+  background:var(--gold,#d5b15e);
+  box-shadow:0 8px 22px rgba(213,177,94,.2);
+}
+.teacher-panel-page .teacher-panel-summary,
+.teacher-panel-page .teacher-panel-grid,
+.teacher-panel-page .teacher-panel-secondary-grid,
+.teacher-panel-page .teacher-permissions{display:none}
+.teacher-panel-page.teacher-tab-overview .teacher-panel-summary{display:grid}
+.teacher-panel-page.teacher-tab-program.teacher-sub-today .teacher-panel-grid{display:grid}
+.teacher-panel-page.teacher-tab-program.teacher-sub-today .teacher-my-students{display:none}
+.teacher-panel-page.teacher-tab-program.teacher-sub-week .teacher-panel-secondary-grid{display:grid}
+.teacher-panel-page.teacher-tab-program.teacher-sub-week .teacher-earning-card{display:none}
+.teacher-panel-page.teacher-tab-students .teacher-panel-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.teacher-panel-page.teacher-tab-students .teacher-panel-grid > .panel:not(.teacher-my-students){display:none}
+.teacher-panel-page.teacher-tab-earnings .teacher-panel-secondary-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+.teacher-panel-page.teacher-tab-earnings .teacher-week-program{display:none}
+.teacher-panel-page.teacher-tab-permissions .teacher-permissions{display:grid}
+.teacher-panel-page.teacher-tab-overview,
+.teacher-panel-page.teacher-tab-program,
+.teacher-panel-page.teacher-tab-students,
+.teacher-panel-page.teacher-tab-earnings,
+.teacher-panel-page.teacher-tab-permissions{min-height:calc(100vh - 250px)}
+body.light .primary-nav .teacher-nav-tab.active{color:#2a2111;background:rgba(178,132,40,.13)}
+body.light .teacher-sub-tabs{background:rgba(129,91,22,.04)}
+@media (max-width:1100px){
+  .primary-nav .teacher-nav-tabs{overflow-x:auto;scrollbar-width:none}
+  .primary-nav .teacher-nav-tabs::-webkit-scrollbar{display:none}
+  .primary-nav .teacher-nav-tab{padding-inline:12px}
+}
+@media (max-width:760px){
+  .teacher-sub-tabs{overflow-x:auto;width:100%;scrollbar-width:none}
+  .teacher-sub-tabs::-webkit-scrollbar{display:none}
+  .teacher-panel-page.teacher-tab-program.teacher-sub-today .teacher-panel-grid,
+  .teacher-panel-page.teacher-tab-program.teacher-sub-week .teacher-panel-secondary-grid,
+  .teacher-panel-page.teacher-tab-students .teacher-panel-grid,
+  .teacher-panel-page.teacher-tab-earnings .teacher-panel-secondary-grid{grid-template-columns:1fr}
+}
