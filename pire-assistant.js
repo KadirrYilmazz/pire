@@ -344,7 +344,7 @@
     const aliases=[
       ["Yönetici",/\b(?:Yönetici|Administrator|Admin)\b/i],
       ["Eğitmen",/\b(?:Eğitmen|Instructor|Teacher)\b/i],
-      ["Öğrenci",/\b(?:Öğrenci|Student)\b/i],
+      ["Öğrenci",/(?:Öğrenci|Student)/i],
       ["Veli",/\b(?:Veli|Parent|Guardian)\b/i]
     ];
     return aliases.find(([,pattern])=>pattern.test(text))?.[0]||"";
