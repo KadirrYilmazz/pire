@@ -29,6 +29,11 @@ test('assistant falls back to the local account profile only for honorific',()=>
   assert.match(assistant,/Promise\.resolve\(localProfileGender\(\)\)/);
 });
 
+test('Supabase account persists the selected honorific even when a local cache record exists',()=>{
+  assert.match(client,/if\(access\)fetch\("\/api\/account-gender"/);
+  assert.doesNotMatch(client,/if\(!local&&access\)/);
+});
+
 test('parent account uses the registered guardian and sends relationship data',()=>{
   assert.match(client,/student\?\.guardianName/);
   assert.match(client,/fullName\.readOnly=true/);
