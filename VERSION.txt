@@ -1,3 +1,9 @@
+Fix 70 — Çoklu Kimlik Rol Geçişinde Siyah Ekran Düzeltmesi
+- Yönetici üstündeki Görünüm seçiminden Eğitmen, Öğrenci veya Veli kimliğine geçmeden önce taşınmış React menü eylemleri özgün yerine döndürülür.
+- Rol değişimi React arayüz ağacını bozmadan gerçekleşir; siyah ekran engellenir.
+- Burak Kuru dahil mevcut hesap, rol bağlantısı ve kullanıcı verileri değiştirilmez.
+- Doğrudan rol geçişi için regresyon testi eklendi.
+
 Fix 69 — Veli Paneli Alt Sekmeleri
 - Dersler bölümü Yaklaşan Dersler, Telafiler ve Değişiklikler alt sekmelerine ayrıldı.
 - Gelişim bölümü Paket, Ödevler, Değerlendirmeler, Katılım ve Yoklama alt sekmelerine ayrıldı.
