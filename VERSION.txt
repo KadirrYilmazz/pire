@@ -1,3 +1,8 @@
+Fix 72 — Gerçek Facebook Bağlantısı
+- Üst iletişim alanındaki Facebook ikonu Pİ-RE Facebook sayfasına bağlandı.
+- Bağlantı güvenli biçimde yeni sekmede açılır.
+- X ve TikTok ikonları şimdilik görsel yer tutucu olarak korunur.
+
 Fix 71 — Eğitmen Paneli Bilgi Sekmeleri
 - Eğitmen Panelim yanına Genel Bakış, Programım, Öğrencilerim, Hakedişim ve Yetkilerim sekmeleri eklendi.
 - Programım bölümü Bugünkü Program ve Haftalık Program alt sekmelerine ayrıldı.
