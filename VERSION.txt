@@ -1,3 +1,9 @@
+Fix 67 — Veli Paneli Bilgi Sekmeleri
+- Veli paneli Genel Bakış, Dersler, Gelişim, Ödemeler ve Bilgiler sekmelerine ayrıldı.
+- Öğrenci kimliği üstte korunur; her sekmede yalnızca ilgili kartlar gösterilir.
+- Seçilen sekme sayfa yenilemesinde korunur ve yalnızca Veli rolüne uygulanır.
+- Mobil yatay sekme kullanımı, açık/koyu tema ve siyah ekran regresyon kontrolleri eklendi.
+
 Fix 66 — Veli Hesabında Kalıcı Hitap
 - Kullanıcı hesabı oluşturulurken Bey/Hanım seçimi Supabase oluşturma isteğine doğrudan eklenir.
 - Yerel hesap önbelleği bulunsa bile hitap bilgisi sunucu profilinde kalıcı olarak güncellenir.
