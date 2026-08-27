@@ -1,3 +1,9 @@
+Fix 69 — Veli Paneli Alt Sekmeleri
+- Dersler bölümü Yaklaşan Dersler, Telafiler ve Değişiklikler alt sekmelerine ayrıldı.
+- Gelişim bölümü Paket, Ödevler, Değerlendirmeler, Katılım ve Yoklama alt sekmelerine ayrıldı.
+- Aynı anda yalnızca seçili alt sekmenin kartı gösterilir; uzun sayfa kaydırması kaldırıldı.
+- Ana ve alt sekme seçimleri sayfa yenilemesinde korunur.
+
 Fix 68 — Veli Sekmelerini Üst Menüye Taşı
 - Genel Bakış, Dersler, Gelişim, Ödemeler ve Bilgiler sekmeleri Veli Panelim düğmesinin yanına taşındı.
 - İçerik alanındaki ikinci sekme çubuğu kaldırıldı.
