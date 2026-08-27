@@ -1,3 +1,8 @@
+Fix 68 — Veli Sekmelerini Üst Menüye Taşı
+- Genel Bakış, Dersler, Gelişim, Ödemeler ve Bilgiler sekmeleri Veli Panelim düğmesinin yanına taşındı.
+- İçerik alanındaki ikinci sekme çubuğu kaldırıldı.
+- Kart dağılımı, seçili sekmenin yenilemede korunması ve mobil yatay kullanım değişmedi.
+
 Fix 67 — Veli Paneli Bilgi Sekmeleri
 - Veli paneli Genel Bakış, Dersler, Gelişim, Ödemeler ve Bilgiler sekmelerine ayrıldı.
 - Öğrenci kimliği üstte korunur; her sekmede yalnızca ilgili kartlar gösterilir.
