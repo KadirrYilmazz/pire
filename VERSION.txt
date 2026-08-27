@@ -1,3 +1,8 @@
+Fix 66 — Veli Hesabında Kalıcı Hitap
+- Kullanıcı hesabı oluşturulurken Bey/Hanım seçimi Supabase oluşturma isteğine doğrudan eklenir.
+- Yerel hesap önbelleği bulunsa bile hitap bilgisi sunucu profilinde kalıcı olarak güncellenir.
+- Veli dahil tüm roller asistan karşılamasında aynı güvenilir profil bilgisini kullanır.
+
 
 Fix 65 — Rol Hedefli Duyuru Bildirimleri
 - Yayındaki kurum duyuruları hedef rolün veya seçilen kullanıcının bildirim merkezine eklenir.
