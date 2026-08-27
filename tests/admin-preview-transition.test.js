@@ -10,3 +10,9 @@ test('admin preview restores moved React actions before changing panel',()=>{
   assert.match(source,/lessonCalendarCard\|\|previewStart\)restoreNewActions\(\)/);
   assert.match(source,/document\.addEventListener\('click',[\s\S]*?,true\);/);
 });
+
+test('direct role view switch restores moved React actions before changing identity',()=>{
+  assert.match(source,/document\.addEventListener\('change',event=>\{/);
+  assert.match(source,/event\.target\.closest\?\.\('\.role-view-switch'\)\)restoreNewActions\(\)/);
+  assert.match(source,/document\.addEventListener\('change',[\s\S]*?,true\);/);
+});
