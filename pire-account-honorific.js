@@ -31,9 +31,9 @@
     try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i)||"";if(!/^sb-.*-auth-token$/.test(key))continue;const value=JSON.parse(localStorage.getItem(key)||"null");const access=value?.access_token||value?.currentSession?.access_token;if(access)return access}}catch(_){}return "";
   }
   function persist(institutionId,gender){
-    const local=setGender(ADMIN_KEY,institutionId,gender)|setGender(CACHE_KEY,institutionId,gender);
+    setGender(ADMIN_KEY,institutionId,gender);setGender(CACHE_KEY,institutionId,gender);
     const access=token();
-    if(!local&&access)fetch("/api/account-gender",{method:"POST",headers:{Authorization:`Bearer ${access}`,"Content-Type":"application/json"},body:JSON.stringify({institutionId,gender})}).catch(()=>{});
+    if(access)fetch("/api/account-gender",{method:"POST",headers:{Authorization:`Bearer ${access}`,"Content-Type":"application/json"},body:JSON.stringify({institutionId,gender})}).catch(()=>{});
   }
   function seedApprovedHonorifics(){
     const records=read(ADMIN_KEY),approved=new Map([["YON-0002",/^burak(?:\s|$)/i],["YON-0003",/^mustafa(?:\s|$)/i]]);
