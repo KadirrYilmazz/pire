@@ -172,6 +172,9 @@
     const previewStart=event.target.closest?.('.admin-preview-actions .start');
     if((nav&&!event.target.closest('.pire-nav-new-actions'))||notification||smartAlert||lessonCalendarCard||previewStart)restoreNewActions();
   },true);
+  document.addEventListener('change',event=>{
+    if(event.target.closest?.('.role-view-switch'))restoreNewActions();
+  },true);
   document.addEventListener('keydown',event=>{
     if((event.key==='Enter'||event.key===' ')&&event.target.closest?.('.premium-dashboard .kpi-lessons'))restoreNewActions();
   },true);
