@@ -1,3 +1,8 @@
+Fix 75 — LinkedIn Sosyal Medya Bağlantısı
+- Takip Et alanına Facebook'tan sonra LinkedIn ikonu eklendi.
+- İkon Pİ-RE Eğitim Atölye LinkedIn profilini güvenli biçimde yeni sekmede açar.
+- Mevcut Instagram, Facebook, X ve TikTok ikonları korunur.
+
 Fix 74D — Öğrenci Sihirbazında Yerel Ders Tekilleştirme
 - Eğitim adımındaki dersler aynı fonksiyon içinde yerel Set ile tekilleştirilir.
 - Tanımsız yardımcı fonksiyon riski olmadan çift ders seçenekleri kaldırılır.
