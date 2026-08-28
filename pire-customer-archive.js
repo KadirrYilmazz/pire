@@ -5,6 +5,7 @@
   const crm=()=>window.PIRE_SAFE_CUSTOMER_CRM;
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const digits=v=>String(v||'').replace(/\D/g,'');
+  const phoneKey=v=>digits(v).replace(/^90/,'').slice(-10);
 
   function viewState(){
     try{return JSON.parse(sessionStorage.getItem(VIEW_KEY)||'{}')}catch(_){return{}}
@@ -70,8 +71,9 @@
   function identifyCards(panel,records){
     panel.querySelectorAll('.safe-customer-card').forEach(card=>{
       if(card.dataset.customerId)return;
-      const name=card.querySelector('header b')?.textContent?.trim(),phone=digits(card.querySelector('header small')?.textContent),project=card.querySelector(':scope > strong')?.textContent?.trim();
-      const matches=records.filter(x=>x.name===name&&digits(x.phone)===phone&&String(x.project||'')===String(project||''));
+      const name=card.querySelector('header b')?.textContent?.trim(),phone=phoneKey(card.querySelector('header small')?.textContent),project=card.querySelector(':scope > strong')?.textContent?.trim();
+      let matches=records.filter(x=>x.name===name&&phoneKey(x.phone)===phone);
+      if(matches.length!==1)matches=records.filter(x=>x.name===name&&String(x.project||'').trim()===String(project||'').trim());
       if(matches.length===1)card.dataset.customerId=matches[0].id;
     });
   }
@@ -94,7 +96,8 @@
     const records=api.read().filter(x=>x.type===type),view=viewState()[type]||'active';
     const map=new Map(records.map(x=>[String(x.id),x]));let visible=0;
     panel.querySelectorAll('.safe-customer-card').forEach(card=>{
-      const record=map.get(String(card.dataset.customerId||'')),show=!!record&&(view==='archive'?!!record.archivedAt:!record.archivedAt);
+      const record=map.get(String(card.dataset.customerId||''));
+      const show=record?(view==='archive'?!!record.archivedAt:!record.archivedAt):view==='active';
       card.hidden=!show;if(show)visible++;
     });
     const active=records.filter(x=>!x.archivedAt).length,archived=records.filter(x=>x.archivedAt).length,tabs=panel.querySelector('.pire-customer-tabs');
