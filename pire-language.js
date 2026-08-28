@@ -281,3 +281,16 @@
     document.head.appendChild(script);
   }
 })();
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-health-tabs]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='/pire-health-tabs.css';link.dataset.pireHealthTabs='true';
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-health-tabs]')){
+    const script=document.createElement('script');
+    script.src='/pire-health-tabs.js';script.defer=true;script.dataset.pireHealthTabs='true';
+    document.head.appendChild(script);
+  }
+})();
