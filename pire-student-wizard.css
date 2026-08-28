@@ -26,3 +26,17 @@
 .pire-wizard-missing strong{display:block;color:#ffaaa4;margin-bottom:5px}
 .pire-wizard-missing p{margin:0 0 5px;font-size:13px;line-height:1.5}.pire-wizard-missing small{color:#bda6a3}
 .pire-wizard-progress button:not(.active){cursor:pointer}
+
+/* Feat86 — Ortak form sihirbazları */
+.pire-shared-wizard>[data-shared-step][hidden],.pire-shared-wizard>[data-shared-original-actions][hidden]{display:none!important}
+.pire-shared-wizard>[data-shared-step]{display:block}
+.pire-shared-wizard .pire-shared-original-single{margin-top:12px}
+.pire-shared-wizard .pire-shared-original-single>button{width:100%}
+.pire-shared-wizard.safe-customer-form{width:min(820px,94vw);max-height:92vh;overflow:auto}
+.pire-shared-wizard.safe-customer-form>[data-shared-step]{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pire-shared-wizard.safe-customer-form>[data-shared-step]>h3{grid-column:1/-1}
+.pire-shared-wizard.safe-customer-form>[data-shared-step]>label.wide{grid-column:1/-1}
+.pire-shared-wizard.lesson-form{width:min(980px,94vw)}
+.pire-shared-wizard.teacher-form{width:min(920px,94vw);max-height:92vh}
+.pire-shared-wizard .pire-shared-actions{position:sticky;bottom:0;padding:12px 0;background:linear-gradient(180deg,transparent,#151615 28%)}
+@media(max-width:700px){.pire-shared-wizard.safe-customer-form>[data-shared-step]{grid-template-columns:1fr}.pire-shared-wizard.safe-customer-form>[data-shared-step]>h3,.pire-shared-wizard.safe-customer-form>[data-shared-step]>label.wide{grid-column:auto}}
