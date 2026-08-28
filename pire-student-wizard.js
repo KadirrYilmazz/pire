@@ -29,20 +29,29 @@
     });
     const back=form.querySelector('.pire-wizard-back'),forward=form.querySelector('.pire-wizard-next'),submit=form.querySelector(':scope > button.primary.wide');
     back.hidden=next===0;forward.hidden=next===max;submit.hidden=next!==max;
-    if(next===max)renderSummary(form);
+    if(next===max){renderSummary(form);renderMissing(form)}
     form.querySelector('[data-wizard-step]:not([hidden]) input, [data-wizard-step]:not([hidden]) select, [data-wizard-step]:not([hidden]) textarea')?.focus({preventScroll:true});
     form.scrollTo({top:0,behavior:'smooth'});
   }
 
-  function validateStep(form){
-    const panel=form.querySelector('[data-wizard-step]:not([hidden])');
-    const fields=[...panel.querySelectorAll('input,select,textarea')].filter(x=>!x.disabled);
-    for(const field of fields)if(!field.checkValidity()){field.reportValidity();field.focus();return false}
-    if(panel.dataset.wizardStep==='2'){
-      if(!value(form,'wizardCourse')){alert('Eğitim planı için bir ders seçin.');form.elements.wizardCourse.focus();return false}
-      if(checked(form,'wizardCreateLesson')&&!value(form,'wizardTeacher')){alert('İlk dersi oluşturmak için eğitmen seçin.');form.elements.wizardTeacher.focus();return false}
-    }
-    return true;
+  function fieldLabel(field){
+    const label=field.closest('label');
+    if(!label)return field.name||'Zorunlu alan';
+    return [...label.childNodes].filter(node=>node.nodeType===Node.TEXT_NODE).map(node=>node.textContent.trim()).filter(Boolean).join(' ')||label.querySelector('strong')?.textContent||field.name;
+  }
+
+  function invalidFields(form){
+    return [...form.querySelectorAll('input,select,textarea')].filter(field=>!field.disabled&&!field.checkValidity());
+  }
+
+  function renderMissing(form){
+    const box=form.querySelector('.pire-wizard-missing'),invalid=invalidFields(form);
+    if(!box)return invalid;
+    if(!invalid.length){box.hidden=true;box.innerHTML='';return invalid}
+    const names=[...new Set(invalid.map(fieldLabel))];
+    box.hidden=false;
+    box.innerHTML='<strong>Eksik zorunlu alanlar</strong><p>'+names.map(esc).join(' · ')+'</p><small>Kaydı tamamlamadan önce bu alanları doldurmalısınız.</small>';
+    return invalid;
   }
 
   function syncOptionalFields(form){
@@ -108,18 +117,28 @@
       (inGuardian?guardian:student).appendChild(node);
       if(node===privacy)inGuardian=false;
     }
-    review.innerHTML='<h3>Son kontrol</h3><p class="pire-wizard-lead">Henüz hiçbir kayıt oluşturulmadı. Bilgileri kontrol edip işlemi tamamlayın.</p><div class="pire-wizard-summary"></div><div class="privacy-note">Kaydı tamamladığınızda seçiminize göre öğrenci, ilk ders ve paket birbirine bağlı olarak oluşturulur.</div>';
+    review.innerHTML='<h3>Son kontrol</h3><p class="pire-wizard-lead">Henüz hiçbir kayıt oluşturulmadı. Bilgileri kontrol edip işlemi tamamlayın.</p><div class="pire-wizard-missing" role="alert" hidden></div><div class="pire-wizard-summary"></div><div class="privacy-note">Kaydı tamamladığınızda seçiminize göre öğrenci, ilk ders ve paket birbirine bağlı olarak oluşturulur.</div>';
     const progress=document.createElement('nav');progress.className='pire-wizard-progress';progress.setAttribute('aria-label','Kayıt adımları');
-    ['Öğrenci','Veli','Eğitim','Onay'].forEach((name,i)=>{const b=document.createElement('button');b.type='button';b.innerHTML='<i>'+(i+1)+'</i><span>'+name+'</span>';b.onclick=()=>{const current=Number(form.dataset.wizardStep||0);if(i<=current)showStep(form,i)};progress.appendChild(b)});
+    ['Öğrenci','Veli','Eğitim','Onay'].forEach((name,i)=>{const b=document.createElement('button');b.type='button';b.innerHTML='<i>'+(i+1)+'</i><span>'+name+'</span>';b.onclick=()=>showStep(form,i);progress.appendChild(b)});
     const actions=document.createElement('div');actions.className='pire-wizard-actions';
     actions.innerHTML='<button type="button" class="pire-wizard-back">← Geri</button><button type="button" class="pire-wizard-next">Devam et →</button>';
     form.querySelector('.student-form-title').after(progress);
     submit.before(student,guardian,buildEducationStep(form),review,actions);
     submit.textContent='Kaydı tamamla';submit.classList.add('pire-wizard-submit');
     actions.querySelector('.pire-wizard-back').onclick=()=>showStep(form,Number(form.dataset.wizardStep||0)-1);
-    actions.querySelector('.pire-wizard-next').onclick=()=>{if(validateStep(form))showStep(form,Number(form.dataset.wizardStep||0)+1)};
+    actions.querySelector('.pire-wizard-next').onclick=()=>showStep(form,Number(form.dataset.wizardStep||0)+1);
+    form.noValidate=true;
     form.addEventListener('submit',event=>{
-      if(Number(form.dataset.wizardStep)!==3){event.preventDefault();event.stopImmediatePropagation();if(validateStep(form))showStep(form,Number(form.dataset.wizardStep||0)+1);return}
+      if(Number(form.dataset.wizardStep)!==3){event.preventDefault();event.stopImmediatePropagation();showStep(form,Number(form.dataset.wizardStep||0)+1);return}
+      const invalid=renderMissing(form);
+      if(invalid.length){
+        event.preventDefault();event.stopImmediatePropagation();
+        const first=invalid[0],section=first.closest('[data-wizard-step]'),index=Number(section?.dataset.wizardStep||0);
+        alert('Eksik zorunlu alanlar var. İlk eksik alanın bulunduğu bölüme yönlendiriliyorsunuz.');
+        showStep(form,index);
+        setTimeout(()=>{first.focus();first.reportValidity()},0);
+        return;
+      }
       window[PENDING]={
         course:value(form,'wizardCourse'),createLesson:checked(form,'wizardCreateLesson'),createPackage:checked(form,'wizardCreatePackage'),
         teacher:value(form,'wizardTeacher'),room:value(form,'wizardRoom'),lessonDate:value(form,'wizardLessonDate'),startTime:value(form,'wizardStartTime'),endTime:value(form,'wizardEndTime'),recurrence:value(form,'wizardRecurrence'),
