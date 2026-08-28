@@ -294,3 +294,16 @@
     document.head.appendChild(script);
   }
 })();
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-settings-tabs]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='/pire-settings-tabs.css';link.dataset.pireSettingsTabs='true';
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-settings-tabs]')){
+    const script=document.createElement('script');
+    script.src='/pire-settings-tabs.js';script.defer=true;script.dataset.pireSettingsTabs='true';
+    document.head.appendChild(script);
+  }
+})();
