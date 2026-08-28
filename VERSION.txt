@@ -1,4 +1,9 @@
-Fix 74 — Ders Seçeneklerini Tekilleştir\n- Yeni öğrenci, eğitmen ve paket formlarındaki ders seçenekleri ada göre tekilleştirilir.\n- Türkçe büyük/küçük harf ve gereksiz boşluk farkları aynı ders kabul edilir.\n- Mevcut öğrenci, paket ve ders kayıtları değiştirilmez.\n\nFix 73 — Rol ve Kişi Bazlı Bildirim Gizliliği
+Fix 74 — Ders Seçeneklerini Tekilleştir
+- Yeni öğrenci, eğitmen ve paket formlarındaki ders seçenekleri ada göre tekilleştirilir.
+- Türkçe büyük/küçük harf ve gereksiz boşluk farkları aynı ders kabul edilir.
+- Mevcut öğrenci, paket ve ders kayıtları değiştirilmez.
+
+Fix 73 — Rol ve Kişi Bazlı Bildirim Gizliliği
 - Öğrenci ve veli yalnızca bağlı öğrencinin ders, yoklama, ödev, paket, telafi ve ödeme bildirimlerini görür.
 - Eğitmen yalnızca kendi dersleriyle ilişkili operasyon bildirimlerini görür.
 - Yöneticiye ait ve başka öğrencilere ait bildirimlerin öğrenci/veli/eğitmen hesaplarına sızması engellenir.
