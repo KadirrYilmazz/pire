@@ -22,3 +22,14 @@ test('site genelindeki etkileşimli kontroller el imleci kullanır',()=>{
   assert.match(source,/button:disabled,select:disabled,input:disabled\{cursor:not-allowed!important\}/);
   assert.match(source,/a\.pire-social-icon\.facebook-icon\{cursor:pointer!important/);
 });
+
+test('LinkedIn ikonu Pİ-RE profiline güvenli bağlantı verir',()=>{
+  assert.match(source,/function addLinkedInIcon\(\)/);
+  assert.match(source,/\.pire-social-icon\.linkedin-icon/);
+  assert.match(source,/https:\/\/www\.linkedin\.com\/in\/pire-e%C4%9Fitim-at%C3%B6lye-536a7641b\//);
+  assert.match(source,/Pİ-RE LinkedIn profilini aç/);
+  assert.match(source,/facebook\?facebook\.after\(link\):container\.appendChild\(link\)/);
+  assert.match(source,/link\.target='_blank'/);
+  assert.match(source,/link\.rel='noopener noreferrer'/);
+  assert.match(source,/function sync\(\)\{linkFacebookIcon\(\);addLinkedInIcon\(\)/);
+});
