@@ -171,11 +171,35 @@
     if(!badge&&total){badge=document.createElement('b');button.appendChild(badge)}
     if(badge){badge.textContent=String(total);badge.hidden=total===0}
 
+    if(!document.documentElement.dataset.pireUnifiedOutsideClose){
+      document.documentElement.dataset.pireUnifiedOutsideClose='1';
+      document.addEventListener('pointerdown',event=>{
+        const activeWrap=document.querySelector('.notification-wrap');
+        if(!activeWrap||activeWrap.contains(event.target))return;
+        activeWrap.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());
+        if(activeWrap.querySelector('.notification-popover')){
+          const activeButton=activeWrap.querySelector('.notification-bell');
+          if(activeButton){activeButton.dataset.pireAllowNative='1';activeButton.click();delete activeButton.dataset.pireAllowNative}
+        }
+      },true);
+      document.addEventListener('keydown',event=>{
+        if(event.key!=='Escape')return;
+        const activeWrap=document.querySelector('.notification-wrap');
+        activeWrap?.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());
+        if(activeWrap?.querySelector('.notification-popover')){
+          const activeButton=activeWrap.querySelector('.notification-bell');
+          if(activeButton){activeButton.dataset.pireAllowNative='1';activeButton.click();delete activeButton.dataset.pireAllowNative}
+        }
+      });
+    }
     if(!button.dataset.pireUnifiedBound){
       button.dataset.pireUnifiedBound='1';
       button.addEventListener('click',event=>{
         if(button.dataset.pireAllowNative==='1')return;
         event.preventDefault();event.stopImmediatePropagation();
+        if(wrap.querySelector('.notification-popover')){
+          button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative;return;
+        }
         document.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());
         const menu=document.createElement('div');menu.className='pire-alert-chooser';
         const notificationsItem=document.createElement('button');notificationsItem.type='button';
