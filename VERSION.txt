@@ -1,3 +1,10 @@
+Fix 78 — Sistem Sağlığı Bilgi Alt Sekmeleri
+- Sistem Sağlığı ekranı Özet, Sistem Kontrolleri ve Akış Testleri alt sekmelerine ayrılır.
+- Yeniden kontrol işlemi, sağlık hataları ve son kontrol zamanı tüm alt sekmelerde ortak kalır.
+- Aynı anda yalnızca seçilen sağlık bilgi grubu gösterilir; uzun sayfa kaydırması azaltılır.
+- Alt sekme seçimi yenilemede korunur; mobil, klavye ve açık/koyu tema desteği bulunur.
+- Sağlık denetimleri, test senaryoları ve kurum verileri değiştirilmez.
+
 Fix 77 — Kullanıcılar Bilgi Alt Sekmeleri
 - Kullanıcılar ekranı Hesaplar, Yetkiler, Duyurular, Yedekleme ve Güvenlik Geçmişi alt sekmelerine ayrılır.
 - Giriş telefonu ve yeni hesap işlemleri tüm alt sekmelerde ortak kalır.
