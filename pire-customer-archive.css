@@ -1,0 +1,13 @@
+/* Pİ-RE müşteri işi arşivleme */
+.pire-customer-tabs{display:flex;gap:8px;margin:0 52px 18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.pire-customer-tabs button{min-height:42px;padding:0 15px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:transparent;color:#97958e;display:flex;align-items:center;gap:9px;cursor:pointer;font-weight:700}
+.pire-customer-tabs button.active{border-color:#d6b55d;background:rgba(214,181,93,.1);color:#f2ead8}
+.pire-customer-tabs b{min-width:22px;height:22px;padding:0 5px;border-radius:999px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:10px}
+.safe-customer-card[hidden],.pire-customer-archive-empty[hidden]{display:none!important}
+.pire-customer-close-panel{margin-top:22px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1)}
+.pire-customer-close-panel>header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.pire-customer-close-panel h3{margin:3px 0 0}.pire-customer-close-panel header small,.pire-customer-close-panel header span{color:#c5a958;font-size:11px}
+.pire-customer-close-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pire-customer-close-grid label{display:grid;gap:7px;color:#aaa79e;font-size:11px}.pire-customer-close-grid label.wide{grid-column:1/-1}
+.pire-customer-close-grid input,.pire-customer-close-grid select,.pire-customer-close-grid textarea{width:100%;border:1px solid rgba(255,255,255,.11);border-radius:10px;background:#111312;color:#eee9df;padding:12px}
+.pire-customer-close-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}.pire-customer-close-actions button{min-height:44px;padding:0 16px;border:1px solid rgba(214,181,93,.35);border-radius:10px;background:transparent;color:#e5ddca;cursor:pointer;font-weight:700}
+.pire-customer-close-actions .archive{background:#d6b55d;color:#111}.pire-customer-close-actions .danger{border-color:rgba(205,75,70,.5);color:#e99692}
+@media(max-width:700px){.pire-customer-tabs{margin-left:20px;margin-right:20px}.pire-customer-close-grid{grid-template-columns:1fr}.pire-customer-close-grid label.wide{grid-column:auto}.pire-customer-close-actions{flex-direction:column}}
