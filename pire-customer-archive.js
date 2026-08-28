@@ -98,10 +98,17 @@
       card.hidden=!show;if(show)visible++;
     });
     const active=records.filter(x=>!x.archivedAt).length,archived=records.filter(x=>x.archivedAt).length,tabs=panel.querySelector('.pire-customer-tabs');
-    tabs?.querySelectorAll('button').forEach(button=>{const selected=button.dataset.view===view;button.classList.toggle('active',selected);button.setAttribute('aria-current',selected?'page':'false');button.querySelector('b').textContent=button.dataset.view==='active'?active:archived});
+    tabs?.querySelectorAll('button').forEach(button=>{
+      const selected=button.dataset.view===view,number=String(button.dataset.view==='active'?active:archived),badge=button.querySelector('b');
+      button.classList.toggle('active',selected);
+      if(button.getAttribute('aria-current')!==(selected?'page':'false'))button.setAttribute('aria-current',selected?'page':'false');
+      if(badge&&badge.textContent!==number)badge.textContent=number;
+    });
     let empty=panel.querySelector('.pire-customer-archive-empty');
     if(!empty){empty=document.createElement('div');empty.className='safe-customer-empty pire-customer-archive-empty';panel.querySelector('.safe-customer-grid')?.appendChild(empty)}
-    empty.textContent=view==='archive'?'Arşivlenmiş müşteri işi bulunmuyor.':'Aktif müşteri işi bulunmuyor.';empty.hidden=visible!==0;
+    const emptyText=view==='archive'?'Arşivlenmiş müşteri işi bulunmuyor.':'Aktif müşteri işi bulunmuyor.';
+    if(empty.textContent!==emptyText)empty.textContent=emptyText;
+    empty.hidden=visible!==0;
   }
 
   function scan(){
