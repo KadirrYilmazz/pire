@@ -1,3 +1,10 @@
+Fix 73 — Rol ve Kişi Bazlı Bildirim Gizliliği
+- Öğrenci ve veli yalnızca bağlı öğrencinin ders, yoklama, ödev, paket, telafi ve ödeme bildirimlerini görür.
+- Eğitmen yalnızca kendi dersleriyle ilişkili operasyon bildirimlerini görür.
+- Yöneticiye ait ve başka öğrencilere ait bildirimlerin öğrenci/veli/eğitmen hesaplarına sızması engellenir.
+- Duyuruların rol ve tek kullanıcı hedeflemesi korunur.
+- Okundu durumu her kullanıcı için ayrı tutulur; öğrencinin işlemi yönetici bildirimlerini değiştirmez.
+
 Fix 72 — Gerçek Facebook Bağlantısı
 - Üst iletişim alanındaki Facebook ikonu Pİ-RE Facebook sayfasına bağlandı.
 - Bağlantı güvenli biçimde yeni sekmede açılır.
