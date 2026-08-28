@@ -141,6 +141,30 @@
     else document.querySelectorAll('.pire-smart-alert-button,.pire-alert-chooser').forEach(button=>button.remove());
   }
 
+  const SMART_READ_KEY='pire-smart-alert-read-v2';
+  const smartAlertSignature=element=>(element?.textContent||'').replace(/\s+/g,' ').trim();
+  function readSmartAlertSignatures(){
+    try{const value=JSON.parse(localStorage.getItem(SMART_READ_KEY)||'[]');return new Set(Array.isArray(value)?value:[])}catch(_){return new Set()}
+  }
+  function smartAlertState(dashboard,fallbackCount){
+    const items=[...(dashboard?.querySelectorAll('.dashboard-alerts .alert-stream > button')||[])];
+    const read=readSmartAlertSignatures();
+    if(!items.length)return{unread:Number(fallbackCount||0),total:Number(fallbackCount||0)};
+    let unread=0,total=0;
+    for(const item of items){
+      const signature=smartAlertSignature(item);
+      const match=signature.match(/(\d+)\s+(?:öğrenci|ders|kayıt)/i);
+      const amount=Number(match?.[1]||1);
+      total+=amount;if(!read.has(signature))unread+=amount;
+    }
+    return{unread,total};
+  }
+  function markSmartAlertRead(item){
+    const signature=smartAlertSignature(item);if(!signature)return;
+    const read=readSmartAlertSignatures();read.add(signature);
+    localStorage.setItem(SMART_READ_KEY,JSON.stringify([...read].slice(-100)));
+  }
+
   function placeSmartAlertButton(dashboard,count){
     const tools=document.querySelector('.app-shell.pire-persistent-header .navbar-tools');
     const wrap=tools?.querySelector('.notification-wrap');
@@ -148,9 +172,7 @@
     if(!tools||!wrap||!button)return;
     tools.querySelectorAll('.pire-smart-alert-button').forEach(item=>item.remove());
 
-    const smartSignature=((dashboard?.querySelector('.dashboard-alerts .alert-stream')?.textContent||'')+'|'+String(count||0)).replace(/\s+/g,' ').trim();
-    const seenKey='pire-smart-alert-seen-v1';
-    const smartUnread=Number(count||0)>0&&localStorage.getItem(seenKey)!==smartSignature;
+    const smartState=smartAlertState(dashboard,count);
     const currentBadge=button.querySelector(':scope > b');
     const currentText=currentBadge?.textContent?.trim()||'0';
     const lastCombined=button.dataset.pireCombinedCount;
@@ -158,10 +180,10 @@
       button.dataset.pireNotificationCount=String(Number(currentText)||0);
     }
     const notificationUnread=Number(button.dataset.pireNotificationCount||0);
-    const total=notificationUnread+(smartUnread?Number(count||0):0);
+    const total=notificationUnread+smartState.unread;
 
-    button.dataset.pireSmartCount=String(Number(count||0));
-    button.dataset.pireSmartSignature=smartSignature;
+    button.dataset.pireSmartCount=String(smartState.unread);
+    button.dataset.pireSmartTotal=String(smartState.total);
     button.dataset.pireUnifiedReady='1';
     button.dataset.pireCombinedCount=String(total);
     button.setAttribute('aria-label',`Bildirim merkezi, ${total} okunmamış kayıt`);
@@ -212,7 +234,7 @@
         };
         smartItem.onclick=event=>{
           event.preventDefault();event.stopPropagation();
-          localStorage.setItem(seenKey,button.dataset.pireSmartSignature||'');menu.remove();button.classList.remove('pire-alert-pulse');
+          menu.remove();
           const currentDashboard=document.querySelector('.premium-dashboard');
           if(currentDashboard?.isConnected){currentDashboard.classList.add('compact-alerts-open')}
           else{const dashboardButton=[...document.querySelectorAll('.primary-nav button')].find(item=>item.textContent?.trim()==='Genel Bakış');if(dashboardButton){openSmartAlertsAfterNavigation=true;dashboardButton.click()}}
@@ -229,6 +251,7 @@
     const nav=event.target.closest?.('.primary-nav');
     const notification=event.target.closest?.('.notification-list > button');
     const smartAlert=event.target.closest?.('.dashboard-alerts .alert-stream > button');
+    if(smartAlert){markSmartAlertRead(smartAlert);setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),0),0)}
     const lessonCalendarCard=event.target.closest?.('.premium-dashboard .kpi-lessons');
     const previewStart=event.target.closest?.('.admin-preview-actions .start');
     if((nav&&!event.target.closest('.pire-nav-new-actions'))||notification||smartAlert||lessonCalendarCard||previewStart)restoreNewActions();
