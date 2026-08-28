@@ -1,0 +1,32 @@
+.account-workspace > .pire-account-tabs{
+  display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:thin;
+  margin:14px 0 18px;padding:5px;border:1px solid rgba(213,177,94,.22);
+  border-radius:14px;background:rgba(14,16,16,.72)
+}
+.pire-account-tabs button{
+  flex:1 0 auto;min-width:118px;border:1px solid transparent;border-radius:10px;
+  padding:11px 15px;background:transparent;color:#aaa79f;font:inherit;font-weight:750;
+  transition:background .18s ease,color .18s ease,border-color .18s ease
+}
+.pire-account-tabs button:hover{color:#f3e7c4;background:rgba(213,177,94,.08)}
+.pire-account-tabs button.active{
+  color:#17140c;background:#d9b85e;border-color:#edcf79;box-shadow:0 5px 16px rgba(0,0,0,.2)
+}
+.pire-account-tabs button:focus-visible{outline:2px solid #edcf79;outline-offset:2px}
+.account-workspace [data-pire-account-section][hidden]{display:none!important}
+.account-workspace[data-pire-account-tab="accounts"] > .account-list{margin-bottom:0}
+.account-workspace[data-pire-account-tab="permissions"] > .access-control,
+.account-workspace[data-pire-account-tab="announcements"] > .announcement-center,
+.account-workspace[data-pire-account-tab="backup"] > .account-backup,
+.account-workspace[data-pire-account-tab="security"] > .account-audit{margin-top:0}
+html[data-theme="light"] .account-workspace > .pire-account-tabs{
+  background:rgba(255,255,255,.78);border-color:rgba(118,91,32,.22)
+}
+html[data-theme="light"] .pire-account-tabs button{color:#655f54}
+html[data-theme="light"] .pire-account-tabs button:hover{color:#513c12;background:rgba(174,132,40,.1)}
+html[data-theme="light"] .pire-account-tabs button.active{color:#241b08;background:#d6b255}
+@media(max-width:700px){
+  .account-workspace > .pire-account-tabs{margin:10px 0 14px;padding:4px}
+  .pire-account-tabs button{min-width:108px;padding:10px 13px}
+}
+@media(prefers-reduced-motion:reduce){.pire-account-tabs button{transition:none}}
