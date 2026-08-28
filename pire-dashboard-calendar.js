@@ -138,31 +138,63 @@
     });
     dashboard=document.querySelector('.premium-dashboard');
     if(hasPersistentHeader)placeSmartAlertButton(dashboard,smartAlertCount);
-    else document.querySelectorAll('.pire-smart-alert-button').forEach(button=>button.remove());
+    else document.querySelectorAll('.pire-smart-alert-button,.pire-alert-chooser').forEach(button=>button.remove());
   }
 
   function placeSmartAlertButton(dashboard,count){
     const tools=document.querySelector('.app-shell.pire-persistent-header .navbar-tools');
-    const notifications=tools?.querySelector('.notification-wrap');
-    if(!tools||!notifications)return;
-    let button=tools.querySelector('.pire-smart-alert-button');
-    if(!button){
-      button=document.createElement('button');button.type='button';button.className='pire-smart-alert-button navbar-icon-button';
-      button.innerHTML='<span aria-hidden="true">✦</span><b></b>';
-      notifications.insertAdjacentElement('afterend',button);
+    const wrap=tools?.querySelector('.notification-wrap');
+    const button=wrap?.querySelector('.notification-bell');
+    if(!tools||!wrap||!button)return;
+    tools.querySelectorAll('.pire-smart-alert-button').forEach(item=>item.remove());
+
+    const smartSignature=((dashboard?.querySelector('.dashboard-alerts .alert-stream')?.textContent||'')+'|'+String(count||0)).replace(/\s+/g,' ').trim();
+    const seenKey='pire-smart-alert-seen-v1';
+    const smartUnread=Number(count||0)>0&&localStorage.getItem(seenKey)!==smartSignature;
+    const currentBadge=button.querySelector(':scope > b');
+    const currentText=currentBadge?.textContent?.trim()||'0';
+    const lastCombined=button.dataset.pireCombinedCount;
+    if(!button.dataset.pireUnifiedReady||currentText!==lastCombined){
+      button.dataset.pireNotificationCount=String(Number(currentText)||0);
     }
-    button.onclick=event=>{
-      event.stopPropagation();
-      if(dashboard?.isConnected){dashboard.classList.toggle('compact-alerts-open');return}
-      const dashboardButton=[...document.querySelectorAll('.primary-nav button')].find(item=>item.textContent?.trim()==='Genel Bakış');
-      if(dashboardButton){openSmartAlertsAfterNavigation=true;dashboardButton.click()}
-    };
-    const badge=button.querySelector('b');if(badge.textContent!==count)badge.textContent=count;
-    badge.hidden=!count||count==='0';
-    button.setAttribute('aria-label',`Akıllı uyarılar, ${count||0} kayıt`);button.title='Akıllı uyarılar';
+    const notificationUnread=Number(button.dataset.pireNotificationCount||0);
+    const total=notificationUnread+(smartUnread?Number(count||0):0);
+
+    button.dataset.pireUnifiedReady='1';
+    button.dataset.pireCombinedCount=String(total);
+    button.setAttribute('aria-label',`Bildirim merkezi, ${total} okunmamış kayıt`);
+    button.title='Bildirim merkezi';
+    button.classList.toggle('pire-alert-pulse',total>0);
+    let badge=button.querySelector(':scope > b');
+    if(!badge&&total){badge=document.createElement('b');button.appendChild(badge)}
+    if(badge){badge.textContent=String(total);badge.hidden=total===0}
+
+    if(!button.dataset.pireUnifiedBound){
+      button.dataset.pireUnifiedBound='1';
+      button.addEventListener('click',event=>{
+        if(button.dataset.pireAllowNative==='1')return;
+        event.preventDefault();event.stopImmediatePropagation();
+        document.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());
+        const menu=document.createElement('div');menu.className='pire-alert-chooser';
+        const notificationsItem=document.createElement('button');notificationsItem.type='button';
+        notificationsItem.innerHTML=`<span><i>♢</i><strong>Bildirimler</strong><small>Mesajlar ve kurum bildirimleri</small></span><b>${button.dataset.pireNotificationCount||0}</b>`;
+        const smartItem=document.createElement('button');smartItem.type='button';
+        smartItem.innerHTML=`<span><i>✦</i><strong>Akıllı Uyarılar</strong><small>Paket, tahsilat ve yoklama uyarıları</small></span><b>${count||0}</b>`;
+        notificationsItem.onclick=()=>{
+          menu.remove();button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative;
+        };
+        smartItem.onclick=()=>{
+          localStorage.setItem(seenKey,smartSignature);menu.remove();button.classList.remove('pire-alert-pulse');
+          if(dashboard?.isConnected){dashboard.classList.add('compact-alerts-open')}
+          else{const dashboardButton=[...document.querySelectorAll('.primary-nav button')].find(item=>item.textContent?.trim()==='Genel Bakış');if(dashboardButton){openSmartAlertsAfterNavigation=true;dashboardButton.click()}}
+          setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),count),0);
+        };
+        menu.append(notificationsItem,smartItem);wrap.appendChild(menu);
+      },true);
+    }
   }
 
-  document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!event.target.closest?.('.pire-smart-alert-button'))dashboard.classList.remove('compact-alerts-open')}));
+  document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!event.target.closest?.('.notification-wrap'))dashboard.classList.remove('compact-alerts-open')}));
   document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(x=>x.classList.remove('compact-alerts-open'))});
   document.addEventListener('click',event=>{
     const nav=event.target.closest?.('.primary-nav');
