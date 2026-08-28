@@ -66,7 +66,11 @@ async function run() {
   const removed = context.window.__PIRE_COURSE_DEDUPE__.dedupeSelect(select);
   check(removed === 2 && options.filter(x => x.removed).length === 2, 'Rendered course select duplicates must be removed');
 
-  console.log(`Fix74 course dedupe: ${passed}/5 passed`);
+  const wizardSource = fs.readFileSync(require('path').join(__dirname, '..', 'pire-student-wizard.js'), 'utf8');
+  check(wizardSource.includes('const seenCourses=new Set();'), 'Student wizard must create a local course-name set');
+  check(wizardSource.includes('seenCourses.has(key)'), 'Student wizard must filter duplicate course names locally');
+
+  console.log('Fix74 course dedupe: '+passed+'/7 passed');
 }
 
 run().catch(error => {
