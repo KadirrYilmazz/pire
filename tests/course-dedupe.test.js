@@ -25,6 +25,12 @@ const nativeFetch = async (input, init = {}) => new Response(JSON.stringify(cata
 const context = {
   window: { fetch: nativeFetch },
   location: { origin: 'https://pire.test' },
+  document: {
+    readyState: 'loading',
+    addEventListener() {},
+    querySelectorAll() { return []; },
+  },
+  MutationObserver: class { observe() {} },
   URL,
   Response,
   Headers,
@@ -52,7 +58,15 @@ async function run() {
   ]);
   check(direct.length === 1, 'Turkish case and repeated whitespace must normalize');
 
-  console.log(`Fix74 course dedupe: ${passed}/4 passed`);
+  const options = ['Ders seçin', 'Bağlama', 'Bağlama', 'Gitar', 'Gitar', 'ŞAN'].map(text => ({
+    textContent: text,
+    remove() { this.removed = true; },
+  }));
+  const select = { name: 'course', options };
+  const removed = context.window.__PIRE_COURSE_DEDUPE__.dedupeSelect(select);
+  check(removed === 2 && options.filter(x => x.removed).length === 2, 'Rendered course select duplicates must be removed');
+
+  console.log(`Fix74 course dedupe: ${passed}/5 passed`);
 }
 
 run().catch(error => {
