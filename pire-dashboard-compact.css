@@ -1024,3 +1024,14 @@ body.light .primary-nav .student-nav-tab.active{color:#2a2111;background:rgba(17
 body.light .student-sub-tabs{background:rgba(129,91,22,.04)}
 @media(max-width:1180px){.primary-nav .student-nav-tabs{overflow-x:auto;scrollbar-width:none}.primary-nav .student-nav-tabs::-webkit-scrollbar{display:none}.primary-nav .student-nav-tab{padding-inline:11px}}
 @media(max-width:760px){.student-sub-tabs{overflow-x:auto;width:100%;scrollbar-width:none}.student-sub-tabs::-webkit-scrollbar{display:none}}
+
+/* Çoklu veli-öğrenci görünümü */
+.parent-student-switcher{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px;padding:10px;border:1px solid rgba(210,170,76,.22);border-radius:14px;background:rgba(210,170,76,.045)}
+.parent-student-switcher::before{content:"Öğrenci";font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a89a7e;margin:0 4px}
+.parent-student-switcher button{min-height:42px;padding:0 18px;border:1px solid rgba(210,170,76,.28);border-radius:11px;background:#151614;color:#d7d3c9;font:inherit;font-weight:750;cursor:pointer;transition:background .18s,border-color .18s,color .18s,box-shadow .18s}
+.parent-student-switcher button:hover{border-color:#d7b85e;color:#fff}
+.parent-student-switcher button.active{background:linear-gradient(135deg,#d9b95f,#b88b31);border-color:#f1d884;color:#12120f;box-shadow:0 8px 22px rgba(196,150,49,.22)}
+body.light .parent-student-switcher{background:rgba(129,91,22,.05)}
+body.light .parent-student-switcher button{background:#fff;color:#493b21}
+body.light .parent-student-switcher button.active{background:linear-gradient(135deg,#d9b95f,#c99d42);color:#17130b}
+@media(max-width:760px){.parent-student-switcher{overflow-x:auto;flex-wrap:nowrap}.parent-student-switcher::before{position:sticky;left:0;background:inherit}.parent-student-switcher button{white-space:nowrap}}
