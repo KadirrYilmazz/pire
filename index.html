@@ -67,6 +67,21 @@ const DBKEY='pire-recovered-backend-v1';
 let db;
 try{db=JSON.parse(localStorage.getItem(DBKEY)||'null')||structuredClone(SEED)}catch(e){db=structuredClone(SEED)}
 function persist(){try{localStorage.setItem(DBKEY,JSON.stringify(db))}catch(e){}}
+function normalizeStudentCourseLinks(){
+ const students=db.students?.students||[],packages=db.packages?.packages||[],lessons=db.lessons?.lessons||[];
+ for(const student of students){
+  const sid=String(student.id),active=packages.filter(p=>String(p.studentId)===sid&&p.status==='Aktif').sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))||Number(b.id||0)-Number(a.id||0));
+  active.slice(1).forEach(p=>{p.status='Yenilendi'});
+  const pkg=active[0],related=lessons.filter(l=>{try{return (Array.isArray(l.studentIds)?l.studentIds:JSON.parse(l.studentIds||'[]')).map(String).includes(sid)}catch(e){return false}}).sort((a,b)=>String(b.lessonDate||'').localeCompare(String(a.lessonDate||''))||String(b.startTime||'').localeCompare(String(a.startTime||''))),lesson=related[0];
+  if(pkg)student.course=pkg.course||lesson?.course||'';
+  else if(lesson)student.course=lesson.course||'';
+  else student.course='';
+  if(lesson){student.teacher=lesson.teacher||'';const weekday=(()=>{try{return new Date(lesson.lessonDate+'T12:00:00').toLocaleDateString('tr-TR',{weekday:'long'})}catch(e){return lesson.lessonDate||''}})();student.lessonDay=(weekday+' '+(lesson.startTime||'')).trim()}
+  else{student.teacher='';student.lessonDay=''}
+ }
+ persist();
+}
+normalizeStudentCourseLinks();
 function authToken(){try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i)||'';if(!/^sb-.*-auth-token$/.test(key))continue;const value=JSON.parse(localStorage.getItem(key)||'null');const token=value?.access_token||value?.currentSession?.access_token;if(token)return token}}catch(e){}return ''}
 function aiSnapshot(){
  const students=(db.students?.students||[]).map(s=>({id:s.id,status:s.status,monthly_fee:s.fee,payment_day:s.paymentDay}));
