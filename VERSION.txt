@@ -1,3 +1,10 @@
+Fix 76 — Raporlar Bilgi Alt Sekmeleri
+- Raporlar ekranı Özet, Branşlar, Finans, Eğitmenler ve Operasyon alt sekmelerine ayrılır.
+- Tarih filtreleri, hızlı dönem seçimleri ve Excel/PDF işlemleri tüm alt sekmelerde ortak kalır.
+- Aynı anda yalnızca seçilen rapor grubu gösterilir; uzun sayfa kaydırması azaltılır.
+- Alt sekme seçimi yenilemede korunur; mobil, klavye ve açık/koyu tema desteği bulunur.
+- React rapor öğeleri taşınmaz ve kullanıcı verileri değiştirilmez.
+
 Fix 75 — LinkedIn Sosyal Medya Bağlantısı
 - Takip Et alanına Facebook'tan sonra LinkedIn ikonu eklendi.
 - İkon Pİ-RE Eğitim Atölye LinkedIn profilini güvenli biçimde yeni sekmede açar.
