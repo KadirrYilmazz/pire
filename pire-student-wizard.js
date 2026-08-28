@@ -76,7 +76,12 @@
 
   function buildEducationStep(form){
     const section=document.createElement('section');section.dataset.wizardStep='2';section.hidden=true;
-    const courses=(catalog.courses||[]).map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join('');
+    const seenCourses=new Set();
+    const courses=(catalog.courses||[]).filter(x=>{
+      const key=String(x?.name||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('tr-TR');
+      if(!key||seenCourses.has(key))return false;
+      seenCourses.add(key);return true;
+    }).map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join('');
     const teachers=(catalog.teachers||[]).filter(x=>x.status!=='Ayrılmış').map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join('');
     const rooms=(settings.rooms||[]).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
     const today=new Date().toISOString().slice(0,10);
