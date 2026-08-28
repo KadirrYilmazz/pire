@@ -1,4 +1,4 @@
-Fix 74B — Görünen Ders Seçeneklerini Tekilleştir
+Fix 74C — Öğrenci Kayıt Sihirbazındaki Dersleri Tekilleştir\n- Eğitim adımındaki wizardCourse listesi doğrudan ders adına göre tekilleştirilir.\n- Aynı ders adına sahip eski katalog kayıtları yalnızca bir seçenek olarak gösterilir.\n- Mevcut öğrenci, paket ve ders kayıtları değiştirilmez.\n\nFix 74B — Görünen Ders Seçeneklerini Tekilleştir
 - Öğrenci kayıt formundaki gerçek ders açılır listesi doğrudan tekilleştirilir.
 - React listeyi yeniden oluştursa bile çift seçenekler tekrar kaldırılır.
 - Mevcut öğrenci, paket ve ders kayıtları değiştirilmez.
