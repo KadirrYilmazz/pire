@@ -21,6 +21,35 @@
     });
   }
 
+  function optionKey(option) {
+    return String(option?.textContent || option?.label || '')
+      .normalize('NFKC')
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLocaleLowerCase('tr-TR');
+  }
+
+  function dedupeSelect(select) {
+    if (!select?.options || String(select.name || '').toLocaleLowerCase('tr-TR') !== 'course') return 0;
+    const seen = new Set();
+    let removed = 0;
+    [...select.options].forEach(option => {
+      const key = optionKey(option);
+      if (!key || !seen.has(key)) {
+        if (key) seen.add(key);
+        return;
+      }
+      option.remove();
+      removed += 1;
+    });
+    return removed;
+  }
+
+  function dedupeRenderedCourseSelects(root = document) {
+    if (root?.matches?.('select[name="course"]')) dedupeSelect(root);
+    root?.querySelectorAll?.('select[name="course"]').forEach(dedupeSelect);
+  }
+
   function responseWith(payload, response) {
     const headers = new Headers(response.headers);
     headers.set('content-type', 'application/json;charset=utf-8');
@@ -58,5 +87,19 @@
     return responseWith({ ...payload, courses: uniqueCourses(payload.courses) }, response);
   };
 
-  window.__PIRE_COURSE_DEDUPE__ = { uniqueCourses };
+  function startRenderedSelectGuard() {
+    dedupeRenderedCourseSelects();
+    const observer = new MutationObserver(records => {
+      records.forEach(record => record.addedNodes.forEach(dedupeRenderedCourseSelects));
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startRenderedSelectGuard, { once: true });
+  } else {
+    startRenderedSelectGuard();
+  }
+
+  window.__PIRE_COURSE_DEDUPE__ = { uniqueCourses, dedupeSelect };
 })();
