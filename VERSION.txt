@@ -1,3 +1,10 @@
+Fix 77 — Kullanıcılar Bilgi Alt Sekmeleri
+- Kullanıcılar ekranı Hesaplar, Yetkiler, Duyurular, Yedekleme ve Güvenlik Geçmişi alt sekmelerine ayrılır.
+- Giriş telefonu ve yeni hesap işlemleri tüm alt sekmelerde ortak kalır.
+- Aynı anda yalnızca seçilen kullanıcı bilgi grubu gösterilir; uzun sayfa kaydırması azaltılır.
+- Alt sekme seçimi yenilemede korunur; mobil, klavye ve açık/koyu tema desteği bulunur.
+- Hesap, rol, duyuru, yedek ve güvenlik verileri değiştirilmez.
+
 Fix 76 — Raporlar Bilgi Alt Sekmeleri
 - Raporlar ekranı Özet, Branşlar, Finans, Eğitmenler ve Operasyon alt sekmelerine ayrılır.
 - Tarih filtreleri, hızlı dönem seçimleri ve Excel/PDF işlemleri tüm alt sekmelerde ortak kalır.
