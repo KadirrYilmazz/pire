@@ -160,6 +160,8 @@
     const notificationUnread=Number(button.dataset.pireNotificationCount||0);
     const total=notificationUnread+(smartUnread?Number(count||0):0);
 
+    button.dataset.pireSmartCount=String(Number(count||0));
+    button.dataset.pireSmartSignature=smartSignature;
     button.dataset.pireUnifiedReady='1';
     button.dataset.pireCombinedCount=String(total);
     button.setAttribute('aria-label',`Bildirim merkezi, ${total} okunmamış kayıt`);
@@ -179,15 +181,16 @@
         const notificationsItem=document.createElement('button');notificationsItem.type='button';
         notificationsItem.innerHTML=`<span><i>♢</i><strong>Bildirimler</strong><small>Mesajlar ve kurum bildirimleri</small></span><b>${button.dataset.pireNotificationCount||0}</b>`;
         const smartItem=document.createElement('button');smartItem.type='button';
-        smartItem.innerHTML=`<span><i>✦</i><strong>Akıllı Uyarılar</strong><small>Paket, tahsilat ve yoklama uyarıları</small></span><b>${count||0}</b>`;
+        smartItem.innerHTML=`<span><i>✦</i><strong>Akıllı Uyarılar</strong><small>Paket, tahsilat ve yoklama uyarıları</small></span><b>${button.dataset.pireSmartCount||0}</b>`;
         notificationsItem.onclick=()=>{
           menu.remove();button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative;
         };
         smartItem.onclick=()=>{
-          localStorage.setItem(seenKey,smartSignature);menu.remove();button.classList.remove('pire-alert-pulse');
-          if(dashboard?.isConnected){dashboard.classList.add('compact-alerts-open')}
+          localStorage.setItem(seenKey,button.dataset.pireSmartSignature||'');menu.remove();button.classList.remove('pire-alert-pulse');
+          const currentDashboard=document.querySelector('.premium-dashboard');
+          if(currentDashboard?.isConnected){currentDashboard.classList.add('compact-alerts-open')}
           else{const dashboardButton=[...document.querySelectorAll('.primary-nav button')].find(item=>item.textContent?.trim()==='Genel Bakış');if(dashboardButton){openSmartAlertsAfterNavigation=true;dashboardButton.click()}}
-          setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),count),0);
+          setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),Number(button.dataset.pireSmartCount||0)),0);
         };
         menu.append(notificationsItem,smartItem);wrap.appendChild(menu);
       },true);
