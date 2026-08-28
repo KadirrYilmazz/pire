@@ -206,10 +206,12 @@
         notificationsItem.innerHTML=`<span><i>♢</i><strong>Bildirimler</strong><small>Mesajlar ve kurum bildirimleri</small></span><b>${button.dataset.pireNotificationCount||0}</b>`;
         const smartItem=document.createElement('button');smartItem.type='button';
         smartItem.innerHTML=`<span><i>✦</i><strong>Akıllı Uyarılar</strong><small>Paket, tahsilat ve yoklama uyarıları</small></span><b>${button.dataset.pireSmartCount||0}</b>`;
-        notificationsItem.onclick=()=>{
+        notificationsItem.onclick=event=>{
+          event.preventDefault();event.stopPropagation();
           menu.remove();button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative;
         };
-        smartItem.onclick=()=>{
+        smartItem.onclick=event=>{
+          event.preventDefault();event.stopPropagation();
           localStorage.setItem(seenKey,button.dataset.pireSmartSignature||'');menu.remove();button.classList.remove('pire-alert-pulse');
           const currentDashboard=document.querySelector('.premium-dashboard');
           if(currentDashboard?.isConnected){currentDashboard.classList.add('compact-alerts-open')}
@@ -221,7 +223,7 @@
     }
   }
 
-  document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!event.target.closest?.('.notification-wrap'))dashboard.classList.remove('compact-alerts-open')}));
+  document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{const path=typeof event.composedPath==='function'?event.composedPath():[];const fromNotification=path.some(node=>node?.classList?.contains?.('notification-wrap'));if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!fromNotification&&!event.target.closest?.('.notification-wrap'))dashboard.classList.remove('compact-alerts-open')}));
   document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(x=>x.classList.remove('compact-alerts-open'))});
   document.addEventListener('click',event=>{
     const nav=event.target.closest?.('.primary-nav');
