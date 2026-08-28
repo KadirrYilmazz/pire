@@ -52,3 +52,5 @@
 
 .student-picker .pire-lesson-student-search input[type="search"]::placeholder{color:#85837d!important;opacity:1}
 .student-picker .pire-lesson-student-search:focus-within{border-color:#d6b55d;box-shadow:0 0 0 3px rgba(214,181,93,.1)}
+
+.student-picker .pire-lesson-student-search>span{display:block!important;min-width:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
