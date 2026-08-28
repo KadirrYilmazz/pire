@@ -76,7 +76,7 @@
 
   function buildEducationStep(form){
     const section=document.createElement('section');section.dataset.wizardStep='2';section.hidden=true;
-    const courses=(catalog.courses||[]).map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join('');
+    const courses=uniqueCourseNames(catalog.courses||[]).map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join('');
     const teachers=(catalog.teachers||[]).filter(x=>x.status!=='Ayrılmış').map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join('');
     const rooms=(settings.rooms||[]).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
     const today=new Date().toISOString().slice(0,10);
