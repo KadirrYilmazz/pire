@@ -1,0 +1,23 @@
+/* Pİ-RE öğrenci kayıt sihirbazı — geri alınabilir eklenti */
+.pire-student-wizard{width:min(900px,94vw);max-height:92vh}
+.pire-student-wizard [data-wizard-step][hidden],.pire-student-wizard .pire-wizard-actions button[hidden],.pire-student-wizard>button.primary.wide[hidden]{display:none!important}
+.pire-wizard-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 24px}
+.pire-wizard-progress button{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.025);color:#8f8d87;border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.pire-wizard-progress i{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#242522;font-style:normal;font-size:11px}
+.pire-wizard-progress button.active{border-color:#d6b55d;color:#f5f0e5;background:rgba(214,181,93,.09)}
+.pire-wizard-progress button.active i,.pire-wizard-progress button.done i{background:#d6b55d;color:#111}
+.pire-wizard-lead{color:#9c9990;margin:-5px 0 18px}
+.pire-wizard-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:15px 0}
+.pire-wizard-choice{border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;display:flex!important;align-items:flex-start;gap:10px;cursor:pointer;background:rgba(255,255,255,.02)}
+.pire-wizard-choice:has(input:checked){border-color:#d6b55d;background:rgba(214,181,93,.09)}
+.pire-wizard-choice input{width:18px;height:18px;margin-top:2px}
+.pire-wizard-choice span{display:grid;gap:4px}.pire-wizard-choice small{color:#8f8d87;font-weight:400}
+.pire-wizard-lesson-fields,.pire-wizard-package-fields{border-top:1px solid rgba(255,255,255,.08);padding-top:16px;margin-top:16px}
+.pire-wizard-actions{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+.pire-wizard-actions button{min-height:48px;padding:0 22px;border-radius:12px;border:1px solid rgba(214,181,93,.35);background:transparent;color:#e8e2d5;cursor:pointer;font-weight:700}
+.pire-wizard-next{margin-left:auto!important;background:#d6b55d!important;color:#111!important}
+.pire-wizard-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.pire-wizard-summary div{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px;display:grid;gap:5px;background:rgba(255,255,255,.02)}
+.pire-wizard-summary span{font-size:11px;color:#8f8d87}.pire-wizard-summary strong{font-size:14px;color:#f3eee4}
+.pire-wizard-submit{margin-top:12px!important}
+@media(max-width:700px){.pire-wizard-progress span{display:none}.pire-wizard-progress button{justify-content:center}.pire-wizard-choice-grid,.pire-wizard-summary{grid-template-columns:1fr}}
