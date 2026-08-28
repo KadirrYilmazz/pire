@@ -44,8 +44,11 @@
 /* Feat87 — Ders katılımcısı arama ve kimlik rozeti */
 .pire-lesson-student-search{margin:8px 0 12px!important;min-height:48px;border:1px solid rgba(214,181,93,.3);border-radius:12px;background:rgba(255,255,255,.025);display:grid!important;grid-template-columns:28px 1fr auto;align-items:center;padding:0 12px;gap:8px}
 .pire-lesson-student-search>span{font-size:18px;color:#d6b55d}
-.pire-lesson-student-search input{width:100%;height:44px!important;border:0!important;background:transparent!important;padding:0!important;outline:0;color:#f3eee4}
+.student-picker .pire-lesson-student-search input[type="search"]{display:block!important;position:static!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;width:100%!important;height:44px!important;min-height:44px!important;border:0!important;background:transparent!important;padding:0!important;margin:0!important;outline:0!important;color:#f3eee4!important;clip:auto!important;transform:none!important;appearance:auto!important}
 .pire-lesson-student-search>b{font-size:11px;color:#9b988f;white-space:nowrap}
 .student-picker label[hidden]{display:none!important}
 .student-picker .pire-student-id{display:inline-flex;margin-top:5px;padding:2px 7px;border:1px solid rgba(214,181,93,.28);border-radius:999px;color:#d8ba69;font-size:10px;font-style:normal;letter-spacing:.04em;width:max-content}
 .pire-student-search-empty{padding:20px;text-align:center;color:#99968d;border:1px dashed rgba(255,255,255,.12);border-radius:12px}
+
+.student-picker .pire-lesson-student-search input[type="search"]::placeholder{color:#85837d!important;opacity:1}
+.student-picker .pire-lesson-student-search:focus-within{border-color:#d6b55d;box-shadow:0 0 0 3px rgba(214,181,93,.1)}
