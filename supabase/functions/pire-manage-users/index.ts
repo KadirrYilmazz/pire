@@ -35,6 +35,11 @@ function normalizePhone(value: unknown) {
   return "";
 }
 
+function normalizeStudentIds(value: unknown, fallback: unknown): number[] {
+  const source = Array.isArray(value) ? value : fallback === null || fallback === undefined || fallback === "" ? [] : [fallback];
+  return [...new Set(source.map(Number).filter(Number.isFinite))];
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return reply(405, { error: "Yalnızca POST desteklenir." });
@@ -85,7 +90,28 @@ Deno.serve(async (req: Request) => {
         .select("id,institution_id,email,phone,full_name,role,roles,status,must_change_password,linked_student_id,linked_teacher_id,gender,last_login_at,created_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return reply(200, { accounts: (data || []).map((account) => ({ ...account, is_current: account.id === userData.user.id })) });
+      const profileIds = (data || []).map((account) => account.id);
+      const { data: relations, error: relationsError } = profileIds.length
+        ? await admin.from("pire_profile_students").select("profile_id,student_id,relationship").in("profile_id", profileIds)
+        : { data: [], error: null };
+      if (relationsError) throw relationsError;
+      const relationsByProfile = new Map<string, Array<{ student_id: number; relationship: string }>>();
+      for (const relation of relations || []) {
+        const items = relationsByProfile.get(relation.profile_id) || [];
+        items.push({ student_id: relation.student_id, relationship: relation.relationship });
+        relationsByProfile.set(relation.profile_id, items);
+      }
+      return reply(200, {
+        accounts: (data || []).map((account) => {
+          const linkedStudents = relationsByProfile.get(account.id) || [];
+          return {
+            ...account,
+            linked_students: linkedStudents,
+            linked_student_ids: linkedStudents.length ? linkedStudents.map((item) => item.student_id) : Number.isFinite(account.linked_student_id) ? [account.linked_student_id] : [],
+            is_current: account.id === userData.user.id,
+          };
+        }),
+      });
     }
 
     if (action === "create") {
@@ -102,14 +128,16 @@ Deno.serve(async (req: Request) => {
       if (!["Erkek", "Kadın", "Belirtilmedi"].includes(gender)) return reply(400, { error: "Geçersiz hitap bilgisi." });
       if ((role === "Öğrenci" || role === "Veli") && !allowedRelationships.includes(relationship)) return reply(400, { error: "Geçersiz yakınlık bilgisi." });
 
-      const linkedStudentId = payload.linked_student_id ? Number(payload.linked_student_id) : null;
+      const requestedStudentIds = normalizeStudentIds(payload.linked_student_ids, payload.linked_student_id);
+      const linkedStudentIds = role === "Veli" ? requestedStudentIds : requestedStudentIds.slice(0, 1);
+      const linkedStudentId = linkedStudentIds[0] ?? null;
       const linkedTeacherId = payload.linked_teacher_id ? String(payload.linked_teacher_id) : null;
       if (role === "Eğitmen" && !linkedTeacherId) return reply(400, { error: "Eğitmen hesabı için bağlı eğitmen kaydı zorunludur." });
-      if ((role === "Öğrenci" || role === "Veli") && !Number.isFinite(linkedStudentId)) return reply(400, { error: "Bu hesap için bağlı öğrenci kaydı zorunludur." });
-      if (Number.isFinite(linkedStudentId)) {
-        const { data: student, error: studentError } = await admin.from("pire_ai_students").select("id").eq("id", linkedStudentId).maybeSingle();
+      if ((role === "Öğrenci" || role === "Veli") && !linkedStudentIds.length) return reply(400, { error: "Bu hesap için en az bir bağlı öğrenci kaydı zorunludur." });
+      if (linkedStudentIds.length) {
+        const { data: students, error: studentError } = await admin.from("pire_ai_students").select("id").in("id", linkedStudentIds);
         if (studentError) throw studentError;
-        if (!student) return reply(400, { error: "Seçilen öğrenci kaydı bulunamadı. Önce öğrenci verilerini eşitleyin." });
+        if ((students || []).length !== linkedStudentIds.length) return reply(400, { error: "Seçilen öğrenci kayıtlarından biri bulunamadı. Önce öğrenci verilerini eşitleyin." });
       }
       if (linkedTeacherId) {
         const { data: existingLink, error: linkError } = await admin.from("pire_profiles").select("institution_id").eq("linked_teacher_id", linkedTeacherId).neq("status", "Pasif").maybeSingle();
@@ -162,14 +190,17 @@ Deno.serve(async (req: Request) => {
         await admin.auth.admin.deleteUser(created.user.id);
         throw updateError;
       }
-      if (Number.isFinite(linkedStudentId)) {
-        const { error: relationError } = await admin.from("pire_profile_students").upsert({ profile_id: created.user.id, student_id: linkedStudentId, relationship }, { onConflict: "profile_id,student_id" });
+      if (linkedStudentIds.length) {
+        const { error: relationError } = await admin.from("pire_profile_students").upsert(
+          linkedStudentIds.map((studentId) => ({ profile_id: created.user.id, student_id: studentId, relationship })),
+          { onConflict: "profile_id,student_id" },
+        );
         if (relationError) {
           await admin.auth.admin.deleteUser(created.user.id);
           throw relationError;
         }
       }
-      return reply(200, { ok: true, institution_id: institutionId, user_id: created.user.id, phone });
+      return reply(200, { ok: true, institution_id: institutionId, user_id: created.user.id, phone, linked_student_ids: linkedStudentIds });
     }
 
     const targetId = String(payload.user_id || "");
@@ -188,14 +219,16 @@ Deno.serve(async (req: Request) => {
         if (managerError) throw managerError;
         if (!managers?.length) return reply(400, { error: "Kurumun son aktif Yönetici kimliği kaldırılamaz." });
       }
-      const linkedStudentId = payload.linked_student_id ? Number(payload.linked_student_id) : null;
+      const requestedStudentIds = normalizeStudentIds(payload.linked_student_ids, payload.linked_student_id);
+      const linkedStudentIds = roles.includes("Veli") ? requestedStudentIds : requestedStudentIds.slice(0, 1);
+      const linkedStudentId = linkedStudentIds[0] ?? null;
       const linkedTeacherId = payload.linked_teacher_id ? String(payload.linked_teacher_id) : null;
       if (roles.includes("Eğitmen") && !linkedTeacherId) return reply(400, { error: "Eğitmen kimliği için bağlı eğitmen kaydı zorunludur." });
-      if ((roles.includes("Öğrenci") || roles.includes("Veli")) && !Number.isFinite(linkedStudentId)) return reply(400, { error: "Öğrenci veya Veli kimliği için bağlı öğrenci kaydı zorunludur." });
-      if (Number.isFinite(linkedStudentId)) {
-        const { data: student, error: studentError } = await admin.from("pire_ai_students").select("id").eq("id", linkedStudentId).maybeSingle();
+      if ((roles.includes("Öğrenci") || roles.includes("Veli")) && !linkedStudentIds.length) return reply(400, { error: "Öğrenci veya Veli kimliği için en az bir bağlı öğrenci kaydı zorunludur." });
+      if (linkedStudentIds.length) {
+        const { data: students, error: studentError } = await admin.from("pire_ai_students").select("id").in("id", linkedStudentIds);
         if (studentError) throw studentError;
-        if (!student) return reply(400, { error: "Seçilen öğrenci kaydı bulunamadı." });
+        if ((students || []).length !== linkedStudentIds.length) return reply(400, { error: "Seçilen öğrenci kayıtlarından biri bulunamadı." });
       }
       if (linkedTeacherId) {
         const { data: existingLink, error: linkError } = await admin.from("pire_profiles").select("institution_id").eq("linked_teacher_id", linkedTeacherId).neq("id", targetId).neq("status", "Pasif").maybeSingle();
@@ -209,13 +242,17 @@ Deno.serve(async (req: Request) => {
       }
       const { error: profileError } = await admin.from("pire_profiles").update({ role: primaryRole, roles, linked_student_id: Number.isFinite(linkedStudentId) ? linkedStudentId : null, linked_teacher_id: linkedTeacherId || null, updated_at: new Date().toISOString() }).eq("id", targetId);
       if (profileError) throw profileError;
-      await admin.from("pire_profile_students").delete().eq("profile_id", targetId);
-      if (Number.isFinite(linkedStudentId)) {
-        const relationship = roles.includes("Öğrenci") ? "Kendi" : "Diğer";
-        const { error: relationError } = await admin.from("pire_profile_students").upsert({ profile_id: targetId, student_id: linkedStudentId, relationship }, { onConflict: "profile_id,student_id" });
+      const { error: deleteRelationsError } = await admin.from("pire_profile_students").delete().eq("profile_id", targetId);
+      if (deleteRelationsError) throw deleteRelationsError;
+      if (linkedStudentIds.length) {
+        const relationship = roles.includes("Öğrenci") && !roles.includes("Veli") ? "Kendi" : "Diğer";
+        const { error: relationError } = await admin.from("pire_profile_students").upsert(
+          linkedStudentIds.map((studentId) => ({ profile_id: targetId, student_id: studentId, relationship })),
+          { onConflict: "profile_id,student_id" },
+        );
         if (relationError) throw relationError;
       }
-      return reply(200, { ok: true, role: primaryRole, roles });
+      return reply(200, { ok: true, role: primaryRole, roles, linked_student_ids: linkedStudentIds });
     }
     if (targetId === userData.user.id || targetRoles.includes("Yönetici")) return reply(400, { error: "Bu hesap üzerinde bu işlem yapılamaz." });
 
