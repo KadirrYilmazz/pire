@@ -255,3 +255,16 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-reports-tabs]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='/pire-reports-tabs.css';link.dataset.pireReportsTabs='true';
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-reports-tabs]')){
+    const script=document.createElement('script');
+    script.src='/pire-reports-tabs.js';script.defer=true;script.dataset.pireReportsTabs='true';
+    document.head.appendChild(script);
+  }
+})();
