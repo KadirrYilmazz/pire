@@ -159,6 +159,10 @@
       a.pire-social-icon.facebook-icon{cursor:pointer!important;pointer-events:auto!important;text-decoration:none!important}
       a.pire-social-icon.facebook-icon:hover{transform:translateY(-1px);filter:brightness(1.18)}
       a.pire-social-icon.facebook-icon:focus-visible{outline:2px solid #d5b15e;outline-offset:4px;border-radius:4px}
+      a.pire-social-icon.linkedin-icon{color:#0a66c2!important;cursor:pointer!important;pointer-events:auto!important;text-decoration:none!important;display:inline-flex;align-items:center;justify-content:center}
+      a.pire-social-icon.linkedin-icon svg{width:20px;height:20px;display:block}
+      a.pire-social-icon.linkedin-icon:hover{transform:translateY(-1px);filter:brightness(1.18)}
+      a.pire-social-icon.linkedin-icon:focus-visible{outline:2px solid #0a66c2;outline-offset:4px;border-radius:4px}
       @media(max-width:700px){.pire-language-toggle{font-size:10px!important}}
     `;
     document.head.appendChild(style);
@@ -191,7 +195,22 @@
       icon.replaceWith(link);
     });
   }
-  function sync(){linkFacebookIcon();if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
+  function addLinkedInIcon(){
+    if(document.querySelector('.pire-social-icon.linkedin-icon'))return;
+    const facebook=document.querySelector('.contact-socials .pire-social-icon.facebook-icon');
+    const container=facebook?.parentElement||document.querySelector('.contact-socials');
+    if(!container)return;
+    const link=document.createElement('a');
+    link.className='pire-social-icon linkedin-icon';
+    link.href='https://www.linkedin.com/in/pire-e%C4%9Fitim-at%C3%B6lye-536a7641b/';
+    link.target='_blank';
+    link.rel='noopener noreferrer';
+    link.setAttribute('aria-label','Pİ-RE LinkedIn profilini aç');
+    link.title='LinkedIn';
+    link.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.2 3.5A2.2 2.2 0 1 1 5.2 8a2.2 2.2 0 0 1 0-4.5ZM3.4 9.6H7V21H3.4V9.6Zm5.8 0h3.4v1.6h.1c.5-.9 1.7-2 3.7-2 3.9 0 4.6 2.5 4.6 5.9V21h-3.6v-5.2c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9V21H9.2V9.6Z"/></svg>';
+    facebook?facebook.after(link):container.appendChild(link);
+  }
+  function sync(){linkFacebookIcon();addLinkedInIcon();if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
   function queueSync(){if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},90)}
   function loadLoginNotification(){
     if(document.querySelector('script[data-pire-login-notification]'))return;
