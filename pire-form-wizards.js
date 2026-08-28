@@ -61,11 +61,39 @@
 
   const section=(title,nodes)=>{const s=document.createElement('section');s.innerHTML='<h3>'+esc(title)+'</h3>';nodes.forEach(n=>s.appendChild(n));return s};
 
+  function enhanceLessonStudentPicker(fieldset){
+    if(!fieldset||fieldset.dataset.pireStudentSearch)return;
+    fieldset.dataset.pireStudentSearch='1';
+    const list=fieldset.querySelector(':scope > div');if(!list)return;
+    const labels=[...list.querySelectorAll(':scope > label')];
+    labels.forEach(label=>{
+      const input=label.querySelector('input[name="studentIds"]'),copy=label.querySelector('span');
+      if(!input||!copy)return;
+      const id='ÖĞ-'+String(input.value).padStart(4,'0');
+      label.dataset.studentSearch=((copy.textContent||'')+' '+id+' '+input.value).toLocaleLowerCase('tr-TR');
+      if(!copy.querySelector('.pire-student-id')){
+        const badge=document.createElement('em');badge.className='pire-student-id';badge.textContent=id;copy.appendChild(badge);
+      }
+    });
+    const search=document.createElement('label');search.className='pire-lesson-student-search';
+    search.innerHTML='<span aria-hidden="true">⌕</span><input type="search" placeholder="Öğrenci adı, soyadı veya ID ara…" aria-label="Ders için öğrenci ara"><b></b>';
+    const input=search.querySelector('input'),counter=search.querySelector('b');
+    const empty=document.createElement('div');empty.className='pire-student-search-empty';empty.textContent='Aramanızla eşleşen öğrenci bulunamadı.';empty.hidden=true;
+    function filter(){
+      const query=input.value.trim().toLocaleLowerCase('tr-TR');let visible=0;
+      labels.forEach(label=>{const show=!query||label.dataset.studentSearch.includes(query);label.hidden=!show;if(show)visible++});
+      counter.textContent=query?visible+' sonuç':labels.length+' öğrenci';empty.hidden=visible!==0;
+    }
+    input.addEventListener('input',filter);
+    fieldset.querySelector('legend')?.after(search);list.after(empty);filter();
+  }
+
   function enhanceLesson(form){
     if(form.dataset.pireSharedWizard)return;
     const head=form.querySelector('.lesson-form-head'),actions=form.querySelector(':scope > .lesson-form-actions');if(!head||!actions)return;
     const direct=[...form.children],byName=name=>direct.find(n=>n.querySelector?.('[name="'+name+'"]'));
     const conflict=form.querySelector(':scope > .conflict-alert'),course=byName('course'),students=form.querySelector(':scope > .student-picker'),teacher=byName('teacher'),date=byName('lessonDate'),repeat=byName('recurrence'),pricing=byName('pricingType'),status=byName('status'),hint=form.querySelector(':scope > .form-hint');
+    enhanceLessonStudentPicker(students);
     const used=new Set([conflict,course,students,teacher,date,repeat,pricing,status,hint,head,actions,form.querySelector(':scope > .close')].filter(Boolean));
     const leftovers=direct.filter(n=>!used.has(n));
     const panels=[
