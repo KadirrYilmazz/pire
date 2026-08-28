@@ -1,0 +1,31 @@
+.reports-page > .pire-report-tabs{
+  display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:thin;
+  margin:14px 0 18px;padding:5px;border:1px solid rgba(213,177,94,.22);
+  border-radius:14px;background:rgba(14,16,16,.72)
+}
+.pire-report-tabs button{
+  flex:1 0 auto;min-width:112px;border:1px solid transparent;border-radius:10px;
+  padding:11px 16px;background:transparent;color:#aaa79f;font:inherit;font-weight:750;
+  transition:background .18s ease,color .18s ease,border-color .18s ease
+}
+.pire-report-tabs button:hover{color:#f3e7c4;background:rgba(213,177,94,.08)}
+.pire-report-tabs button.active{
+  color:#17140c;background:#d9b85e;border-color:#edcf79;box-shadow:0 5px 16px rgba(0,0,0,.2)
+}
+.pire-report-tabs button:focus-visible{outline:2px solid #edcf79;outline-offset:2px}
+.reports-page [data-pire-report-section][hidden]{display:none!important}
+.reports-page > .report-grid:not([hidden]){grid-template-columns:minmax(0,1fr)!important}
+.reports-page > .report-grid:not([hidden]) > .panel{min-height:0}
+.reports-page[data-pire-report-tab="summary"] > .report-metrics{margin-bottom:0}
+.reports-page[data-pire-report-tab="operations"] > .report-bottom-cards{margin-top:16px}
+html[data-theme="light"] .reports-page > .pire-report-tabs{
+  background:rgba(255,255,255,.78);border-color:rgba(118,91,32,.22)
+}
+html[data-theme="light"] .pire-report-tabs button{color:#655f54}
+html[data-theme="light"] .pire-report-tabs button:hover{color:#513c12;background:rgba(174,132,40,.1)}
+html[data-theme="light"] .pire-report-tabs button.active{color:#241b08;background:#d6b255}
+@media(max-width:700px){
+  .reports-page > .pire-report-tabs{margin:10px 0 14px;padding:4px}
+  .pire-report-tabs button{min-width:104px;padding:10px 13px}
+}
+@media(prefers-reduced-motion:reduce){.pire-report-tabs button{transition:none}}
