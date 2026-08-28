@@ -180,3 +180,12 @@
   loadOptions().finally(scan);
   new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
 })();
+
+;(()=>{
+  if(document.querySelector('script[data-pire-form-wizards]'))return;
+  const script=document.createElement('script');
+  script.src='/pire-form-wizards.js';
+  script.defer=true;
+  script.dataset.pireFormWizards='true';
+  document.head.appendChild(script);
+})();
