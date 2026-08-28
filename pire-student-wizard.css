@@ -21,3 +21,8 @@
 .pire-wizard-summary span{font-size:11px;color:#8f8d87}.pire-wizard-summary strong{font-size:14px;color:#f3eee4}
 .pire-wizard-submit{margin-top:12px!important}
 @media(max-width:700px){.pire-wizard-progress span{display:none}.pire-wizard-progress button{justify-content:center}.pire-wizard-choice-grid,.pire-wizard-summary{grid-template-columns:1fr}}
+
+.pire-wizard-missing{margin:14px 0 6px;padding:14px 16px;border:1px solid rgba(218,82,76,.5);border-radius:12px;background:rgba(151,38,34,.13);color:#f2d7d4}
+.pire-wizard-missing strong{display:block;color:#ffaaa4;margin-bottom:5px}
+.pire-wizard-missing p{margin:0 0 5px;font-size:13px;line-height:1.5}.pire-wizard-missing small{color:#bda6a3}
+.pire-wizard-progress button:not(.active){cursor:pointer}
