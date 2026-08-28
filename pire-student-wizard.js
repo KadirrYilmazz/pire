@@ -189,3 +189,12 @@
   script.dataset.pireFormWizards='true';
   document.head.appendChild(script);
 })();
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-customer-archive]')){
+    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-customer-archive.css';link.dataset.pireCustomerArchive='true';document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-customer-archive]')){
+    const script=document.createElement('script');script.src='/pire-customer-archive.js';script.defer=true;script.dataset.pireCustomerArchive='true';document.head.appendChild(script);
+  }
+})();
