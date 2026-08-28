@@ -1,0 +1,107 @@
+/* Pİ-RE ayarlar ekranını bilgi alt sekmelerine ayırır. */
+(()=>{
+  const STORAGE_KEY='pire-settings-active-tab';
+  const TABS=[
+    {id:'institution',label:'Kurum'},
+    {id:'schedule',label:'Çalışma Takvimi'},
+    {id:'rooms',label:'Derslikler'},
+    {id:'lessons',label:'Ders & Paket'},
+    {id:'makeups',label:'İptal & Telafi'},
+    {id:'notifications',label:'Bildirimler'}
+  ];
+  let queued=false;
+
+  const readTab=()=>{
+    try{
+      const value=localStorage.getItem(STORAGE_KEY);
+      return TABS.some(tab=>tab.id===value)?value:'institution';
+    }catch(_){return 'institution'}
+  };
+
+  const saveTab=value=>{
+    try{localStorage.setItem(STORAGE_KEY,value)}catch(_){}
+  };
+
+  function showTab(page,tabId){
+    const active=TABS.some(tab=>tab.id===tabId)?tabId:'institution';
+    const sections=page.querySelectorAll(':scope > .settings-grid > section');
+    sections.forEach((section,index)=>{
+      const id=TABS[index]?.id||`other-${index}`;
+      section.dataset.pireSettingsSection=id;
+      section.hidden=id!==active;
+    });
+    page.dataset.pireSettingsTab=active;
+    page.querySelectorAll('.pire-settings-tabs button').forEach(button=>{
+      const selected=button.dataset.settingsTab===active;
+      button.classList.toggle('active',selected);
+      button.setAttribute('aria-selected',String(selected));
+      button.tabIndex=selected?0:-1;
+    });
+  }
+
+  function createTabs(page,hero){
+    let nav=page.querySelector(':scope > .pire-settings-tabs');
+    if(nav)return nav;
+    nav=document.createElement('div');
+    nav.className='pire-settings-tabs';
+    nav.setAttribute('role','tablist');
+    nav.setAttribute('aria-label','Ayar bilgi grupları');
+    TABS.forEach(tab=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.dataset.settingsTab=tab.id;
+      button.setAttribute('role','tab');
+      button.textContent=tab.label;
+      button.addEventListener('click',()=>{
+        saveTab(tab.id);
+        showTab(page,tab.id);
+      });
+      button.addEventListener('keydown',event=>{
+        if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+        event.preventDefault();
+        const current=TABS.findIndex(item=>item.id===button.dataset.settingsTab);
+        const next=event.key==='Home'?0:event.key==='End'?TABS.length-1:
+          (current+(event.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;
+        const target=nav.querySelector(`[data-settings-tab="${TABS[next].id}"]`);
+        target?.click();target?.focus();
+      });
+      nav.appendChild(button);
+    });
+    hero.after(nav);
+    return nav;
+  }
+
+  function sync(){
+    const page=document.querySelector('.settings-workspace');
+    if(!page)return;
+    const hero=page.querySelector(':scope > .settings-hero');
+    const grid=page.querySelector(':scope > .settings-grid');
+    if(!hero||!grid)return;
+    createTabs(page,hero);
+    showTab(page,readTab());
+  }
+
+  function restoreBeforeReact(event){
+    const page=event.target?.closest?.('.settings-workspace');
+    if(!page||event.target?.closest?.('.pire-settings-tabs'))return;
+    page.querySelector(':scope > .pire-settings-tabs')?.remove();
+    page.querySelectorAll('[data-pire-settings-section]').forEach(section=>{
+      section.hidden=false;
+      delete section.dataset.pireSettingsSection;
+    });
+    delete page.dataset.pireSettingsTab;
+    queueSync();
+  }
+
+  function queueSync(){
+    if(queued)return;
+    queued=true;
+    setTimeout(()=>{queued=false;sync()},100);
+  }
+
+  ['pointerdown','input','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
+  new MutationObserver(queueSync).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueSync,{once:true});
+  else queueSync();
+})();

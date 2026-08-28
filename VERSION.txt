@@ -1,3 +1,10 @@
+Fix 79 — Ayarlar Bilgi Alt Sekmeleri
+- Ayarlar ekranı Kurum, Çalışma Takvimi, Derslikler, Ders & Paket, İptal & Telafi ve Bildirimler alt sekmelerine ayrılır.
+- Üst ve alt kaydetme işlemleri, geri bildirimler ve son güncelleme bilgisi tüm alt sekmelerde ortak kalır.
+- Aynı anda yalnızca seçilen ayar grubu gösterilir; uzun sayfa kaydırması azaltılır.
+- Alt sekme seçimi yenilemede korunur; mobil, klavye ve açık/koyu tema desteği bulunur.
+- Ayar değerleri, kayıt işlemleri ve kurum verileri değiştirilmez.
+
 Fix 78 — Sistem Sağlığı Bilgi Alt Sekmeleri
 - Sistem Sağlığı ekranı Özet, Sistem Kontrolleri ve Akış Testleri alt sekmelerine ayrılır.
 - Yeniden kontrol işlemi, sağlık hataları ve son kontrol zamanı tüm alt sekmelerde ortak kalır.
