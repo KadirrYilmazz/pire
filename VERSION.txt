@@ -1,3 +1,11 @@
+Fix 86 — Hesapları Kullanıcı Hesaplarına Birleştir
+- Ayrı Hesaplar alt sekmesi kaldırılır.
+- Kullanıcı Hesapları sekmesi yönetici kartı, hesap özeti ve kullanıcı listesini birlikte gösterir.
+- Daha önce Hesaplar seçili olan tarayıcılar otomatik olarak Kullanıcı Hesapları sekmesine yönelir.
+- Yetkiler, Duyurular, Yedekleme, Güvenlik Geçmişi ve 5/10/20 sayfalama korunur.
+- Kullanıcı verileri ve hesap işlemleri değiştirilmez.
+- Beğenilmezse Fix85 sürümüne geri dönülebilir.
+
 Fix 85 — Kullanıcı Hesapları Alt Sekmesi
 - Kullanıcılar başlık sırasına yeni Kullanıcı Hesapları alt sekmesi eklenir.
 - Yönetici yetki alanı kartı, giriş telefonunu ayarlama ve yeni hesap oluşturma işlemleri bu sekmede gösterilir.
