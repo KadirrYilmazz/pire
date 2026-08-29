@@ -27,6 +27,11 @@
     element.hidden=hidden;
   }
 
+  function findHeading(page){
+    const content=page?.closest('.content');
+    return content?.querySelector(':scope > header')||null;
+  }
+
   function showTab(page,tabId){
     const active=TABS.some(tab=>tab.id===tabId)?tabId:'summary';
     const metrics=page.querySelector(':scope > .report-metrics');
@@ -48,7 +53,7 @@
     setHidden(bottom,active!=='operations','operations');
 
     page.dataset.pireReportTab=active;
-    page.querySelectorAll('.pire-report-tabs button').forEach(button=>{
+    findHeading(page)?.querySelectorAll(':scope > .pire-report-tabs button').forEach(button=>{
       const selected=button.dataset.reportTab===active;
       button.classList.toggle('active',selected);
       button.setAttribute('aria-selected',String(selected));
@@ -56,8 +61,8 @@
     });
   }
 
-  function createTabs(page,head){
-    let nav=page.querySelector(':scope > .pire-report-tabs');
+  function createTabs(page,heading){
+    let nav=heading.querySelector(':scope > .pire-report-tabs');
     if(nav)return nav;
     nav=document.createElement('div');
     nav.className='pire-report-tabs';
@@ -84,23 +89,31 @@
       });
       nav.appendChild(button);
     });
-    head.after(nav);
+    const titleBlock=heading.querySelector(':scope > div:not(.top-actions)');
+    if(!titleBlock)return null;
+    heading.classList.add('pire-report-heading');
+    titleBlock.after(nav);
     return nav;
   }
 
   function sync(){
     const page=document.querySelector('.reports-page');
-    if(!page)return;
-    const head=page.querySelector(':scope > .reports-head');
-    if(!head)return;
-    createTabs(page,head);
+    if(!page){
+      document.querySelectorAll('.pire-report-tabs').forEach(nav=>nav.remove());
+      document.querySelectorAll('.pire-report-heading').forEach(heading=>heading.classList.remove('pire-report-heading'));
+      return;
+    }
+    const heading=findHeading(page);
+    if(!heading)return;
+    createTabs(page,heading);
     showTab(page,readTab());
   }
 
   function restoreBeforeReact(event){
-    const page=event.target?.closest?.('.reports-page');
+    const page=document.querySelector('.reports-page');
     if(!page||event.target?.closest?.('.pire-report-tabs'))return;
-    page.querySelector(':scope > .pire-report-tabs')?.remove();
+    document.querySelector('.pire-report-tabs')?.remove();
+    findHeading(page)?.classList.remove('pire-report-heading');
     page.querySelectorAll('[data-pire-report-section]').forEach(element=>{
       element.hidden=false;
       delete element.dataset.pireReportSection;
@@ -115,7 +128,7 @@
     setTimeout(()=>{queued=false;sync()},100);
   }
 
-  ['pointerdown','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
+  ['pointerdown','input','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
   new MutationObserver(queueSync).observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueSync,{once:true});
