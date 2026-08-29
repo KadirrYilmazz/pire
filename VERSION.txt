@@ -1,3 +1,11 @@
+Fix 89 — Kurum Genel Durumu Rapor Alt Sekmesi
+- Raporlar bölümüne Genel Durum alt sekmesi eklenir.
+- Kurumun genel durumu kartı, tarih filtreleri ve Excel/PDF işlemleri bu sekmede gösterilir.
+- Diğer rapor alt sekmelerinde genel durum kartı gizlenerek gereksiz sayfa alanı kaldırılır.
+- Özet, Branşlar, Finans, Eğitmenler ve Operasyon alt sekmeleri korunur.
+- Rapor verileri, filtreler ve dışa aktarma işlemleri değiştirilmez.
+- Beğenilmezse Fix88 sürümüne geri dönülebilir.
+
 Fix 88 — Kullanıcı Hesapları Kırmızı Vurgu
 - Kullanıcı Hesapları alt sekmesi güçlü kırmızı renk, beyaz yazı ve belirgin parlama ile öne çıkarılır.
 - Sekme seçili olduğunda kırmızı vurgu ve çerçeve daha güçlü görünür.

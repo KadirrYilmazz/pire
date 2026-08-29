@@ -2,6 +2,7 @@
 (()=>{
   const STORAGE_KEY='pire-reports-active-tab';
   const TABS=[
+    {id:'overview',label:'Genel Durum'},
     {id:'summary',label:'Özet'},
     {id:'branches',label:'Branşlar'},
     {id:'finance',label:'Finans'},
@@ -13,8 +14,8 @@
   const readTab=()=>{
     try{
       const value=localStorage.getItem(STORAGE_KEY);
-      return TABS.some(tab=>tab.id===value)?value:'summary';
-    }catch(_){return 'summary'}
+      return TABS.some(tab=>tab.id===value)?value:'overview';
+    }catch(_){return 'overview'}
   };
 
   const saveTab=value=>{
@@ -33,7 +34,8 @@
   }
 
   function showTab(page,tabId){
-    const active=TABS.some(tab=>tab.id===tabId)?tabId:'summary';
+    const active=TABS.some(tab=>tab.id===tabId)?tabId:'overview';
+    const head=page.querySelector(':scope > .reports-head');
     const metrics=page.querySelector(':scope > .report-metrics');
     const comparison=page.querySelector(':scope > .report-comparison-note');
     const grid=page.querySelector(':scope > .report-grid');
@@ -43,6 +45,7 @@
     const operations=page.querySelector(':scope > .report-operations-grid');
     const bottom=page.querySelector(':scope > .report-bottom-cards');
 
+    setHidden(head,active!=='overview','overview');
     setHidden(metrics,active!=='summary','summary');
     setHidden(comparison,active!=='summary','summary');
     setHidden(grid,!['branches','finance'].includes(active),'reports');
