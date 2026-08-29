@@ -25,7 +25,8 @@
     });
   }
   function enhance(){
-    const root=workspace();if(!root)return;
+    const root=workspace();
+    if(!root){document.querySelector('.pire-payment-tabs')?.remove();return}
     const heading=renameHeading(),header=heading?.closest('header');
     let nav=document.querySelector('.pire-payment-tabs');
     if(!nav){
