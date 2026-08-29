@@ -1,3 +1,10 @@
+Fix 83 — Güvenlik Sayfalama Tıklama Düzeltmesi
+- Önceki ve Sonraki düğmelerinin her senkronizasyonda yeniden oluşturulması engellenir.
+- Sayfalama düğmeleri yerinde korunur; yalnızca sayfa numarası ve etkin/pasif durumları güncellenir.
+- Fare basma ile tıklama arasındaki düğme değişimi kaldırılarak Sonraki işlemi çalışır hâle getirilir.
+- Beş kayıt sınırı, kompakt görünüm ve bütün güvenlik kayıtları korunur.
+- Beğenilmezse Fix82 sürümüne geri dönülebilir.
+
 Fix 82 — Güvenlik Geçmişi Sayfalama
 - Son kritik işlemler listesi sayfa başına 5 kayıt gösterecek şekilde sınırlandırılır.
 - Önceki ve Sonraki düğmeleri ile mevcut sayfa/toplam sayfa bilgisi eklenir.

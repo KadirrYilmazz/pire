@@ -57,28 +57,36 @@
     const audit=page.querySelector(':scope > .account-audit');
     const list=audit?.querySelector(':scope > div:not(.pire-audit-pager)');
     const entries=list?[...list.querySelectorAll(':scope > article')]:[];
-    audit?.querySelector(':scope > .pire-audit-pager')?.remove();
-    if(!audit||!entries.length)return;
+    let pager=audit?.querySelector(':scope > .pire-audit-pager');
+    if(!audit||!entries.length){pager?.remove();return}
     const pageCount=Math.max(1,Math.ceil(entries.length/AUDIT_PAGE_SIZE));
     auditPage=Math.max(1,Math.min(auditPage,pageCount));
     entries.forEach((entry,index)=>{
       entry.dataset.pireAuditEntry='true';
       entry.hidden=index<(auditPage-1)*AUDIT_PAGE_SIZE||index>=auditPage*AUDIT_PAGE_SIZE;
     });
-    if(pageCount===1)return;
-    const pager=document.createElement('div');
-    pager.className='pire-audit-pager';
-    pager.setAttribute('aria-label','Güvenlik geçmişi sayfaları');
-    const previous=document.createElement('button');
-    previous.type='button';previous.textContent='← Önceki';previous.disabled=auditPage===1;
-    const status=document.createElement('span');
-    status.textContent=`${auditPage} / ${pageCount}`;
-    const next=document.createElement('button');
-    next.type='button';next.textContent='Sonraki →';next.disabled=auditPage===pageCount;
-    previous.addEventListener('click',()=>{auditPage-=1;paginateAudit(page)});
-    next.addEventListener('click',()=>{auditPage+=1;paginateAudit(page)});
-    pager.append(previous,status,next);
-    audit.appendChild(pager);
+    if(pageCount===1){pager?.remove();return}
+    if(!pager){
+      pager=document.createElement('div');
+      pager.className='pire-audit-pager';
+      pager.setAttribute('aria-label','Güvenlik geçmişi sayfaları');
+      const previous=document.createElement('button');
+      previous.type='button';previous.dataset.auditPage='previous';previous.textContent='← Önceki';
+      const status=document.createElement('span');status.setAttribute('aria-live','polite');
+      const next=document.createElement('button');
+      next.type='button';next.dataset.auditPage='next';next.textContent='Sonraki →';
+      previous.addEventListener('click',()=>{auditPage-=1;paginateAudit(page)});
+      next.addEventListener('click',()=>{auditPage+=1;paginateAudit(page)});
+      pager.append(previous,status,next);
+      audit.appendChild(pager);
+    }
+    const previous=pager.querySelector('[data-audit-page="previous"]');
+    const status=pager.querySelector('span');
+    const next=pager.querySelector('[data-audit-page="next"]');
+    previous.disabled=auditPage===1;
+    next.disabled=auditPage===pageCount;
+    const pageLabel=`${auditPage} / ${pageCount}`;
+    if(status.textContent!==pageLabel)status.textContent=pageLabel;
   }
 
   function createTabs(page,heading){

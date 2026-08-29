@@ -49,3 +49,12 @@ test('audit pager is removed and entries restored before React actions',()=>{
   assert.match(source,/entry\.hidden=false/);
   assert.match(source,/delete entry\.dataset\.pireAuditEntry/);
 });
+
+test('audit pager is reused so pointer click can complete',()=>{
+  assert.match(source,/let pager=audit\?\.querySelector/);
+  assert.match(source,/if\(!pager\)\{/);
+  assert.match(source,/dataset\.auditPage='previous'/);
+  assert.match(source,/dataset\.auditPage='next'/);
+  assert.doesNotMatch(source,/audit\?\.querySelector\([^\n]+\)\?\.remove\(\);\n\s*if\(!audit/);
+  assert.match(source,/if\(status\.textContent!==pageLabel\)/);
+});
