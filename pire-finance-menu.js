@@ -16,12 +16,11 @@
     while((textNode=walker.nextNode())){
       const rule=rules[textNode.textContent.trim()];if(!rule)continue;
       const label=textNode.parentElement,target=label?.closest('button,a,[role="button"],li')||label;if(!target||!label)continue;
+      target.classList.remove('pire-finance-income','pire-finance-expense');
+      label.classList.remove('pire-finance-income','pire-finance-expense',...markers);
       target.classList.add(rule.kind==='income'?'pire-finance-income':'pire-finance-expense');
       label.classList.add(rule.kind==='income'?'pire-finance-income':'pire-finance-expense');
-      if(rule.marker){
-        markers.forEach(name=>{if(name!=='pire-label-'+rule.marker)label.classList.remove(name)});
-        label.classList.add('pire-label-'+rule.marker);
-      }
+      if(rule.marker)label.classList.add('pire-label-'+rule.marker);
     }
   }
   let queued=false;
