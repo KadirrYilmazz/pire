@@ -37,9 +37,9 @@
 
 ;(()=>{
   if(!document.querySelector('link[data-pire-expense-periods]')){
-    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-expense-periods.css?v=1';link.dataset.pireExpensePeriods='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-expense-periods.css?v=2';link.dataset.pireExpensePeriods='true';document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-pire-expense-periods]')){
-    const script=document.createElement('script');script.src='/pire-expense-periods.js?v=1';script.defer=true;script.dataset.pireExpensePeriods='true';document.head.appendChild(script);
+    const script=document.createElement('script');script.src='/pire-expense-periods.js?v=2';script.defer=true;script.dataset.pireExpensePeriods='true';document.head.appendChild(script);
   }
 })();
