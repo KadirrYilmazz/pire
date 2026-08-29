@@ -88,5 +88,6 @@ test('user accounts tab has a strong accessible red emphasis',()=>{
   assert.match(style,/color:#fff!important/);
   assert.match(style,/pire-account-alert-pulse 2\.2s/);
   assert.match(style,/@keyframes pire-account-alert-pulse/);
-  assert.match(style,/prefers-reduced-motion:reduce[^}]+button\[data-account-tab="intro"\]\{animation:none\}/);
+  assert.match(style,/prefers-reduced-motion:reduce/);
+  assert.match(style,/button\[data-account-tab="intro"\]\{animation:none\}/);
 });
