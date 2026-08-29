@@ -19,6 +19,11 @@
     try{localStorage.setItem(STORAGE_KEY,value)}catch(_){}
   };
 
+  function findHeading(page){
+    const content=page?.closest('.content');
+    return content?.querySelector(':scope > header')||null;
+  }
+
   function mark(element,section,active){
     if(!element)return;
     element.dataset.pireHealthSection=section;
@@ -31,7 +36,7 @@
     mark(page.querySelector(':scope > .health-check-list'),'checks',active);
     mark(page.querySelector(':scope > .e2e-center'),'flows',active);
     page.dataset.pireHealthTab=active;
-    page.querySelectorAll('.pire-health-tabs button').forEach(button=>{
+    findHeading(page)?.querySelectorAll(':scope > .pire-health-tabs button').forEach(button=>{
       const selected=button.dataset.healthTab===active;
       button.classList.toggle('active',selected);
       button.setAttribute('aria-selected',String(selected));
@@ -39,8 +44,8 @@
     });
   }
 
-  function createTabs(page,hero){
-    let nav=page.querySelector(':scope > .pire-health-tabs');
+  function createTabs(page,heading){
+    let nav=heading.querySelector(':scope > .pire-health-tabs');
     if(nav)return nav;
     nav=document.createElement('div');
     nav.className='pire-health-tabs';
@@ -67,23 +72,31 @@
       });
       nav.appendChild(button);
     });
-    hero.after(nav);
+    const titleBlock=heading.querySelector(':scope > div:not(.top-actions)');
+    if(!titleBlock)return null;
+    heading.classList.add('pire-health-heading');
+    titleBlock.after(nav);
     return nav;
   }
 
   function sync(){
     const page=document.querySelector('.health-workspace');
-    if(!page)return;
-    const hero=page.querySelector(':scope > .health-hero');
-    if(!hero)return;
-    createTabs(page,hero);
+    if(!page){
+      document.querySelectorAll('.pire-health-tabs').forEach(nav=>nav.remove());
+      document.querySelectorAll('.pire-health-heading').forEach(heading=>heading.classList.remove('pire-health-heading'));
+      return;
+    }
+    const heading=findHeading(page);
+    if(!heading)return;
+    createTabs(page,heading);
     showTab(page,readTab());
   }
 
   function restoreBeforeReact(event){
-    const page=event.target?.closest?.('.health-workspace');
+    const page=document.querySelector('.health-workspace');
     if(!page||event.target?.closest?.('.pire-health-tabs'))return;
-    page.querySelector(':scope > .pire-health-tabs')?.remove();
+    document.querySelector('.pire-health-tabs')?.remove();
+    findHeading(page)?.classList.remove('pire-health-heading');
     page.querySelectorAll('[data-pire-health-section]').forEach(element=>{
       element.hidden=false;
       delete element.dataset.pireHealthSection;
@@ -98,7 +111,7 @@
     setTimeout(()=>{queued=false;sync()},100);
   }
 
-  ['pointerdown','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
+  ['pointerdown','input','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
   new MutationObserver(queueSync).observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueSync,{once:true});
