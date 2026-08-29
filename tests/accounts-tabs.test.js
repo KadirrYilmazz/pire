@@ -34,3 +34,18 @@ test('React-managed account nodes are restored before account actions',()=>{
   assert.match(style,/\[data-pire-account-section\]\[hidden\]\{display:none!important\}/);
   assert.match(source,/classList\.remove\('pire-account-heading'\)/);
 });
+
+test('security history is compacted to five records with pagination',()=>{
+  assert.match(source,/AUDIT_PAGE_SIZE=5/);
+  assert.match(source,/Math\.ceil\(entries\.length\/AUDIT_PAGE_SIZE\)/);
+  assert.match(source,/previous\.textContent='← Önceki'/);
+  assert.match(source,/next\.textContent='Sonraki →'/);
+  assert.match(style,/\.pire-audit-pager/);
+  assert.match(style,/article\[hidden\]\{display:none!important\}/);
+});
+
+test('audit pager is removed and entries restored before React actions',()=>{
+  assert.match(source,/account-audit > \.pire-audit-pager/);
+  assert.match(source,/entry\.hidden=false/);
+  assert.match(source,/delete entry\.dataset\.pireAuditEntry/);
+});
