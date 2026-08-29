@@ -20,6 +20,7 @@
 .reports-page [data-pire-report-section][hidden]{display:none!important}
 .reports-page > .report-grid:not([hidden]){grid-template-columns:minmax(0,1fr)!important}
 .reports-page > .report-grid:not([hidden]) > .panel{min-height:0}
+.reports-page[data-pire-report-tab="overview"] > .reports-head{margin-bottom:0}
 .reports-page[data-pire-report-tab="summary"] > .report-metrics{margin-bottom:0}
 .reports-page[data-pire-report-tab="operations"] > .report-bottom-cards{margin-top:16px}
 html[data-theme="light"] .content > header.pire-report-heading > .pire-report-tabs{
