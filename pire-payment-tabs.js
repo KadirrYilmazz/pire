@@ -24,6 +24,17 @@
       if(button){button.classList.toggle('active',tab.id===id);button.setAttribute('aria-selected',String(tab.id===id))}
     });
   }
+  function positionNav(nav,header,heading){
+    const headerBox=header.getBoundingClientRect(),titleBox=heading.parentElement.getBoundingClientRect();
+    const gap=34,minWidth=560,left=titleBox.right+gap,right=headerBox.right;
+    if(right-left>=minWidth){
+      nav.classList.remove('compact-row');
+      nav.style.left=`${window.scrollX+left}px`;nav.style.top=`${window.scrollY+headerBox.top+Math.max(0,(headerBox.height-54)/2)}px`;nav.style.width=`${right-left}px`;
+    }else{
+      nav.classList.add('compact-row');
+      nav.style.left=`${window.scrollX+headerBox.left}px`;nav.style.top=`${window.scrollY+headerBox.bottom+8}px`;nav.style.width=`${headerBox.width}px`;
+    }
+  }
   function enhance(){
     const root=workspace();
     if(!root){document.querySelector('.pire-payment-tabs')?.remove();return}
@@ -33,10 +44,12 @@
       nav=document.createElement('nav');nav.className='pire-payment-tabs';nav.setAttribute('aria-label','Cari alacak ve tahsilat bölümleri');nav.setAttribute('role','tablist');
       tabs.forEach(tab=>{const button=document.createElement('button');button.type='button';button.dataset.tab=tab.id;button.setAttribute('role','tab');button.innerHTML=`<span>${tab.label}</span>`;button.addEventListener('click',()=>show(tab.id));nav.appendChild(button)});
     }
-    if(header&&nav.parentElement!==header){const actions=header.querySelector('.top-actions');header.insertBefore(nav,actions||null)}
+    if(header&&nav.parentElement!==document.body)document.body.appendChild(nav);
+    if(header)positionNav(nav,header,heading);
     show(active);
   }
   let queued=false;
   function scan(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhance()})}
   scan();new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
+  addEventListener('resize',scan,{passive:true});addEventListener('scroll',scan,{passive:true});
 })();
