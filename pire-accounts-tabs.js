@@ -2,6 +2,15 @@
 (()=>{
   const STORAGE_KEY='pire-accounts-active-tab';
   const AUDIT_SIZE_KEY='pire-audit-page-size';
+  const ACCOUNT_ROLE_KEY='pire-account-role-filter';
+  const ACCOUNT_PAGE_SIZE=5;
+  const ACCOUNT_ROLES=[
+    {value:'all',label:'Tüm roller'},
+    {value:'Yönetici',label:'Yönetici'},
+    {value:'Öğrenci',label:'Öğrenci'},
+    {value:'Eğitmen',label:'Eğitmen'},
+    {value:'Veli',label:'Veli'}
+  ];
   const TABS=[
     {id:'intro',label:'Kullanıcı Hesapları'},
     {id:'permissions',label:'Yetkiler'},
@@ -13,6 +22,8 @@
   let queued=false;
   let auditPage=1;
   let auditPageSize=readAuditPageSize();
+  let accountPage=1;
+  let accountRole=readAccountRole();
 
   const readTab=()=>{
     try{
@@ -36,6 +47,17 @@
     try{localStorage.setItem(AUDIT_SIZE_KEY,String(value))}catch(_){}
   }
 
+  function readAccountRole(){
+    try{
+      const value=localStorage.getItem(ACCOUNT_ROLE_KEY);
+      return ACCOUNT_ROLES.some(role=>role.value===value)?value:'all';
+    }catch(_){return 'all'}
+  }
+
+  function saveAccountRole(value){
+    try{localStorage.setItem(ACCOUNT_ROLE_KEY,value)}catch(_){}
+  }
+
   function findHeading(page){
     const content=page?.closest('.content');
     return content?.querySelector(':scope > header')||null;
@@ -53,6 +75,8 @@
     mark(page.querySelector(':scope > .account-stats'),'intro',active);
     mark(page.querySelector(':scope > .account-list-head'),'intro',active);
     mark(page.querySelector(':scope > .account-list'),'intro',active);
+    const accountPager=page.querySelector(':scope > .pire-account-list-pager');
+    if(accountPager)accountPager.hidden=active!=='intro';
     mark(page.querySelector(':scope > .access-control'),'permissions',active);
     mark(page.querySelector(':scope > .announcement-center'),'announcements',active);
     mark(page.querySelector(':scope > .account-backup'),'backup',active);
@@ -65,6 +89,61 @@
       button.setAttribute('aria-selected',String(selected));
       button.tabIndex=selected?0:-1;
     });
+  }
+
+  function paginateAccounts(page){
+    const list=page.querySelector(':scope > .account-list');
+    const entries=list?[...list.querySelectorAll(':scope > article.account-row')]:[];
+    let pager=page.querySelector(':scope > .pire-account-list-pager');
+    if(!list||!entries.length){pager?.remove();return}
+    const matching=entries.filter(entry=>{
+      if(accountRole==='all')return true;
+      const roleText=entry.querySelector('.account-relation > b')?.textContent||'';
+      return roleText.split('·').map(role=>role.trim()).includes(accountRole);
+    });
+    const pageCount=Math.max(1,Math.ceil(matching.length/ACCOUNT_PAGE_SIZE));
+    accountPage=Math.max(1,Math.min(accountPage,pageCount));
+    const visible=new Set(matching.slice((accountPage-1)*ACCOUNT_PAGE_SIZE,accountPage*ACCOUNT_PAGE_SIZE));
+    entries.forEach(entry=>{
+      entry.dataset.pireAccountEntry='true';
+      entry.hidden=!visible.has(entry);
+    });
+    if(!pager){
+      pager=document.createElement('div');
+      pager.className='pire-account-list-pager';
+      pager.setAttribute('aria-label','Kullanıcı hesabı filtreleri ve sayfaları');
+      const roleLabel=document.createElement('label');
+      roleLabel.textContent='Rol';
+      const roleSelect=document.createElement('select');
+      roleSelect.setAttribute('aria-label','Kullanıcıları role göre filtrele');
+      ACCOUNT_ROLES.forEach(role=>{
+        const option=document.createElement('option');
+        option.value=role.value;option.textContent=role.label;roleSelect.appendChild(option);
+      });
+      roleSelect.addEventListener('change',()=>{
+        accountRole=roleSelect.value;accountPage=1;saveAccountRole(accountRole);paginateAccounts(page);
+      });
+      roleLabel.appendChild(roleSelect);
+      const previous=document.createElement('button');
+      previous.type='button';previous.dataset.accountPage='previous';previous.textContent='← Önceki';
+      const status=document.createElement('span');status.setAttribute('aria-live','polite');
+      const next=document.createElement('button');
+      next.type='button';next.dataset.accountPage='next';next.textContent='Sonraki →';
+      previous.addEventListener('click',()=>{accountPage-=1;paginateAccounts(page)});
+      next.addEventListener('click',()=>{accountPage+=1;paginateAccounts(page)});
+      pager.append(roleLabel,previous,status,next);
+      list.after(pager);
+    }
+    const roleSelect=pager.querySelector('select');
+    const previous=pager.querySelector('[data-account-page="previous"]');
+    const status=pager.querySelector('span');
+    const next=pager.querySelector('[data-account-page="next"]');
+    roleSelect.value=accountRole;
+    previous.disabled=accountPage===1;
+    next.disabled=accountPage===pageCount;
+    const pageLabel=`${matching.length} hesap · ${accountPage} / ${pageCount}`;
+    if(status.textContent!==pageLabel)status.textContent=pageLabel;
+    pager.hidden=page.dataset.pireAccountTab!=='intro';
   }
 
   function paginateAudit(page){
@@ -162,13 +241,19 @@
     if(!heading)return;
     createTabs(page,heading);
     showTab(page,readTab());
+    paginateAccounts(page);
     paginateAudit(page);
   }
 
   function restoreBeforeReact(event){
     const page=document.querySelector('.account-workspace');
-    if(!page||event.target?.closest?.('.pire-account-tabs,.pire-audit-pager'))return;
+    if(!page||event.target?.closest?.('.pire-account-tabs,.pire-account-list-pager,.pire-audit-pager'))return;
     document.querySelector('.pire-account-tabs')?.remove();
+    page.querySelector(':scope > .pire-account-list-pager')?.remove();
+    page.querySelectorAll('[data-pire-account-entry]').forEach(entry=>{
+      entry.hidden=false;
+      delete entry.dataset.pireAccountEntry;
+    });
     page.querySelector(':scope > .account-audit > .pire-audit-pager')?.remove();
     page.querySelectorAll('[data-pire-audit-entry]').forEach(entry=>{
       entry.hidden=false;
