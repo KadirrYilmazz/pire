@@ -8,12 +8,12 @@ const corsHeaders = {
 };
 
 type Role = "Yönetici" | "Eğitmen" | "Öğrenci" | "Veli";
-type CreateRole = Exclude<Role, "Yönetici">;
+type CreateRole = Role;
 type Gender = "Erkek" | "Kadın" | "Belirtilmedi";
 const allowedRelationships = ["Kendi", "Anne", "Baba", "Vasi", "Diğer"];
 const allowedRoles: Role[] = ["Yönetici", "Eğitmen", "Öğrenci", "Veli"];
-const createRoles: CreateRole[] = ["Eğitmen", "Öğrenci", "Veli"];
-const prefixes: Record<CreateRole, string> = { "Eğitmen": "EGT", "Öğrenci": "OGR", "Veli": "VEL" };
+const createRoles: CreateRole[] = ["Yönetici", "Eğitmen", "Öğrenci", "Veli"];
+const prefixes: Record<CreateRole, string> = { "Yönetici": "YON", "Eğitmen": "EGT", "Öğrenci": "OGR", "Veli": "VEL" };
 
 function reply(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
