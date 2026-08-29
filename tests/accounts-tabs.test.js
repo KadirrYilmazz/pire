@@ -36,8 +36,8 @@ test('React-managed account nodes are restored before account actions',()=>{
 });
 
 test('security history is compacted to five records with pagination',()=>{
-  assert.match(source,/AUDIT_PAGE_SIZE=5/);
-  assert.match(source,/Math\.ceil\(entries\.length\/AUDIT_PAGE_SIZE\)/);
+  assert.match(source,/AUDIT_PAGE_SIZES=\[5,10,20\]/);
+  assert.match(source,/Math\.ceil\(entries\.length\/auditPageSize\)/);
   assert.match(source,/previous\.textContent='← Önceki'/);
   assert.match(source,/next\.textContent='Sonraki →'/);
   assert.match(style,/\.pire-audit-pager/);
@@ -57,4 +57,13 @@ test('audit pager is reused so pointer click can complete',()=>{
   assert.match(source,/dataset\.auditPage='next'/);
   assert.doesNotMatch(source,/audit\?\.querySelector\([^\n]+\)\?\.remove\(\);\n\s*if\(!audit/);
   assert.match(source,/if\(status\.textContent!==pageLabel\)/);
+});
+
+test('audit page size can be selected and remembered',()=>{
+  assert.match(source,/pire-audit-page-size/);
+  assert.match(source,/AUDIT_PAGE_SIZES\.includes\(value\)\?value:5/);
+  assert.match(source,/sizeLabel\.textContent='Göster'/);
+  assert.match(source,/auditPageSize=Number\(sizeSelect\.value\);auditPage=1/);
+  assert.match(source,/saveAuditPageSize\(auditPageSize\)/);
+  assert.match(style,/\.pire-audit-pager select/);
 });

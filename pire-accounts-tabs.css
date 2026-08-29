@@ -26,8 +26,13 @@
 }
 .account-audit > div:not(.pire-audit-pager) > article[hidden]{display:none!important}
 .account-audit .pire-audit-pager{
-  display:flex;align-items:center;justify-content:center;gap:14px;
+  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
   padding:14px 20px;border-top:1px solid rgba(213,177,94,.18)
+}
+.pire-audit-pager label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:750;color:#81765f}
+.pire-audit-pager select{
+  min-width:68px;border:1px solid rgba(213,177,94,.38);border-radius:9px;
+  padding:9px 28px 9px 11px;background:rgba(213,177,94,.08);color:inherit;font:inherit;font-weight:800
 }
 .pire-audit-pager button{
   min-width:112px;border:1px solid rgba(213,177,94,.38);border-radius:9px;
@@ -42,6 +47,8 @@ html[data-theme="light"] .content > header.pire-account-heading > .pire-account-
 html[data-theme="light"] .pire-account-tabs button{color:#655f54}
 html[data-theme="light"] .pire-account-tabs button:hover{color:#513c12;background:rgba(174,132,40,.1)}
 html[data-theme="light"] .pire-account-tabs button.active{color:#241b08;background:#d6b255}
+html[data-theme="light"] .pire-audit-pager label{color:#655f54}
+html[data-theme="light"] .pire-audit-pager select{background:#fff;color:#3c3425}
 @media(max-width:1050px){
   .content > header.pire-account-heading{flex-wrap:wrap;gap:12px}
   .content > header.pire-account-heading > .pire-account-tabs{flex:1 0 100%;order:3}

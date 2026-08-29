@@ -1,3 +1,11 @@
+Fix 84 — Güvenlik Geçmişi Kayıt Sayısı Seçimi
+- Güvenlik Geçmişi sayfalamasına Göster: 5, 10 veya 20 kayıt seçimi eklenir.
+- Kayıt sayısı tercihi tarayıcıda saklanır ve sonraki ziyaretlerde korunur.
+- Kayıt sayısı değiştirildiğinde liste otomatik olarak ilk sayfaya döner.
+- Önceki/Sonraki düğmeleri ve sayfa bilgisi seçilen kayıt sayısına göre güncellenir.
+- Seçim alanı tek sayfa kaldığında da görünür; hiçbir güvenlik kaydı silinmez.
+- Beğenilmezse Fix83 sürümüne geri dönülebilir.
+
 Fix 83 — Güvenlik Sayfalama Tıklama Düzeltmesi
 - Önceki ve Sonraki düğmelerinin her senkronizasyonda yeniden oluşturulması engellenir.
 - Sayfalama düğmeleri yerinde korunur; yalnızca sayfa numarası ve etkin/pasif durumları güncellenir.
