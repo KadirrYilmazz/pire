@@ -1,3 +1,11 @@
+Fix 88 — Kullanıcı Hesapları Kırmızı Vurgu
+- Kullanıcı Hesapları alt sekmesi güçlü kırmızı renk, beyaz yazı ve belirgin parlama ile öne çıkarılır.
+- Sekme seçili olduğunda kırmızı vurgu ve çerçeve daha güçlü görünür.
+- Dikkat çekici hafif vurgu animasyonu eklenir; hareket azaltma tercihinde animasyon kapatılır.
+- Açık ve koyu tema ile klavye odağı korunur.
+- Diğer kullanıcı alt sekmeleri ve hesap verileri değiştirilmez.
+- Beğenilmezse Fix87 sürümüne geri dönülebilir.
+
 Fix 87 — TikTok Profil Bağlantısı
 - Üst iletişim alanındaki TikTok ikonu Pİ-RE Eğitim Atölye TikTok profiline bağlanır.
 - Bağlantı güvenli biçimde yeni sekmede açılır.
