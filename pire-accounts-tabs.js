@@ -8,7 +8,9 @@
     {id:'backup',label:'Yedekleme'},
     {id:'security',label:'Güvenlik Geçmişi'}
   ];
+  const AUDIT_PAGE_SIZE=5;
   let queued=false;
+  let auditPage=1;
 
   const readTab=()=>{
     try{
@@ -49,6 +51,34 @@
       button.setAttribute('aria-selected',String(selected));
       button.tabIndex=selected?0:-1;
     });
+  }
+
+  function paginateAudit(page){
+    const audit=page.querySelector(':scope > .account-audit');
+    const list=audit?.querySelector(':scope > div:not(.pire-audit-pager)');
+    const entries=list?[...list.querySelectorAll(':scope > article')]:[];
+    audit?.querySelector(':scope > .pire-audit-pager')?.remove();
+    if(!audit||!entries.length)return;
+    const pageCount=Math.max(1,Math.ceil(entries.length/AUDIT_PAGE_SIZE));
+    auditPage=Math.max(1,Math.min(auditPage,pageCount));
+    entries.forEach((entry,index)=>{
+      entry.dataset.pireAuditEntry='true';
+      entry.hidden=index<(auditPage-1)*AUDIT_PAGE_SIZE||index>=auditPage*AUDIT_PAGE_SIZE;
+    });
+    if(pageCount===1)return;
+    const pager=document.createElement('div');
+    pager.className='pire-audit-pager';
+    pager.setAttribute('aria-label','Güvenlik geçmişi sayfaları');
+    const previous=document.createElement('button');
+    previous.type='button';previous.textContent='← Önceki';previous.disabled=auditPage===1;
+    const status=document.createElement('span');
+    status.textContent=`${auditPage} / ${pageCount}`;
+    const next=document.createElement('button');
+    next.type='button';next.textContent='Sonraki →';next.disabled=auditPage===pageCount;
+    previous.addEventListener('click',()=>{auditPage-=1;paginateAudit(page)});
+    next.addEventListener('click',()=>{auditPage+=1;paginateAudit(page)});
+    pager.append(previous,status,next);
+    audit.appendChild(pager);
   }
 
   function createTabs(page,heading){
@@ -97,12 +127,18 @@
     if(!heading)return;
     createTabs(page,heading);
     showTab(page,readTab());
+    paginateAudit(page);
   }
 
   function restoreBeforeReact(event){
     const page=document.querySelector('.account-workspace');
-    if(!page||event.target?.closest?.('.pire-account-tabs'))return;
+    if(!page||event.target?.closest?.('.pire-account-tabs,.pire-audit-pager'))return;
     document.querySelector('.pire-account-tabs')?.remove();
+    page.querySelector(':scope > .account-audit > .pire-audit-pager')?.remove();
+    page.querySelectorAll('[data-pire-audit-entry]').forEach(entry=>{
+      entry.hidden=false;
+      delete entry.dataset.pireAuditEntry;
+    });
     findHeading(page)?.classList.remove('pire-account-heading');
     page.querySelectorAll('[data-pire-account-section]').forEach(element=>{
       element.hidden=false;

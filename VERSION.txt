@@ -1,3 +1,11 @@
+Fix 82 — Güvenlik Geçmişi Sayfalama
+- Son kritik işlemler listesi sayfa başına 5 kayıt gösterecek şekilde sınırlandırılır.
+- Önceki ve Sonraki düğmeleri ile mevcut sayfa/toplam sayfa bilgisi eklenir.
+- İşlem satırları daha kompakt gösterilir; Güvenlik Geçmişi sayfasının sürekli uzaması engellenir.
+- Toplam kayıt sayısı ve bütün geçmiş kayıtları korunur; hiçbir güvenlik kaydı silinmez.
+- React geçiş koruması ve başlık yanı alt sekme düzeni korunur.
+- Beğenilmezse Fix81 sürümüne geri dönülebilir.
+
 Fix 81 — Yönetim Alt Sekmelerini Başlıklara Taşı
 - Kullanıcılar alt sekmeleri Kullanıcı Hesapları başlığının yanına taşınır.
 - Sistem Sağlığı alt sekmeleri Sistem Sağlığı başlığının yanına taşınır.
