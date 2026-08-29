@@ -1,3 +1,11 @@
+Fix 85 — Kullanıcı Hesapları Alt Sekmesi
+- Kullanıcılar başlık sırasına yeni Kullanıcı Hesapları alt sekmesi eklenir.
+- Yönetici yetki alanı kartı, giriş telefonunu ayarlama ve yeni hesap oluşturma işlemleri bu sekmede gösterilir.
+- Mevcut Hesaplar sekmesi hesap özeti ve kullanıcı listesini göstermeye devam eder.
+- Yetkiler, Duyurular, Yedekleme ve Güvenlik Geçmişi sekmeleri korunur.
+- Güvenlik sayfalaması, seçim hafızası ve bütün kullanıcı verileri değiştirilmez.
+- Beğenilmezse Fix84 sürümüne geri dönülebilir.
+
 Fix 84 — Güvenlik Geçmişi Kayıt Sayısı Seçimi
 - Güvenlik Geçmişi sayfalamasına Göster: 5, 10 veya 20 kayıt seçimi eklenir.
 - Kayıt sayısı tercihi tarayıcıda saklanır ve sonraki ziyaretlerde korunur.
