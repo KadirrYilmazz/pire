@@ -1,3 +1,12 @@
+Fix 90 — Kullanıcı Hesapları Rol Filtresi ve Sayfalama
+- Kullanıcı hesapları listesi sayfa başına 5 hesap gösterecek şekilde sayfalanır.
+- Önceki ve Sonraki düğmeleri ile mevcut sayfa ve eşleşen hesap sayısı gösterilir.
+- Tüm roller, Yönetici, Öğrenci, Eğitmen ve Veli filtreleri eklenir.
+- Çoklu kimlikli hesaplar sahip oldukları her ilgili rol filtresinde gösterilir.
+- Rol seçimi tarayıcıda korunur; filtre değiştiğinde liste ilk sayfaya döner.
+- Hesap işlemleri, kimlikler ve kullanıcı verileri değiştirilmez.
+- Beğenilmezse Fix89 sürümüne geri dönülebilir.
+
 Fix 89 — Kurum Genel Durumu Rapor Alt Sekmesi
 - Raporlar bölümüne Genel Durum alt sekmesi eklenir.
 - Kurumun genel durumu kartı, tarih filtreleri ve Excel/PDF işlemleri bu sekmede gösterilir.

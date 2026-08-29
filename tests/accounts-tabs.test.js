@@ -91,3 +91,34 @@ test('user accounts tab has a strong accessible red emphasis',()=>{
   assert.match(style,/prefers-reduced-motion:reduce/);
   assert.match(style,/button\[data-account-tab="intro"\]\{animation:none\}/);
 });
+
+test('user accounts are paginated five at a time',()=>{
+  assert.match(source,/ACCOUNT_PAGE_SIZE=5/);
+  assert.match(source,/function paginateAccounts\(page\)/);
+  assert.match(source,/matching\.slice\(\(accountPage-1\)\*ACCOUNT_PAGE_SIZE,accountPage\*ACCOUNT_PAGE_SIZE\)/);
+  assert.match(source,/previous\.textContent='← Önceki'/);
+  assert.match(source,/next\.textContent='Sonraki →'/);
+  assert.match(style,/\.pire-account-list-pager/);
+  assert.match(style,/article\.account-row\[hidden\]\{display:none!important\}/);
+});
+
+test('user accounts can be filtered by every supported identity',()=>{
+  for(const role of ['Yönetici','Öğrenci','Eğitmen','Veli'])assert.match(source,new RegExp(`value:'${role}'`));
+  assert.match(source,/roleText\.split\('·'\)/);
+  assert.match(source,/includes\(accountRole\)/);
+  assert.match(source,/pire-account-role-filter/);
+  assert.match(source,/Kullanıcıları role göre filtrele/);
+});
+
+test('multi-role accounts remain visible in every matching role filter',()=>{
+  assert.match(source,/entry\.querySelector\('\.account-relation > b'\)/);
+  assert.match(source,/map\(role=>role\.trim\(\)\)\.includes\(accountRole\)/);
+  assert.match(source,/accountRole=roleSelect\.value;accountPage=1/);
+});
+
+test('account pagination is restored safely before React account actions',()=>{
+  assert.match(source,/pire-account-list-pager/);
+  assert.match(source,/entry\.hidden=false/);
+  assert.match(source,/delete entry\.dataset\.pireAccountEntry/);
+  assert.match(source,/paginateAccounts\(page\);/);
+});
