@@ -6,8 +6,8 @@ const path=require('node:path');
 const source=fs.readFileSync(path.join(__dirname,'..','pire-accounts-tabs.js'),'utf8');
 const style=fs.readFileSync(path.join(__dirname,'..','pire-accounts-tabs.css'),'utf8');
 
-test('users workspace is divided into six persistent information tabs',()=>{
-  for(const id of ['intro','accounts','permissions','announcements','backup','security']){
+test('users workspace is divided into five persistent information tabs',()=>{
+  for(const id of ['intro','permissions','announcements','backup','security']){
     assert.match(source,new RegExp(`id:'${id}'`));
   }
   assert.match(source,/pire-accounts-active-tab/);
@@ -26,6 +26,14 @@ test('user accounts introduction card has its own tab',()=>{
   assert.match(source,/\{id:'intro',label:'Kullanıcı Hesapları'\}/);
   assert.match(source,/mark\(page\.querySelector\(':scope > \.account-hero'\),'intro',active\)/);
   assert.match(style,/data-pire-account-tab="intro"/);
+});
+
+test('account summary and list are merged into user accounts tab',()=>{
+  assert.doesNotMatch(source,/\{id:'accounts',label:'Hesaplar'\}/);
+  assert.match(source,/account-stats'\),'intro',active/);
+  assert.match(source,/account-list-head'\),'intro',active/);
+  assert.match(source,/account-list'\),'intro',active/);
+  assert.match(source,/\?value:'intro'/);
 });
 
 test('all existing user information groups receive one tab',()=>{
