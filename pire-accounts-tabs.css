@@ -1,11 +1,13 @@
-.account-workspace > .pire-account-tabs{
+.content > header.pire-account-heading{display:flex;align-items:center;gap:24px}
+.content > header.pire-account-heading > div:first-child{flex:0 0 auto}
+.content > header.pire-account-heading > .pire-account-tabs{
   display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:thin;
-  margin:14px 0 18px;padding:5px;border:1px solid rgba(213,177,94,.22);
+  flex:1 1 auto;min-width:0;margin:0;padding:5px;border:1px solid rgba(213,177,94,.22);
   border-radius:14px;background:rgba(14,16,16,.72)
 }
 .pire-account-tabs button{
-  flex:1 0 auto;min-width:118px;border:1px solid transparent;border-radius:10px;
-  padding:11px 15px;background:transparent;color:#aaa79f;font:inherit;font-weight:750;
+  flex:1 0 auto;min-width:106px;border:1px solid transparent;border-radius:10px;
+  padding:10px 13px;background:transparent;color:#aaa79f;font:inherit;font-weight:750;
   transition:background .18s ease,color .18s ease,border-color .18s ease
 }
 .pire-account-tabs button:hover{color:#f3e7c4;background:rgba(213,177,94,.08)}
@@ -19,14 +21,18 @@
 .account-workspace[data-pire-account-tab="announcements"] > .announcement-center,
 .account-workspace[data-pire-account-tab="backup"] > .account-backup,
 .account-workspace[data-pire-account-tab="security"] > .account-audit{margin-top:0}
-html[data-theme="light"] .account-workspace > .pire-account-tabs{
+html[data-theme="light"] .content > header.pire-account-heading > .pire-account-tabs{
   background:rgba(255,255,255,.78);border-color:rgba(118,91,32,.22)
 }
 html[data-theme="light"] .pire-account-tabs button{color:#655f54}
 html[data-theme="light"] .pire-account-tabs button:hover{color:#513c12;background:rgba(174,132,40,.1)}
 html[data-theme="light"] .pire-account-tabs button.active{color:#241b08;background:#d6b255}
+@media(max-width:1050px){
+  .content > header.pire-account-heading{flex-wrap:wrap;gap:12px}
+  .content > header.pire-account-heading > .pire-account-tabs{flex:1 0 100%;order:3}
+}
 @media(max-width:700px){
-  .account-workspace > .pire-account-tabs{margin:10px 0 14px;padding:4px}
+  .content > header.pire-account-heading > .pire-account-tabs{padding:4px}
   .pire-account-tabs button{min-width:108px;padding:10px 13px}
 }
 @media(prefers-reduced-motion:reduce){.pire-account-tabs button{transition:none}}
