@@ -18,14 +18,17 @@ test('every health information group receives one tab',()=>{
   }
 });
 
-test('shared health actions, errors and last-check footer remain visible',()=>{
-  assert.match(source,/createTabs\(page,hero\)/);
-  assert.match(source,/hero\.after\(nav\)/);
+test('health tabs are placed beside the page title while shared content remains visible',()=>{
+  assert.match(source,/findHeading\(page\)/);
+  assert.match(source,/heading\.classList\.add\('pire-health-heading'\)/);
+  assert.match(source,/titleBlock\.after\(nav\)/);
   assert.doesNotMatch(source,/mark\([^\n]*(health-hero|health-run-error|health-footer)/);
+  assert.match(style,/header\.pire-health-heading > \.pire-health-tabs/);
 });
 
 test('React-managed health nodes are restored before checks run',()=>{
   assert.match(source,/element\.hidden=false/);
   assert.match(source,/document\.addEventListener\(type,restoreBeforeReact,true\)/);
   assert.match(style,/\[data-pire-health-section\]\[hidden\]\{display:none!important\}/);
+  assert.match(source,/classList\.remove\('pire-health-heading'\)/);
 });
