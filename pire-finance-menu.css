@@ -1,0 +1,5 @@
+/* Finans: para girişi yeşil, para çıkışı kırmızı */
+.pire-finance-income{color:#20df78!important;font-weight:750!important;text-shadow:0 0 16px rgba(32,223,120,.2)}
+.pire-finance-expense{color:#ff6565!important;font-weight:750!important;text-shadow:0 0 16px rgba(255,79,79,.16)}
+.pire-finance-income:hover,.pire-finance-income:focus-visible{color:#64f3a3!important;background-color:rgba(24,190,98,.1)!important}
+.pire-finance-expense:hover,.pire-finance-expense:focus-visible{color:#ff9292!important;background-color:rgba(223,64,64,.1)!important}
