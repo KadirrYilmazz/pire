@@ -3,3 +3,14 @@
 .pire-finance-expense{color:#ff6565!important;font-weight:750!important;text-shadow:0 0 16px rgba(255,79,79,.16)}
 .pire-finance-income:hover,.pire-finance-income:focus-visible{color:#64f3a3!important;background-color:rgba(24,190,98,.1)!important}
 .pire-finance-expense:hover,.pire-finance-expense:focus-visible{color:#ff9292!important;background-color:rgba(223,64,64,.1)!important}
+/* Görsel etiketler: özgün React metni korunur. */
+.pire-label-receivables-tr,.pire-label-receivables-en,.pire-label-earnings-tr,.pire-label-earnings-en,.pire-label-earnings-heading-tr,.pire-label-earnings-heading-en{font-size:0!important}
+.pire-label-receivables-tr::before{content:"+ Cari Alacak / Tahsilatlar"}
+.pire-label-receivables-en::before{content:"+ Receivables / Collections"}
+.pire-label-earnings-tr::before{content:"Hakedişler / Maaşlar"}
+.pire-label-earnings-en::before{content:"Earnings / Salaries"}
+.pire-label-earnings-heading-tr::before{content:"Eğitmen Hakedişleri / Maaşlar"}
+.pire-label-earnings-heading-en::before{content:"Instructor Earnings / Salaries"}
+.pire-label-receivables-tr::before,.pire-label-receivables-en::before,.pire-label-earnings-tr::before,.pire-label-earnings-en::before{font-size:16px}
+h1.pire-label-earnings-heading-tr::before,h1.pire-label-earnings-heading-en::before{font-size:32px;line-height:1.15}
+.pire-label-receivables-tr>*,.pire-label-receivables-en>*,.pire-label-earnings-tr>*,.pire-label-earnings-en>*{font-size:14px}
