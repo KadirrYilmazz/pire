@@ -1,3 +1,10 @@
+Fix 91 — Yeni Düğmesi Mavi Renk
+- Üst menüdeki + Yeni düğmesi yeşilden canlı mavi renk geçişine çevrilir.
+- Beyaz yazı, mavi çerçeve ve belirgin mavi parlama uygulanır.
+- Üzerine gelme, klavye odağı, açılır menü ve mobil görünüm korunur.
+- Düğmenin işlemleri ve diğer üst menü öğeleri değiştirilmez.
+- Beğenilmezse Fix90 sürümüne geri dönülebilir.
+
 Fix 90 — Kullanıcı Hesapları Rol Filtresi ve Sayfalama
 - Kullanıcı hesapları listesi sayfa başına 5 hesap gösterecek şekilde sayfalanır.
 - Önceki ve Sonraki düğmeleri ile mevcut sayfa ve eşleşen hesap sayısı gösterilir.

@@ -1,4 +1,4 @@
-/* “Yeni” aksiyonu navigasyonla aynı ölçekte, zümrüt yeşili aksiyon rengiyle daha görünür kalır. */
+/* “Yeni” aksiyonu navigasyonla aynı ölçekte, canlı mavi aksiyon rengiyle daha görünür kalır. */
 .app-shell .pire-new-trigger{
   box-sizing:border-box!important;
   width:auto!important;
@@ -7,15 +7,15 @@
   min-width:132px!important;
   padding:0 18px!important;
   gap:9px!important;
-  border:1px solid rgba(104,255,170,.98)!important;
+  border:1px solid rgba(111,191,255,.98)!important;
   border-radius:10px!important;
-  color:#f7fff9!important;
-  background:linear-gradient(135deg,#16c96b 0%,#078f48 58%,#056c39 100%)!important;
+  color:#f8fbff!important;
+  background:linear-gradient(135deg,#1687ff 0%,#075ecf 58%,#063f9b 100%)!important;
   font-size:13px!important;
   font-weight:900!important;
   line-height:1!important;
   letter-spacing:.01em!important;
-  box-shadow:0 0 0 1px rgba(112,255,174,.24),0 9px 26px rgba(0,151,72,.5),0 0 30px rgba(19,220,107,.28)!important;
+  box-shadow:0 0 0 1px rgba(112,193,255,.28),0 9px 26px rgba(0,91,204,.55),0 0 30px rgba(24,132,255,.34)!important;
   position:relative!important;
   top:14px!important;
   transform:none!important;
@@ -23,8 +23,8 @@
 .app-shell .pire-new-trigger:hover,
 .app-shell .pire-new-trigger:focus-visible{
   filter:brightness(1.14) saturate(1.12)!important;
-  border-color:#a2ffc8!important;
-  box-shadow:0 0 0 3px rgba(74,255,150,.24),0 12px 32px rgba(0,155,72,.58),0 0 38px rgba(18,236,112,.38)!important;
+  border-color:#b9ddff!important;
+  box-shadow:0 0 0 3px rgba(72,166,255,.3),0 12px 32px rgba(0,86,204,.62),0 0 38px rgba(25,134,255,.44)!important;
   transform:translateY(-1px)!important;
 }
 .app-shell .pire-new-plus{font-size:18px!important;line-height:1!important;font-weight:900!important}
