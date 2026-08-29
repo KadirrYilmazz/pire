@@ -50,6 +50,24 @@ html[data-theme="light"] .pire-account-tabs button:hover{color:#513c12;backgroun
 html[data-theme="light"] .pire-account-tabs button.active{color:#241b08;background:#d6b255}
 html[data-theme="light"] .pire-audit-pager label{color:#655f54}
 html[data-theme="light"] .pire-audit-pager select{background:#fff;color:#3c3425}
+.pire-account-tabs button[data-account-tab="intro"]{
+  color:#fff!important;background:linear-gradient(135deg,#ff3131 0%,#cf111f 58%,#9e0712 100%)!important;
+  border-color:#ff7373!important;box-shadow:0 0 0 2px rgba(255,38,52,.2),0 8px 24px rgba(216,12,30,.48)!important;
+  text-shadow:0 1px 2px rgba(70,0,5,.65);animation:pire-account-alert-pulse 2.2s ease-in-out infinite
+}
+.pire-account-tabs button[data-account-tab="intro"]:hover{
+  color:#fff!important;background:linear-gradient(135deg,#ff4949,#d60b1d)!important;
+  border-color:#ffadad!important;transform:translateY(-1px)
+}
+.pire-account-tabs button[data-account-tab="intro"].active{
+  color:#fff!important;background:linear-gradient(135deg,#ff1f2f,#b90016)!important;
+  border-color:#ffd0d0!important;box-shadow:0 0 0 3px rgba(255,41,57,.28),0 10px 30px rgba(218,0,25,.58)!important
+}
+.pire-account-tabs button[data-account-tab="intro"]:focus-visible{outline-color:#ff424f}
+@keyframes pire-account-alert-pulse{
+  0%,100%{filter:brightness(1);box-shadow:0 0 0 2px rgba(255,38,52,.18),0 8px 22px rgba(216,12,30,.42)}
+  50%{filter:brightness(1.12);box-shadow:0 0 0 4px rgba(255,38,52,.3),0 10px 32px rgba(245,12,34,.68)}
+}
 @media(max-width:1050px){
   .content > header.pire-account-heading{flex-wrap:wrap;gap:12px}
   .content > header.pire-account-heading > .pire-account-tabs{flex:1 0 100%;order:3}
@@ -60,4 +78,4 @@ html[data-theme="light"] .pire-audit-pager select{background:#fff;color:#3c3425}
   .account-audit > div:not(.pire-audit-pager) > article{padding:12px 14px!important}
   .pire-audit-pager button{min-width:94px;padding:8px 10px}
 }
-@media(prefers-reduced-motion:reduce){.pire-account-tabs button{transition:none}}
+@media(prefers-reduced-motion:reduce){.pire-account-tabs button{transition:none}.pire-account-tabs button[data-account-tab="intro"]{animation:none}}
