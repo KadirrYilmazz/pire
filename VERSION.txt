@@ -1,3 +1,10 @@
+Fix 87 — TikTok Profil Bağlantısı
+- Üst iletişim alanındaki TikTok ikonu Pİ-RE Eğitim Atölye TikTok profiline bağlanır.
+- Bağlantı güvenli biçimde yeni sekmede açılır.
+- Mevcut Instagram, Facebook, LinkedIn ve X ikonları korunur.
+- Dinamik üst menü yeniden oluşturulduğunda TikTok bağlantısı otomatik olarak yeniden etkinleşir.
+- Beğenilmezse Fix86 sürümüne geri dönülebilir.
+
 Fix 86 — Hesapları Kullanıcı Hesaplarına Birleştir
 - Ayrı Hesaplar alt sekmesi kaldırılır.
 - Kullanıcı Hesapları sekmesi yönetici kartı, hesap özeti ve kullanıcı listesini birlikte gösterir.
