@@ -20,14 +20,17 @@ test('six existing settings sections are mapped without moving them',()=>{
   assert.doesNotMatch(source,/appendChild\(section\)|append\(section\)/);
 });
 
-test('shared save actions, feedback and update footer remain visible',()=>{
-  assert.match(source,/createTabs\(page,hero\)/);
-  assert.match(source,/hero\.after\(nav\)/);
+test('settings tabs are placed beside the page title while shared content remains visible',()=>{
+  assert.match(source,/findHeading\(page\)/);
+  assert.match(source,/heading\.classList\.add\('pire-settings-heading'\)/);
+  assert.match(source,/titleBlock\.after\(nav\)/);
   assert.doesNotMatch(source,/pireSettingsSection[^\n]*(settings-hero|settings-feedback|footer)/);
+  assert.match(style,/header\.pire-settings-heading > \.pire-settings-tabs/);
 });
 
 test('controlled inputs restore React structure before every change',()=>{
   assert.match(source,/\['pointerdown','input','change','submit'\]/);
   assert.match(source,/section\.hidden=false/);
   assert.match(style,/\[data-pire-settings-section\]\[hidden\]\{display:none!important\}/);
+  assert.match(source,/classList\.remove\('pire-settings-heading'\)/);
 });
