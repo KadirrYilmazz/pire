@@ -3,6 +3,7 @@
   const STORAGE_KEY='pire-accounts-active-tab';
   const AUDIT_SIZE_KEY='pire-audit-page-size';
   const TABS=[
+    {id:'intro',label:'Kullanıcı Hesapları'},
     {id:'accounts',label:'Hesaplar'},
     {id:'permissions',label:'Yetkiler'},
     {id:'announcements',label:'Duyurular'},
@@ -49,6 +50,7 @@
 
   function showTab(page,tabId){
     const active=TABS.some(tab=>tab.id===tabId)?tabId:'accounts';
+    mark(page.querySelector(':scope > .account-hero'),'intro',active);
     mark(page.querySelector(':scope > .account-stats'),'accounts',active);
     mark(page.querySelector(':scope > .account-list-head'),'accounts',active);
     mark(page.querySelector(':scope > .account-list'),'accounts',active);
