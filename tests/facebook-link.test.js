@@ -33,3 +33,14 @@ test('LinkedIn ikonu Pİ-RE profiline güvenli bağlantı verir',()=>{
   assert.match(source,/link\.rel='noopener noreferrer'/);
   assert.match(source,/function sync\(\)\{linkFacebookIcon\(\);addLinkedInIcon\(\)/);
 });
+
+test('TikTok ikonu Pİ-RE profiline güvenli bağlantı verir',()=>{
+  assert.match(source,/function linkTikTokIcon\(\)/);
+  assert.match(source,/\.pire-social-icon\.tiktok-icon:not\(a\)/);
+  assert.match(source,/https:\/\/www\.tiktok\.com\/@pire\.egitimatolye/);
+  assert.match(source,/Pİ-RE TikTok profilini aç/);
+  assert.match(source,/a\.pire-social-icon\.tiktok-icon\{cursor:pointer!important/);
+  assert.match(source,/link\.target='_blank'/);
+  assert.match(source,/link\.rel='noopener noreferrer'/);
+  assert.match(source,/function sync\(\)\{linkFacebookIcon\(\);linkTikTokIcon\(\);addLinkedInIcon\(\)/);
+});
