@@ -16,6 +16,7 @@
 }
 .pire-account-tabs button:focus-visible{outline:2px solid #edcf79;outline-offset:2px}
 .account-workspace [data-pire-account-section][hidden]{display:none!important}
+.account-workspace[data-pire-account-tab="intro"] > .account-hero{margin:0}
 .account-workspace[data-pire-account-tab="accounts"] > .account-list{margin-bottom:0}
 .account-workspace[data-pire-account-tab="permissions"] > .access-control,
 .account-workspace[data-pire-account-tab="announcements"] > .announcement-center,
