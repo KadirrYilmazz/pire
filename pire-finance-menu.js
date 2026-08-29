@@ -34,3 +34,12 @@
   if(document.body)scan();else document.addEventListener('DOMContentLoaded',scan,{once:true});
   new MutationObserver(queueScan).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
 })();
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-expense-periods]')){
+    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-expense-periods.css?v=1';link.dataset.pireExpensePeriods='true';document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-expense-periods]')){
+    const script=document.createElement('script');script.src='/pire-expense-periods.js?v=1';script.defer=true;script.dataset.pireExpensePeriods='true';document.head.appendChild(script);
+  }
+})();
