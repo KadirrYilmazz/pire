@@ -323,3 +323,17 @@
     document.head.appendChild(script);
   }
 })();
+
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-finance-menu]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='/pire-finance-menu.css?v=2';link.dataset.pireFinanceMenu='true';
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-finance-menu]')){
+    const script=document.createElement('script');
+    script.src='/pire-finance-menu.js?v=2';script.defer=true;script.dataset.pireFinanceMenu='true';
+    document.head.appendChild(script);
+  }
+})();
