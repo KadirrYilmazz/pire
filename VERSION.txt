@@ -1,3 +1,10 @@
+Fix 80 — Rapor Alt Sekmelerini Başlığa Taşı
+- Özet, Branşlar, Finans, Eğitmenler ve Operasyon alt sekmeleri Raporlar ve Analiz başlığının yanına taşınır.
+- Dar ekranlarda sekmeler başlığın hemen altında yatay kullanılmaya devam eder.
+- Sekme içerikleri, filtreler, çıktı işlemleri ve seçim hafızası değiştirilmez.
+- Raporlardan ayrılırken başlık sekmeleri React geçişinden önce güvenle kaldırılır.
+- Beğenilmezse Fix79 sürümüne geri dönülebilir.
+
 Fix 79 — Ayarlar Bilgi Alt Sekmeleri
 - Ayarlar ekranı Kurum, Çalışma Takvimi, Derslikler, Ders & Paket, İptal & Telafi ve Bildirimler alt sekmelerine ayrılır.
 - Üst ve alt kaydetme işlemleri, geri bildirimler ve son güncelleme bilgisi tüm alt sekmelerde ortak kalır.
