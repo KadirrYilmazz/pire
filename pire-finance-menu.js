@@ -41,7 +41,7 @@
 
 ;(()=>{
   if(!document.querySelector('link[data-pire-payment-tabs]')){
-    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-payment-tabs.css?v=4';link.dataset.pirePaymentTabs='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-payment-tabs.css?v=5';link.dataset.pirePaymentTabs='true';document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-pire-payment-tabs]')){
     const script=document.createElement('script');script.src='/pire-payment-tabs.js?v=4';script.defer=true;script.dataset.pirePaymentTabs='true';document.head.appendChild(script);
