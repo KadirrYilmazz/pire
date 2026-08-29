@@ -13,25 +13,26 @@
   function renameHeading(){
     const heading=[...document.querySelectorAll('h1')].find(x=>x.textContent.trim()==='Ödeme Takibi');
     if(heading)heading.textContent='Cari Alacak / Tahsilatlar';
+    return heading||[...document.querySelectorAll('h1')].find(x=>/Cari Alacak\s*\/\s*Tahsilatlar/.test(x.textContent));
   }
   function show(id){
     if(!tabs.some(x=>x.id===id))id='summary';active=id;sessionStorage.setItem(KEY,id);
     const root=workspace();if(!root)return;
     tabs.forEach(tab=>{
       const section=root.querySelector(tab.selector);if(section)section.hidden=tab.id!==id;
-      const button=root.querySelector(`.pire-payment-tabs [data-tab="${tab.id}"]`);
+      const button=document.querySelector(`.pire-payment-tabs [data-tab="${tab.id}"]`);
       if(button){button.classList.toggle('active',tab.id===id);button.setAttribute('aria-selected',String(tab.id===id))}
     });
   }
   function enhance(){
     const root=workspace();if(!root)return;
-    renameHeading();
-    let nav=root.querySelector('.pire-payment-tabs');
+    const heading=renameHeading(),header=heading?.closest('header');
+    let nav=document.querySelector('.pire-payment-tabs');
     if(!nav){
       nav=document.createElement('nav');nav.className='pire-payment-tabs';nav.setAttribute('aria-label','Cari alacak ve tahsilat bölümleri');nav.setAttribute('role','tablist');
       tabs.forEach(tab=>{const button=document.createElement('button');button.type='button';button.dataset.tab=tab.id;button.setAttribute('role','tab');button.innerHTML=`<span>${tab.label}</span>`;button.addEventListener('click',()=>show(tab.id));nav.appendChild(button)});
-      root.insertBefore(nav,root.firstChild);
     }
+    if(header&&nav.parentElement!==header){const actions=header.querySelector('.top-actions');header.insertBefore(nav,actions||null)}
     show(active);
   }
   let queued=false;
