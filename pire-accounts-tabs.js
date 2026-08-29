@@ -1,6 +1,7 @@
 /* Pİ-RE kullanıcılar ekranını bilgi alt sekmelerine ayırır. */
 (()=>{
   const STORAGE_KEY='pire-accounts-active-tab';
+  const AUDIT_SIZE_KEY='pire-audit-page-size';
   const TABS=[
     {id:'accounts',label:'Hesaplar'},
     {id:'permissions',label:'Yetkiler'},
@@ -8,9 +9,10 @@
     {id:'backup',label:'Yedekleme'},
     {id:'security',label:'Güvenlik Geçmişi'}
   ];
-  const AUDIT_PAGE_SIZE=5;
+  const AUDIT_PAGE_SIZES=[5,10,20];
   let queued=false;
   let auditPage=1;
+  let auditPageSize=readAuditPageSize();
 
   const readTab=()=>{
     try{
@@ -22,6 +24,17 @@
   const saveTab=value=>{
     try{localStorage.setItem(STORAGE_KEY,value)}catch(_){}
   };
+
+  function readAuditPageSize(){
+    try{
+      const value=Number(localStorage.getItem(AUDIT_SIZE_KEY));
+      return AUDIT_PAGE_SIZES.includes(value)?value:5;
+    }catch(_){return 5}
+  }
+
+  function saveAuditPageSize(value){
+    try{localStorage.setItem(AUDIT_SIZE_KEY,String(value))}catch(_){}
+  }
 
   function findHeading(page){
     const content=page?.closest('.content');
@@ -59,17 +72,28 @@
     const entries=list?[...list.querySelectorAll(':scope > article')]:[];
     let pager=audit?.querySelector(':scope > .pire-audit-pager');
     if(!audit||!entries.length){pager?.remove();return}
-    const pageCount=Math.max(1,Math.ceil(entries.length/AUDIT_PAGE_SIZE));
+    const pageCount=Math.max(1,Math.ceil(entries.length/auditPageSize));
     auditPage=Math.max(1,Math.min(auditPage,pageCount));
     entries.forEach((entry,index)=>{
       entry.dataset.pireAuditEntry='true';
-      entry.hidden=index<(auditPage-1)*AUDIT_PAGE_SIZE||index>=auditPage*AUDIT_PAGE_SIZE;
+      entry.hidden=index<(auditPage-1)*auditPageSize||index>=auditPage*auditPageSize;
     });
-    if(pageCount===1){pager?.remove();return}
     if(!pager){
       pager=document.createElement('div');
       pager.className='pire-audit-pager';
       pager.setAttribute('aria-label','Güvenlik geçmişi sayfaları');
+      const sizeLabel=document.createElement('label');
+      sizeLabel.textContent='Göster';
+      const sizeSelect=document.createElement('select');
+      sizeSelect.setAttribute('aria-label','Sayfa başına güvenlik kaydı');
+      AUDIT_PAGE_SIZES.forEach(size=>{
+        const option=document.createElement('option');option.value=String(size);option.textContent=String(size);
+        sizeSelect.appendChild(option);
+      });
+      sizeSelect.addEventListener('change',()=>{
+        auditPageSize=Number(sizeSelect.value);auditPage=1;saveAuditPageSize(auditPageSize);paginateAudit(page);
+      });
+      sizeLabel.appendChild(sizeSelect);
       const previous=document.createElement('button');
       previous.type='button';previous.dataset.auditPage='previous';previous.textContent='← Önceki';
       const status=document.createElement('span');status.setAttribute('aria-live','polite');
@@ -77,12 +101,14 @@
       next.type='button';next.dataset.auditPage='next';next.textContent='Sonraki →';
       previous.addEventListener('click',()=>{auditPage-=1;paginateAudit(page)});
       next.addEventListener('click',()=>{auditPage+=1;paginateAudit(page)});
-      pager.append(previous,status,next);
+      pager.append(sizeLabel,previous,status,next);
       audit.appendChild(pager);
     }
+    const sizeSelect=pager.querySelector('select');
     const previous=pager.querySelector('[data-audit-page="previous"]');
     const status=pager.querySelector('span');
     const next=pager.querySelector('[data-audit-page="next"]');
+    sizeSelect.value=String(auditPageSize);
     previous.disabled=auditPage===1;
     next.disabled=auditPage===pageCount;
     const pageLabel=`${auditPage} / ${pageCount}`;
