@@ -1,9 +1,15 @@
 .pire-expense-periods{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.018)}
+.pire-expense-control-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .pire-expense-modes,.pire-expense-navigation{display:flex;align-items:center;gap:8px}
 .pire-expense-periods button{min-height:40px;padding:0 16px;border:1px solid rgba(213,179,93,.3);border-radius:10px;background:rgba(255,255,255,.025);color:#aaa;font:inherit;font-weight:700;cursor:pointer}
 .pire-expense-periods button:hover,.pire-expense-periods button:focus-visible{border-color:#d8b75e;color:#fff;background:rgba(216,183,94,.1)}
 .pire-expense-periods button.active{color:#12130f;background:#dfbd62;border-color:#f4d77d;box-shadow:0 0 18px rgba(223,189,98,.16)}
+.pire-expense-category{display:flex;align-items:center;gap:8px;margin-left:8px;color:#8f8d87;font-size:12px}.pire-expense-category select,.pire-expense-compare-inputs input{height:40px;padding:0 12px;border:1px solid rgba(213,179,93,.3);border-radius:10px;background:#151713;color:#eee;font:inherit;cursor:pointer}
+.pire-expense-compare-trigger{color:#e4c56d!important}
 .pire-expense-periods [data-period]{min-width:190px;text-align:center;color:#ece8de;font-size:14px}
+.pire-expense-comparison{padding:18px 24px;border-bottom:1px solid rgba(255,255,255,.09);background:linear-gradient(90deg,rgba(216,183,94,.07),transparent)}
+.pire-expense-compare-inputs{display:flex;align-items:end;gap:12px;margin-bottom:16px}.pire-expense-compare-inputs label{display:grid;gap:6px;color:#aaa;font-size:12px}.pire-expense-compare-inputs>span{padding-bottom:11px;color:#777}
+.pire-expense-compare-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.pire-expense-compare-results article{display:grid;gap:6px;padding:14px 16px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(0,0,0,.18)}.pire-expense-compare-results span{color:#92928d;font-size:12px}.pire-expense-compare-results strong{font-size:22px;color:#ff7777}.pire-expense-compare-results small{color:#aaa}.pire-expense-compare-results .increase{color:#ff6565}.pire-expense-compare-results .decrease{color:#35d884}
 .pire-expense-empty{margin:18px 24px 24px;padding:28px;text-align:center;border:1px dashed rgba(216,183,94,.28);border-radius:12px;color:#999}
 tr[hidden]{display:none!important}
-@media(max-width:760px){.pire-expense-periods{align-items:stretch;flex-direction:column}.pire-expense-modes,.pire-expense-navigation{justify-content:center;flex-wrap:wrap}.pire-expense-periods [data-period]{order:-1;width:100%}}
+@media(max-width:900px){.pire-expense-periods{align-items:stretch;flex-direction:column}.pire-expense-modes,.pire-expense-navigation{justify-content:center;flex-wrap:wrap}.pire-expense-periods [data-period]{order:-1;width:100%}.pire-expense-control-row{justify-content:center}.pire-expense-compare-results{grid-template-columns:1fr}.pire-expense-compare-inputs{align-items:stretch;flex-direction:column}.pire-expense-compare-inputs>span{padding:0}}
