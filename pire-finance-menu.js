@@ -1,42 +1,33 @@
-/* Pİ-RE finans menüsü gelir / gider görsel ayrımı */
+/* Pİ-RE finans menüsü — React metnine dokunmayan gelir / gider ayrımı */
 (()=>{
-  const labels={
+  const rules={
     'Finans':{kind:'income'},'Finance':{kind:'income'},
-    'Ödemeler':{kind:'income',label:'+ Cari Alacak / Tahsilatlar'},
-    'Payments':{kind:'income',label:'+ Receivables / Collections'},
-    'Cari Alacak / Tahsilatlar':{kind:'income',label:'+ Cari Alacak / Tahsilatlar'},
-    '+ Cari Alacak / Tahsilatlar':{kind:'income',label:'+ Cari Alacak / Tahsilatlar'},
-    'Receivables / Collections':{kind:'income',label:'+ Receivables / Collections'},
-    '+ Receivables / Collections':{kind:'income',label:'+ Receivables / Collections'},
-    'Giderler':{kind:'expense'},'Expenses':{kind:'expense'},
-    'Gider Takibi':{kind:'expense'},'Expense Tracking':{kind:'expense'},
-    'Hakedişler':{kind:'expense',label:'Hakedişler / Maaşlar'},
-    'Eğitmen Hakedişleri':{kind:'expense',label:'Eğitmen Hakedişleri / Maaşlar'},
-    'Eğitmen Hakedişleri / Maaşlar':{kind:'expense',label:'Eğitmen Hakedişleri / Maaşlar'},
-    'Instructor Earnings':{kind:'expense',label:'Instructor Earnings / Salaries'},
-    'Earnings':{kind:'expense',label:'Earnings / Salaries'},
-    'Hakedişler / Maaşlar':{kind:'expense',label:'Hakedişler / Maaşlar'},
-    'Earnings / Salaries':{kind:'expense',label:'Earnings / Salaries'}
+    'Ödemeler':{kind:'income',marker:'receivables-tr'},'Cari Alacak / Tahsilatlar':{kind:'income',marker:'receivables-tr'},'+ Cari Alacak / Tahsilatlar':{kind:'income',marker:'receivables-tr'},
+    'Payments':{kind:'income',marker:'receivables-en'},'Receivables / Collections':{kind:'income',marker:'receivables-en'},'+ Receivables / Collections':{kind:'income',marker:'receivables-en'},
+    'Giderler':{kind:'expense'},'Expenses':{kind:'expense'},'Gider Takibi':{kind:'expense'},'Expense Tracking':{kind:'expense'},
+    'Hakedişler':{kind:'expense',marker:'earnings-tr'},'Hakedişler / Maaşlar':{kind:'expense',marker:'earnings-tr'},
+    'Earnings':{kind:'expense',marker:'earnings-en'},'Earnings / Salaries':{kind:'expense',marker:'earnings-en'},
+    'Eğitmen Hakedişleri':{kind:'expense',marker:'earnings-heading-tr'},'Eğitmen Hakedişleri / Maaşlar':{kind:'expense',marker:'earnings-heading-tr'},
+    'Instructor Earnings':{kind:'expense',marker:'earnings-heading-en'},'Instructor Earnings / Salaries':{kind:'expense',marker:'earnings-heading-en'}
   };
+  const markers=['pire-label-receivables-tr','pire-label-receivables-en','pire-label-earnings-tr','pire-label-earnings-en','pire-label-earnings-heading-tr','pire-label-earnings-heading-en'];
   function scan(){
-    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-    const nodes=[];let node;
-    while((node=walker.nextNode()))if(labels[node.textContent.trim()])nodes.push(node);
-    nodes.forEach(textNode=>{
-      const text=textNode.textContent.trim(),rule=labels[text];
-      const target=textNode.parentElement?.closest('button,a,[role="button"],li')||textNode.parentElement;
-      if(!target)return;
-      target.classList.toggle('pire-finance-income',rule.kind==='income');
-      target.classList.toggle('pire-finance-expense',rule.kind==='expense');
-      textNode.parentElement?.classList.toggle('pire-finance-income',rule.kind==='income');
-      textNode.parentElement?.classList.toggle('pire-finance-expense',rule.kind==='expense');
-      if(rule.label&&text!==rule.label)textNode.textContent=textNode.textContent.replace(text,rule.label);
-    });
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let textNode;
+    while((textNode=walker.nextNode())){
+      const rule=rules[textNode.textContent.trim()];if(!rule)continue;
+      const label=textNode.parentElement,target=label?.closest('button,a,[role="button"],li')||label;if(!target||!label)continue;
+      target.classList.add(rule.kind==='income'?'pire-finance-income':'pire-finance-expense');
+      label.classList.add(rule.kind==='income'?'pire-finance-income':'pire-finance-expense');
+      if(rule.marker){
+        markers.forEach(name=>{if(name!=='pire-label-'+rule.marker)label.classList.remove(name)});
+        label.classList.add('pire-label-'+rule.marker);
+      }
+    }
   }
   let queued=false;
   function queueScan(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;scan()})}
   if(document.body)scan();else document.addEventListener('DOMContentLoaded',scan,{once:true});
-  new MutationObserver(queueScan).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+  new MutationObserver(queueScan).observe(document.documentElement,{childList:true,subtree:true});
 })();
 
 ;(()=>{
