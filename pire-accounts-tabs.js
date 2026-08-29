@@ -4,7 +4,6 @@
   const AUDIT_SIZE_KEY='pire-audit-page-size';
   const TABS=[
     {id:'intro',label:'Kullanıcı Hesapları'},
-    {id:'accounts',label:'Hesaplar'},
     {id:'permissions',label:'Yetkiler'},
     {id:'announcements',label:'Duyurular'},
     {id:'backup',label:'Yedekleme'},
@@ -18,8 +17,8 @@
   const readTab=()=>{
     try{
       const value=localStorage.getItem(STORAGE_KEY);
-      return TABS.some(tab=>tab.id===value)?value:'accounts';
-    }catch(_){return 'accounts'}
+      return TABS.some(tab=>tab.id===value)?value:'intro';
+    }catch(_){return 'intro'}
   };
 
   const saveTab=value=>{
@@ -49,11 +48,11 @@
   }
 
   function showTab(page,tabId){
-    const active=TABS.some(tab=>tab.id===tabId)?tabId:'accounts';
+    const active=TABS.some(tab=>tab.id===tabId)?tabId:'intro';
     mark(page.querySelector(':scope > .account-hero'),'intro',active);
-    mark(page.querySelector(':scope > .account-stats'),'accounts',active);
-    mark(page.querySelector(':scope > .account-list-head'),'accounts',active);
-    mark(page.querySelector(':scope > .account-list'),'accounts',active);
+    mark(page.querySelector(':scope > .account-stats'),'intro',active);
+    mark(page.querySelector(':scope > .account-list-head'),'intro',active);
+    mark(page.querySelector(':scope > .account-list'),'intro',active);
     mark(page.querySelector(':scope > .access-control'),'permissions',active);
     mark(page.querySelector(':scope > .announcement-center'),'announcements',active);
     mark(page.querySelector(':scope > .account-backup'),'backup',active);
