@@ -1,3 +1,12 @@
+Fix 81 — Yönetim Alt Sekmelerini Başlıklara Taşı
+- Kullanıcılar alt sekmeleri Kullanıcı Hesapları başlığının yanına taşınır.
+- Sistem Sağlığı alt sekmeleri Sistem Sağlığı başlığının yanına taşınır.
+- Ayarlar alt sekmeleri Kurum Ayarları başlığının yanına taşınır.
+- Dar ekranlarda sekmeler kendi başlıklarının hemen altında yatay kullanılmaya devam eder.
+- Sayfa geçişlerinde başlık sekmeleri React işleminden önce güvenle kaldırılır.
+- İçerikler, işlemler, seçim hafızası ve kurum verileri değiştirilmez.
+- Beğenilmezse Fix80 sürümüne geri dönülebilir.
+
 Fix 80 — Rapor Alt Sekmelerini Başlığa Taşı
 - Özet, Branşlar, Finans, Eğitmenler ve Operasyon alt sekmeleri Raporlar ve Analiz başlığının yanına taşınır.
 - Dar ekranlarda sekmeler başlığın hemen altında yatay kullanılmaya devam eder.

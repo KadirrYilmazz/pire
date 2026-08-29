@@ -14,10 +14,12 @@ test('users workspace is divided into five persistent information tabs',()=>{
   assert.match(source,/localStorage\.setItem\(STORAGE_KEY,value\)/);
 });
 
-test('shared hero and feedback messages are never hidden',()=>{
-  assert.match(source,/createTabs\(page,hero\)/);
-  assert.match(source,/hero\.after\(nav\)/);
+test('account tabs are placed beside the page title while shared content remains visible',()=>{
+  assert.match(source,/findHeading\(page\)/);
+  assert.match(source,/heading\.classList\.add\('pire-account-heading'\)/);
+  assert.match(source,/titleBlock\.after\(nav\)/);
   assert.doesNotMatch(source,/mark\([^\n]*(account-hero|account-feedback)/);
+  assert.match(style,/header\.pire-account-heading > \.pire-account-tabs/);
 });
 
 test('all existing user information groups receive one tab',()=>{
@@ -30,4 +32,5 @@ test('React-managed account nodes are restored before account actions',()=>{
   assert.match(source,/element\.hidden=false/);
   assert.match(source,/document\.addEventListener\(type,restoreBeforeReact,true\)/);
   assert.match(style,/\[data-pire-account-section\]\[hidden\]\{display:none!important\}/);
+  assert.match(source,/classList\.remove\('pire-account-heading'\)/);
 });

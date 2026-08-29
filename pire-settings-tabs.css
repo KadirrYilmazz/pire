@@ -1,11 +1,13 @@
-.settings-workspace > .pire-settings-tabs{
+.content > header.pire-settings-heading{display:flex;align-items:center;gap:24px}
+.content > header.pire-settings-heading > div:first-child{flex:0 0 auto}
+.content > header.pire-settings-heading > .pire-settings-tabs{
   display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:thin;
-  margin:14px 0 18px;padding:5px;border:1px solid rgba(213,177,94,.22);
+  flex:1 1 auto;min-width:0;margin:0;padding:5px;border:1px solid rgba(213,177,94,.22);
   border-radius:14px;background:rgba(14,16,16,.72)
 }
 .pire-settings-tabs button{
-  flex:1 0 auto;min-width:120px;border:1px solid transparent;border-radius:10px;
-  padding:11px 14px;background:transparent;color:#aaa79f;font:inherit;font-weight:750;
+  flex:1 0 auto;min-width:105px;border:1px solid transparent;border-radius:10px;
+  padding:10px 12px;background:transparent;color:#aaa79f;font:inherit;font-weight:750;
   transition:background .18s ease,color .18s ease,border-color .18s ease
 }
 .pire-settings-tabs button:hover{color:#f3e7c4;background:rgba(213,177,94,.08)}
@@ -16,14 +18,18 @@
 .settings-workspace [data-pire-settings-section][hidden]{display:none!important}
 .settings-workspace[data-pire-settings-tab] > .settings-grid{grid-template-columns:minmax(0,1fr)!important}
 .settings-workspace[data-pire-settings-tab] > .settings-grid > section:not([hidden]){min-height:0;margin:0}
-html[data-theme="light"] .settings-workspace > .pire-settings-tabs{
+html[data-theme="light"] .content > header.pire-settings-heading > .pire-settings-tabs{
   background:rgba(255,255,255,.78);border-color:rgba(118,91,32,.22)
 }
 html[data-theme="light"] .pire-settings-tabs button{color:#655f54}
 html[data-theme="light"] .pire-settings-tabs button:hover{color:#513c12;background:rgba(174,132,40,.1)}
 html[data-theme="light"] .pire-settings-tabs button.active{color:#241b08;background:#d6b255}
+@media(max-width:1200px){
+  .content > header.pire-settings-heading{flex-wrap:wrap;gap:12px}
+  .content > header.pire-settings-heading > .pire-settings-tabs{flex:1 0 100%;order:3}
+}
 @media(max-width:700px){
-  .settings-workspace > .pire-settings-tabs{margin:10px 0 14px;padding:4px}
+  .content > header.pire-settings-heading > .pire-settings-tabs{padding:4px}
   .pire-settings-tabs button{min-width:112px;padding:10px 13px}
 }
 @media(prefers-reduced-motion:reduce){.pire-settings-tabs button{transition:none}}

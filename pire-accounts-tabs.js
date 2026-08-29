@@ -21,6 +21,11 @@
     try{localStorage.setItem(STORAGE_KEY,value)}catch(_){}
   };
 
+  function findHeading(page){
+    const content=page?.closest('.content');
+    return content?.querySelector(':scope > header')||null;
+  }
+
   function mark(element,section,active){
     if(!element)return;
     element.dataset.pireAccountSection=section;
@@ -38,7 +43,7 @@
     mark(page.querySelector(':scope > .account-audit'),'security',active);
 
     page.dataset.pireAccountTab=active;
-    page.querySelectorAll('.pire-account-tabs button').forEach(button=>{
+    findHeading(page)?.querySelectorAll(':scope > .pire-account-tabs button').forEach(button=>{
       const selected=button.dataset.accountTab===active;
       button.classList.toggle('active',selected);
       button.setAttribute('aria-selected',String(selected));
@@ -46,8 +51,8 @@
     });
   }
 
-  function createTabs(page,hero){
-    let nav=page.querySelector(':scope > .pire-account-tabs');
+  function createTabs(page,heading){
+    let nav=heading.querySelector(':scope > .pire-account-tabs');
     if(nav)return nav;
     nav=document.createElement('div');
     nav.className='pire-account-tabs';
@@ -74,23 +79,31 @@
       });
       nav.appendChild(button);
     });
-    hero.after(nav);
+    const titleBlock=heading.querySelector(':scope > div:not(.top-actions)');
+    if(!titleBlock)return null;
+    heading.classList.add('pire-account-heading');
+    titleBlock.after(nav);
     return nav;
   }
 
   function sync(){
     const page=document.querySelector('.account-workspace');
-    if(!page)return;
-    const hero=page.querySelector(':scope > .account-hero');
-    if(!hero)return;
-    createTabs(page,hero);
+    if(!page){
+      document.querySelectorAll('.pire-account-tabs').forEach(nav=>nav.remove());
+      document.querySelectorAll('.pire-account-heading').forEach(heading=>heading.classList.remove('pire-account-heading'));
+      return;
+    }
+    const heading=findHeading(page);
+    if(!heading)return;
+    createTabs(page,heading);
     showTab(page,readTab());
   }
 
   function restoreBeforeReact(event){
-    const page=event.target?.closest?.('.account-workspace');
+    const page=document.querySelector('.account-workspace');
     if(!page||event.target?.closest?.('.pire-account-tabs'))return;
-    page.querySelector(':scope > .pire-account-tabs')?.remove();
+    document.querySelector('.pire-account-tabs')?.remove();
+    findHeading(page)?.classList.remove('pire-account-heading');
     page.querySelectorAll('[data-pire-account-section]').forEach(element=>{
       element.hidden=false;
       delete element.dataset.pireAccountSection;
@@ -105,7 +118,7 @@
     setTimeout(()=>{queued=false;sync()},100);
   }
 
-  ['pointerdown','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
+  ['pointerdown','input','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
   new MutationObserver(queueSync).observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueSync,{once:true});

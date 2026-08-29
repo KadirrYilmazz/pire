@@ -22,6 +22,11 @@
     try{localStorage.setItem(STORAGE_KEY,value)}catch(_){}
   };
 
+  function findHeading(page){
+    const content=page?.closest('.content');
+    return content?.querySelector(':scope > header')||null;
+  }
+
   function showTab(page,tabId){
     const active=TABS.some(tab=>tab.id===tabId)?tabId:'institution';
     const sections=page.querySelectorAll(':scope > .settings-grid > section');
@@ -31,7 +36,7 @@
       section.hidden=id!==active;
     });
     page.dataset.pireSettingsTab=active;
-    page.querySelectorAll('.pire-settings-tabs button').forEach(button=>{
+    findHeading(page)?.querySelectorAll(':scope > .pire-settings-tabs button').forEach(button=>{
       const selected=button.dataset.settingsTab===active;
       button.classList.toggle('active',selected);
       button.setAttribute('aria-selected',String(selected));
@@ -39,8 +44,8 @@
     });
   }
 
-  function createTabs(page,hero){
-    let nav=page.querySelector(':scope > .pire-settings-tabs');
+  function createTabs(page,heading){
+    let nav=heading.querySelector(':scope > .pire-settings-tabs');
     if(nav)return nav;
     nav=document.createElement('div');
     nav.className='pire-settings-tabs';
@@ -67,24 +72,32 @@
       });
       nav.appendChild(button);
     });
-    hero.after(nav);
+    const titleBlock=heading.querySelector(':scope > div:not(.top-actions)');
+    if(!titleBlock)return null;
+    heading.classList.add('pire-settings-heading');
+    titleBlock.after(nav);
     return nav;
   }
 
   function sync(){
     const page=document.querySelector('.settings-workspace');
-    if(!page)return;
-    const hero=page.querySelector(':scope > .settings-hero');
+    if(!page){
+      document.querySelectorAll('.pire-settings-tabs').forEach(nav=>nav.remove());
+      document.querySelectorAll('.pire-settings-heading').forEach(heading=>heading.classList.remove('pire-settings-heading'));
+      return;
+    }
+    const heading=findHeading(page);
     const grid=page.querySelector(':scope > .settings-grid');
-    if(!hero||!grid)return;
-    createTabs(page,hero);
+    if(!heading||!grid)return;
+    createTabs(page,heading);
     showTab(page,readTab());
   }
 
   function restoreBeforeReact(event){
-    const page=event.target?.closest?.('.settings-workspace');
+    const page=document.querySelector('.settings-workspace');
     if(!page||event.target?.closest?.('.pire-settings-tabs'))return;
-    page.querySelector(':scope > .pire-settings-tabs')?.remove();
+    document.querySelector('.pire-settings-tabs')?.remove();
+    findHeading(page)?.classList.remove('pire-settings-heading');
     page.querySelectorAll('[data-pire-settings-section]').forEach(section=>{
       section.hidden=false;
       delete section.dataset.pireSettingsSection;
