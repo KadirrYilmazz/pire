@@ -1,0 +1,6 @@
+.pire-payment-tabs{display:flex;align-items:center;gap:10px;margin:0 0 20px;padding:8px;border:1px solid rgba(216,183,94,.22);border-radius:14px;background:rgba(255,255,255,.018);overflow-x:auto}
+.pire-payment-tabs button{display:flex;align-items:center;justify-content:center;min-width:145px;min-height:50px;padding:0 20px;border:1px solid transparent;border-radius:10px;background:transparent;color:#96958f;font:inherit;font-weight:750;white-space:nowrap;cursor:pointer;transition:.18s ease}
+.pire-payment-tabs button:hover,.pire-payment-tabs button:focus-visible{color:#f0eee8;background:rgba(255,255,255,.04);border-color:rgba(216,183,94,.24)}
+.pire-payment-tabs button.active{color:#152018;background:linear-gradient(135deg,#42dd8a,#21b969);border-color:#6af1a7;box-shadow:0 0 20px rgba(34,210,118,.18)}
+.payments-workspace>.payment-flow-summary[hidden],.payments-workspace>.collection-priority[hidden],.payments-workspace>.monthly-collections[hidden],.payments-workspace>.finance-analysis[hidden]{display:none!important}
+@media(max-width:700px){.pire-payment-tabs{justify-content:flex-start}.pire-payment-tabs button{min-width:128px;padding:0 14px}}
