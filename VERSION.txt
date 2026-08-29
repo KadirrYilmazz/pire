@@ -1,3 +1,12 @@
+Fix 92 — Merkezi Yönetici Girişi
+- Yeni Yönetici hesapları tarayıcıya özel yerel kayıt yerine Supabase Auth üzerinde merkezi oluşturulur.
+- Yönetici kimlikleri sunucuda YON-0002, YON-0003 sırasıyla güvenli biçimde üretilir.
+- Merkezi Yönetici hesapları telefon ve şifreyle farklı cihazlardan giriş yapabilir.
+- Yönetici oluşturma işlemi yalnızca aktif bir merkezi Yönetici oturumundan yapılabilir.
+- Mevcut yerel Yönetici 2 ve 3 kayıtları merkezi giriş doğrulanana kadar yedek olarak korunur.
+- Telefon ve şifreler istemci koduna veya sürüm geçmişine yazılmaz.
+- Beğenilmezse Fix91 sürümüne geri dönülebilir.
+
 Fix 91 — Yeni Düğmesi Mavi Renk
 - Üst menüdeki + Yeni düğmesi yeşilden canlı mavi renk geçişine çevrilir.
 - Beyaz yazı, mavi çerçeve ve belirgin mavi parlama uygulanır.
