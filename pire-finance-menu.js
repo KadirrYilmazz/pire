@@ -14,17 +14,23 @@
     'Hakedişler / Maaşlar':{kind:'expense',label:'Hakedişler / Maaşlar'},
     'Earnings / Salaries':{kind:'expense',label:'Earnings / Salaries'}
   };
-  function ownText(element){return [...element.childNodes].find(node=>node.nodeType===Node.TEXT_NODE&&node.textContent.trim())}
   function scan(){
-    document.querySelectorAll('button,a,[role="button"]').forEach(element=>{
-      const node=ownText(element),text=node?.textContent.trim(),rule=labels[text];
-      if(!rule)return;
-      element.classList.toggle('pire-finance-income',rule.kind==='income');
-      element.classList.toggle('pire-finance-expense',rule.kind==='expense');
-      if(rule.label&&text!==rule.label)node.textContent=node.textContent.replace(text,rule.label);
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    const nodes=[];let node;
+    while((node=walker.nextNode()))if(labels[node.textContent.trim()])nodes.push(node);
+    nodes.forEach(textNode=>{
+      const text=textNode.textContent.trim(),rule=labels[text];
+      const target=textNode.parentElement?.closest('button,a,[role="button"],li')||textNode.parentElement;
+      if(!target)return;
+      target.classList.toggle('pire-finance-income',rule.kind==='income');
+      target.classList.toggle('pire-finance-expense',rule.kind==='expense');
+      textNode.parentElement?.classList.toggle('pire-finance-income',rule.kind==='income');
+      textNode.parentElement?.classList.toggle('pire-finance-expense',rule.kind==='expense');
+      if(rule.label&&text!==rule.label)textNode.textContent=textNode.textContent.replace(text,rule.label);
     });
   }
   let queued=false;
   function queueScan(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;scan()})}
-  scan();new MutationObserver(queueScan).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+  if(document.body)scan();else document.addEventListener('DOMContentLoaded',scan,{once:true});
+  new MutationObserver(queueScan).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
 })();
