@@ -39,8 +39,7 @@
       Object.entries(labels).forEach(([id,label])=>{const button=document.createElement('button');button.type='button';button.dataset.filter=id;button.setAttribute('role','tab');button.innerHTML='<span>'+label+'</span><b>0</b>';button.addEventListener('click',()=>{filter=id;page=1;sessionStorage.setItem(FILTER_KEY,filter);render(root)});tabs.appendChild(button)});
       controls.appendChild(tabs);
     }
-    if(host&&controls.parentElement!==host)host.appendChild(controls);
-    else if(!host&&!controls.isConnected)root.prepend(controls);
+    if(controls.parentElement!==root)root.prepend(controls);
     let footer=root.querySelector('.pire-makeup-pagination');
     if(!footer){
       footer=document.createElement('div');footer.className='pire-makeup-pagination';
