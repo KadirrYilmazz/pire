@@ -74,6 +74,13 @@
     ui.footer.querySelector('[data-page="prev"]').disabled=page<=1;
     ui.footer.querySelector('[data-page="next"]').disabled=page>=pages;
   }
+  document.addEventListener('click',event=>{
+    const button=event.target.closest?.('.pire-makeup-tabs button[data-filter]');
+    if(!button)return;
+    event.preventDefault();event.stopPropagation();
+    filter=button.dataset.filter;page=1;sessionStorage.setItem(FILTER_KEY,filter);
+    const root=document.querySelector('.makeups-page');if(root)render(root);
+  },true);
   function enhance(){const root=document.querySelector('.makeups-page');if(root)render(root)}
   let queued=false;function scan(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhance()})}
   scan();new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
