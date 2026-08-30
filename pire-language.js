@@ -173,7 +173,19 @@
       a.pire-social-icon.linkedin-icon svg{width:20px;height:20px;display:block}
       a.pire-social-icon.linkedin-icon:hover{transform:translateY(-1px);filter:brightness(1.18)}
       a.pire-social-icon.linkedin-icon:focus-visible{outline:2px solid #0a66c2;outline-offset:4px;border-radius:4px}
-      @media(max-width:700px){.pire-language-toggle{font-size:10px!important}}
+      .contact-socials{display:flex!important;align-items:center!important;gap:12px!important;flex-wrap:wrap}
+      .contact-socials .pire-social-icon{width:48px!important;height:48px!important;min-width:48px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:15px!important;background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.025))!important;box-shadow:0 8px 24px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.12)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,filter .2s ease!important}
+      .contact-socials .pire-social-icon svg{width:26px!important;height:26px!important;display:block!important;overflow:visible}
+      .contact-socials .pire-social-icon:hover{transform:translateY(-3px) scale(1.04)!important;border-color:rgba(255,255,255,.28)!important;filter:none!important}
+      .contact-socials .instagram-icon:hover{box-shadow:0 10px 28px rgba(225,48,108,.32),inset 0 1px 0 rgba(255,255,255,.16)!important}
+      .contact-socials .youtube-icon{color:#ff0033!important}.contact-socials .youtube-icon:hover{box-shadow:0 10px 28px rgba(255,0,51,.32),inset 0 1px 0 rgba(255,255,255,.16)!important}
+      .contact-socials .linkedin-icon{color:#1686d9!important}.contact-socials .linkedin-icon:hover{box-shadow:0 10px 28px rgba(10,102,194,.34),inset 0 1px 0 rgba(255,255,255,.16)!important}
+      .contact-socials .facebook-icon{color:#2584ff!important}.contact-socials .facebook-icon:hover{box-shadow:0 10px 28px rgba(37,132,255,.32),inset 0 1px 0 rgba(255,255,255,.16)!important}
+      .contact-socials .x-icon,.contact-socials .twitter-icon{color:#f5f2ea!important}.contact-socials .x-icon:hover,.contact-socials .twitter-icon:hover{box-shadow:0 10px 28px rgba(255,255,255,.18),inset 0 1px 0 rgba(255,255,255,.16)!important}
+      .contact-socials .tiktok-icon:hover{box-shadow:-5px 8px 22px rgba(37,244,238,.22),5px 8px 22px rgba(254,44,85,.22),inset 0 1px 0 rgba(255,255,255,.16)!important}
+      html[data-theme="light"] .contact-socials .pire-social-icon{background:linear-gradient(145deg,#fff,#f4f1e9)!important;border-color:rgba(91,69,27,.15)!important;box-shadow:0 8px 20px rgba(60,45,18,.10),inset 0 1px 0 #fff!important}
+      html[data-theme="light"] .contact-socials .x-icon,html[data-theme="light"] .contact-socials .twitter-icon{color:#161616!important}
+      @media(max-width:700px){.pire-language-toggle{font-size:10px!important}.contact-socials{gap:9px!important}.contact-socials .pire-social-icon{width:42px!important;height:42px!important;min-width:42px!important;border-radius:13px!important}.contact-socials .pire-social-icon svg{width:23px!important;height:23px!important}}
     `;
     document.head.appendChild(style);
   }
