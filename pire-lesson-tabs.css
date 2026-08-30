@@ -1,0 +1,33 @@
+/* Pİ-RE yoklama ve telafi ortak kompakt alt sekmeleri */
+.attendance-page,.makeups-page{gap:12px!important}
+.attendance-summary,.makeup-summary{display:none!important}
+.attendance-page>.pire-attendance-controls,.makeups-page>.pire-makeup-controls{position:relative;width:min(68%,1080px);margin:-104px 0 18px auto;z-index:1000;pointer-events:auto!important}
+.pire-attendance-controls{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 14px;background:rgba(255,255,255,.015)}
+.pire-makeup-controls{border:1px solid var(--line);border-radius:14px;padding:8px 10px;background:rgba(255,255,255,.015)}
+.pire-attendance-tabs,.pire-makeup-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;position:relative;z-index:1001;pointer-events:auto!important}
+.pire-attendance-tabs button,.pire-makeup-tabs button{position:relative;min-height:42px;border:1px solid rgba(216,183,94,.18);border-radius:10px;background:rgba(255,255,255,.025);color:var(--muted);font:inherit;font-size:12px;font-weight:750;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;pointer-events:auto!important}
+.pire-attendance-tabs button b,.pire-makeup-tabs button b{min-width:24px;padding:3px 7px;border-radius:999px;background:rgba(255,255,255,.07);font-size:10px}
+.pire-attendance-tabs button.active,.pire-makeup-tabs button.active{color:#17130c;background:linear-gradient(135deg,#dfbd61,#c89a3e);border-color:#f0d47f;box-shadow:0 8px 22px rgba(207,164,68,.16)}
+.pire-attendance-tabs button.active b,.pire-makeup-tabs button.active b{background:rgba(16,13,7,.13)}
+.attendance-list>.panel-title{min-height:76px;padding:16px 20px!important}
+.attendance-lesson-row{min-height:58px!important;padding:10px 20px!important}
+.attendance-lesson-row[hidden],.makeup-lesson-row[hidden],.makeup-right[hidden],.change-row[hidden],.makeup-columns[hidden],.makeups-page section[hidden]{display:none!important}
+.makeups-page .makeup-columns{grid-template-columns:1fr!important;gap:12px!important}
+.makeups-page .panel>.panel-title{min-height:68px!important;padding:14px 20px!important}
+.makeup-lesson-row,.makeup-right,.change-row{min-height:64px!important;padding:11px 20px!important}
+.pire-attendance-pagination,.pire-makeup-pagination{min-height:58px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:12px}
+.pire-attendance-pagination{border-top:1px solid var(--line)}
+.pire-makeup-pagination{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.015)}
+.pire-attendance-pagination label,.pire-makeup-pagination label{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:700}
+.pire-attendance-pagination select,.pire-attendance-pagination button,.pire-makeup-pagination select,.pire-makeup-pagination button{height:36px;border:1px solid rgba(216,183,94,.28);border-radius:9px;background:rgba(255,255,255,.025);color:inherit;padding:0 12px;font:inherit;font-size:11px;font-weight:750}
+.pire-attendance-pagination button,.pire-makeup-pagination button{cursor:pointer}
+.pire-attendance-pagination button:disabled,.pire-makeup-pagination button:disabled{opacity:.35;cursor:not-allowed}
+.pire-attendance-pagination strong,.pire-makeup-pagination strong{min-width:54px;text-align:center;color:#d8b75e;font-size:13px}
+.pire-attendance-empty,.pire-makeup-empty{padding:32px;text-align:center;color:var(--muted);font-size:12px}
+.pire-makeup-empty{border:1px solid var(--line);border-radius:14px}
+.pire-attendance-empty[hidden],.pire-attendance-pagination[hidden],.pire-makeup-empty[hidden],.pire-makeup-pagination[hidden]{display:none!important}
+html[data-theme=light] .pire-attendance-controls,html[data-theme=light] .pire-makeup-controls,html[data-theme=light] .pire-makeup-pagination{background:#fff}
+html[data-theme=light] .pire-attendance-tabs button,html[data-theme=light] .pire-makeup-tabs button{background:#faf8f2;color:#6e685d}
+html[data-theme=light] .pire-attendance-pagination select,html[data-theme=light] .pire-attendance-pagination button,html[data-theme=light] .pire-makeup-pagination select,html[data-theme=light] .pire-makeup-pagination button{background:#fff}
+@media(max-width:1200px){.attendance-page>.pire-attendance-controls,.makeups-page>.pire-makeup-controls{width:100%;margin:0 0 12px}.pire-attendance-tabs,.pire-makeup-tabs{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.pire-attendance-tabs,.pire-makeup-tabs{display:flex;overflow-x:auto}.pire-attendance-tabs button{min-width:145px}.pire-makeup-tabs button{min-width:165px}.pire-attendance-pagination,.pire-makeup-pagination{flex-wrap:wrap}.pire-attendance-pagination label,.pire-makeup-pagination label{width:100%;justify-content:center}.makeup-lesson-row,.makeup-right,.change-row{padding:10px 12px!important}}
