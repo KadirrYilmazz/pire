@@ -388,9 +388,16 @@
   }
 
   async function initializeGreeting(root){
-    state.profileGender=await requestProfileGender();
-    if(!authenticated()||root.querySelector(".pire-guide-message.user"))return;
-    const messages=root.querySelector(".pire-guide-messages");messages.innerHTML="";addMessage(welcomeMessage());
+    if(root.querySelector(".pire-guide-message.user"))return;
+    const messages=root.querySelector(".pire-guide-messages");
+    messages.innerHTML="";
+    addMessage(welcomeMessage());
+    const gender=await requestProfileGender();
+    state.profileGender=gender;
+    if(root.querySelector(".pire-guide-message.user"))return;
+    const greeting=root.querySelector(".pire-guide-message.bot");
+    if(greeting)greeting.textContent=welcomeMessage();
+    else addMessage(welcomeMessage());
   }
 
   function addMessage(text,type="bot"){
