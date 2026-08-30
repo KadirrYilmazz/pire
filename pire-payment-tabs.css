@@ -6,5 +6,5 @@
 .payments-workspace>.payment-flow-summary[hidden],.payments-workspace>.collection-priority[hidden],.payments-workspace>.monthly-collections[hidden],.payments-workspace>.finance-analysis[hidden]{display:none!important}
 .pire-payment-tabs.compact-row{padding:10px 0;border-left:0;border-top:1px solid rgba(216,183,94,.18);background:#0c0e0b}.pire-payment-tabs.compact-row button{min-width:140px;padding:0 16px}
 
-h1.pire-payment-heading{font-size:0!important}
+h1.pire-payment-heading{font-size:0!important;color:#20df78!important;text-shadow:0 0 16px rgba(32,223,120,.2)}
 h1.pire-payment-heading::before{content:attr(data-pire-payment-label);font-size:32px;line-height:1.15}
