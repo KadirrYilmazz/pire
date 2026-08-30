@@ -162,6 +162,9 @@
       a.pire-social-icon.tiktok-icon{cursor:pointer!important;pointer-events:auto!important;text-decoration:none!important}
       a.pire-social-icon.tiktok-icon:hover{transform:translateY(-1px);filter:brightness(1.18)}
       a.pire-social-icon.tiktok-icon:focus-visible{outline:2px solid #25f4ee;outline-offset:4px;border-radius:4px}
+      a.pire-social-icon.twitter-icon,a.pire-social-icon.x-icon{cursor:pointer!important;pointer-events:auto!important;text-decoration:none!important}
+      a.pire-social-icon.twitter-icon:hover,a.pire-social-icon.x-icon:hover{transform:translateY(-1px);filter:brightness(1.18)}
+      a.pire-social-icon.twitter-icon:focus-visible,a.pire-social-icon.x-icon:focus-visible{outline:2px solid #1d9bf0;outline-offset:4px;border-radius:4px}
       a.pire-social-icon.linkedin-icon{color:#0a66c2!important;cursor:pointer!important;pointer-events:auto!important;text-decoration:none!important;display:inline-flex;align-items:center;justify-content:center}
       a.pire-social-icon.linkedin-icon svg{width:20px;height:20px;display:block}
       a.pire-social-icon.linkedin-icon:hover{transform:translateY(-1px);filter:brightness(1.18)}
@@ -211,6 +214,19 @@
       icon.replaceWith(link);
     });
   }
+  function linkTwitterIcon(){
+    document.querySelectorAll('.contact-socials .pire-social-icon.twitter-icon:not(a),.contact-socials .pire-social-icon.x-icon:not(a)').forEach(icon=>{
+      const link=document.createElement('a');
+      link.className=icon.className;
+      link.href='https://x.com/PREEGTMATLY';
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      link.setAttribute('aria-label','Pİ-RE X profilini aç');
+      link.title='X';
+      link.innerHTML=icon.innerHTML;
+      icon.replaceWith(link);
+    });
+  }
   function addLinkedInIcon(){
     if(document.querySelector('.pire-social-icon.linkedin-icon'))return;
     const facebook=document.querySelector('.contact-socials .pire-social-icon.facebook-icon');
@@ -226,7 +242,7 @@
     link.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.2 3.5A2.2 2.2 0 1 1 5.2 8a2.2 2.2 0 0 1 0-4.5ZM3.4 9.6H7V21H3.4V9.6Zm5.8 0h3.4v1.6h.1c.5-.9 1.7-2 3.7-2 3.9 0 4.6 2.5 4.6 5.9V21h-3.6v-5.2c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9V21H9.2V9.6Z"/></svg>';
     facebook?facebook.after(link):container.appendChild(link);
   }
-  function sync(){linkFacebookIcon();linkTikTokIcon();addLinkedInIcon();if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
+  function sync(){linkFacebookIcon();linkTikTokIcon();linkTwitterIcon();addLinkedInIcon();if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
   function queueSync(){if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},90)}
   function loadLoginNotification(){
     if(document.querySelector('script[data-pire-login-notification]'))return;
