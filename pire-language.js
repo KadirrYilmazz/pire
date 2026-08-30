@@ -221,7 +221,7 @@
 
   function markInstagramIcon(){
     document.querySelectorAll('.contact-socials a[href*="instagram.com"]').forEach(link=>{
-      link.classList.add('instagram-icon');
+      link.classList.add('pire-social-icon','instagram-icon');
       link.setAttribute('aria-label','Pİ-RE Instagram profilini aç');
       link.title='Instagram';
     });
