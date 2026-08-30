@@ -12,6 +12,7 @@
   };
   const markers=['pire-label-receivables-tr','pire-label-receivables-en','pire-label-earnings-tr','pire-label-earnings-en','pire-label-earnings-heading-tr','pire-label-earnings-heading-en'];
   function scan(){
+    document.querySelectorAll('.pire-finance-income,.pire-finance-expense,'+markers.map(x=>'.'+x).join(',')).forEach(element=>element.classList.remove('pire-finance-income','pire-finance-expense',...markers));
     const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let textNode;
     while((textNode=walker.nextNode())){
       const rule=rules[textNode.textContent.trim()];if(!rule)continue;
@@ -41,7 +42,7 @@
 
 ;(()=>{
   if(!document.querySelector('link[data-pire-payment-tabs]')){
-    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-payment-tabs.css?v=6';link.dataset.pirePaymentTabs='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-payment-tabs.css?v=7';link.dataset.pirePaymentTabs='true';document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-pire-payment-tabs]')){
     const script=document.createElement('script');script.src='/pire-payment-tabs.js?v=5';script.defer=true;script.dataset.pirePaymentTabs='true';document.head.appendChild(script);
