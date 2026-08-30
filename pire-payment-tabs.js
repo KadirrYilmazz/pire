@@ -10,10 +10,22 @@
   let active=sessionStorage.getItem(KEY)||'summary';
 
   function workspace(){return document.querySelector('.payments-workspace')}
+  function activePageLabel(){
+    return [...document.querySelectorAll('.primary-nav button.active span')].map(x=>x.textContent.trim()).find(Boolean)||'';
+  }
+  function restoreHeading(){
+    const heading=document.querySelector('h1.pire-payment-heading')||[...document.querySelectorAll('h1')].find(x=>/Cari Alacak\s*\/\s*Tahsilatlar/.test(x.textContent));
+    if(!heading)return;
+    heading.classList.remove('pire-payment-heading');delete heading.dataset.pirePaymentLabel;
+    const titles={'Genel Bakış':'Genel Bakış','Müşteriler':'Müşteriler','Öğrenciler':'Öğrenciler','Eğitmenler':'Eğitmenler','Ödemeler':'Ödeme Takibi','Giderler':'Gider Takibi','Hakedişler':'Eğitmen Hakedişleri','Yoklama':'Yoklama ve Ders Notları','Telafiler':'Telafi ve Ders Değişiklikleri','Takvim':'Ders Takvimi','Raporlar':'Raporlar ve Analiz','Kullanıcılar':'Kullanıcı Hesapları','Sistem Sağlığı':'Sistem Sağlığı','Ayarlar':'Kurum Ayarları','İletişim':'İletişim'};
+    const title=titles[activePageLabel()];if(title)heading.textContent=title;
+  }
   function renameHeading(){
-    const heading=[...document.querySelectorAll('h1')].find(x=>x.textContent.trim()==='Ödeme Takibi');
-    if(heading)heading.textContent='Cari Alacak / Tahsilatlar';
-    return heading||[...document.querySelectorAll('h1')].find(x=>/Cari Alacak\s*\/\s*Tahsilatlar/.test(x.textContent));
+    const heading=[...document.querySelectorAll('h1')].find(x=>x.textContent.trim()==='Ödeme Takibi'||/Cari Alacak\s*\/\s*Tahsilatlar/.test(x.textContent)||x.classList.contains('pire-payment-heading'));
+    if(!heading)return null;
+    if(/Cari Alacak\s*\/\s*Tahsilatlar/.test(heading.textContent))heading.textContent='Ödeme Takibi';
+    heading.classList.add('pire-payment-heading');heading.dataset.pirePaymentLabel='Cari Alacak / Tahsilatlar';
+    return heading;
   }
   function show(id){
     if(!tabs.some(x=>x.id===id))id='summary';active=id;sessionStorage.setItem(KEY,id);
@@ -37,7 +49,7 @@
   }
   function enhance(){
     const root=workspace();
-    if(!root){document.querySelector('.pire-payment-tabs')?.remove();return}
+    if(!root){document.querySelector('.pire-payment-tabs')?.remove();restoreHeading();return}
     const heading=renameHeading(),header=heading?.closest('header');
     let nav=document.querySelector('.pire-payment-tabs');
     if(!nav){
