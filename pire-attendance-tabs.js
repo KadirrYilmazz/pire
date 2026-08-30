@@ -8,13 +8,14 @@
   function rows(root){return [...root.querySelectorAll('.attendance-lesson-row[data-attendance-state]')]}
   function build(root){
     const list=root.querySelector('.attendance-list'),title=list?.querySelector('.panel-title');if(!list||!title)return null;
-    let controls=list.querySelector('.pire-attendance-controls');
+    let controls=root.querySelector('.pire-attendance-controls');
     if(!controls){
       controls=document.createElement('div');controls.className='pire-attendance-controls';
       const tabs=document.createElement('div');tabs.className='pire-attendance-tabs';tabs.setAttribute('role','tablist');
       Object.entries(labels).forEach(([id,label])=>{const button=document.createElement('button');button.type='button';button.dataset.filter=id;button.setAttribute('role','tab');button.innerHTML='<span>'+label+'</span><b>0</b>';button.addEventListener('click',()=>{filter=id;page=1;sessionStorage.setItem(FILTER_KEY,filter);render(root)});tabs.appendChild(button)});
-      controls.appendChild(tabs);title.after(controls);
+      controls.appendChild(tabs);
     }
+    if(controls.parentElement!==root)root.prepend(controls);
     let footer=list.querySelector('.pire-attendance-pagination');
     if(!footer){
       footer=document.createElement('div');footer.className='pire-attendance-pagination';
