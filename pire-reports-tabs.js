@@ -112,26 +112,12 @@
     showTab(page,readTab());
   }
 
-  function restoreBeforeReact(event){
-    const page=document.querySelector('.reports-page');
-    if(!page||event.target?.closest?.('.pire-report-tabs'))return;
-    document.querySelector('.pire-report-tabs')?.remove();
-    findHeading(page)?.classList.remove('pire-report-heading');
-    page.querySelectorAll('[data-pire-report-section]').forEach(element=>{
-      element.hidden=false;
-      delete element.dataset.pireReportSection;
-    });
-    delete page.dataset.pireReportTab;
-    queueSync();
-  }
-
   function queueSync(){
     if(queued)return;
     queued=true;
     setTimeout(()=>{queued=false;sync()},100);
   }
 
-  ['pointerdown','input','change','submit'].forEach(type=>document.addEventListener(type,restoreBeforeReact,true));
   new MutationObserver(queueSync).observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)queueSync()});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueSync,{once:true});
