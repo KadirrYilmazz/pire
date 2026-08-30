@@ -356,12 +356,12 @@
 ;(()=>{
   if(!document.querySelector('link[data-pire-makeup-tabs]')){
     const link=document.createElement('link');
-    link.rel='stylesheet';link.href='/pire-makeup-tabs.css?v=2';link.dataset.pireMakeupTabs='true';
+    link.rel='stylesheet';link.href='/pire-makeup-tabs.css?v=3';link.dataset.pireMakeupTabs='true';
     document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-pire-makeup-tabs]')){
     const script=document.createElement('script');
-    script.src='/pire-makeup-tabs.js?v=2';script.defer=true;script.dataset.pireMakeupTabs='true';
+    script.src='/pire-makeup-tabs.js?v=3';script.defer=true;script.dataset.pireMakeupTabs='true';
     document.head.appendChild(script);
   }
 })();
