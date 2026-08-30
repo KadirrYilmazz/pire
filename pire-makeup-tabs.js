@@ -22,15 +22,25 @@
       history:[...root.querySelectorAll('.change-history .change-row')]
     };
   }
+  function findHeading(){
+    return [...document.querySelectorAll('h1,h2')].find(node=>{
+      const text=(node.textContent||'').trim().toLocaleLowerCase('tr-TR');
+      return text.includes('telafi ve ders değişiklikleri')||text.includes('make-up')||text.includes('lesson changes');
+    });
+  }
   function build(root){
-    const summary=root.querySelector('.makeup-summary');if(!summary)return null;
-    let controls=root.querySelector('.pire-makeup-controls');
+    const summary=root.querySelector('.makeup-summary');if(summary)summary.hidden=true;
+    const heading=findHeading(),host=heading?.parentElement;
+    if(host)host.classList.add('pire-makeup-heading-host');
+    let controls=document.querySelector('.pire-makeup-controls');
     if(!controls){
       controls=document.createElement('div');controls.className='pire-makeup-controls';
       const tabs=document.createElement('div');tabs.className='pire-makeup-tabs';tabs.setAttribute('role','tablist');
       Object.entries(labels).forEach(([id,label])=>{const button=document.createElement('button');button.type='button';button.dataset.filter=id;button.setAttribute('role','tab');button.innerHTML='<span>'+label+'</span><b>0</b>';button.addEventListener('click',()=>{filter=id;page=1;sessionStorage.setItem(FILTER_KEY,filter);render(root)});tabs.appendChild(button)});
-      controls.appendChild(tabs);summary.after(controls);
+      controls.appendChild(tabs);
     }
+    if(host&&controls.parentElement!==host)host.appendChild(controls);
+    else if(!host&&!controls.isConnected)root.prepend(controls);
     let footer=root.querySelector('.pire-makeup-pagination');
     if(!footer){
       footer=document.createElement('div');footer.className='pire-makeup-pagination';
