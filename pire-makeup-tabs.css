@@ -2,9 +2,10 @@
 .makeups-page{gap:12px!important}
 .makeup-summary{display:none!important}
 .pire-makeup-heading-host{position:relative!important;padding-right:min(70%,1100px)!important}
-.pire-makeup-heading-host>.pire-makeup-controls{position:absolute;right:0;bottom:18px;width:min(68%,1080px);z-index:2}
+.pire-makeup-heading-host>.pire-makeup-controls{position:absolute;right:0;bottom:18px;width:min(68%,1080px);z-index:1000;pointer-events:auto!important}
 .pire-makeup-controls{border:1px solid var(--line);border-radius:14px;padding:8px 10px;background:rgba(255,255,255,.015)}
 .pire-makeup-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pire-makeup-tabs,.pire-makeup-tabs button{position:relative;z-index:1001;pointer-events:auto!important}
 .pire-makeup-tabs button{min-height:42px;border:1px solid rgba(216,183,94,.18);border-radius:10px;background:rgba(255,255,255,.025);color:var(--muted);font:inherit;font-size:12px;font-weight:750;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .pire-makeup-tabs button b{min-width:24px;padding:3px 7px;border-radius:999px;background:rgba(255,255,255,.07);font-size:10px}
 .pire-makeup-tabs button.active{color:#17130c;background:linear-gradient(135deg,#dfbd61,#c89a3e);border-color:#f0d47f;box-shadow:0 8px 22px rgba(207,164,68,.16)}
