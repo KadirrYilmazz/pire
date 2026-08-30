@@ -351,3 +351,17 @@
     document.head.appendChild(script);
   }
 })();
+
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-makeup-tabs]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='/pire-makeup-tabs.css?v=1';link.dataset.pireMakeupTabs='true';
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-makeup-tabs]')){
+    const script=document.createElement('script');
+    script.src='/pire-makeup-tabs.js?v=1';script.defer=true;script.dataset.pireMakeupTabs='true';
+    document.head.appendChild(script);
+  }
+})();
