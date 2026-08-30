@@ -177,7 +177,7 @@
       .contact-socials .pire-social-icon{width:48px!important;height:48px!important;min-width:48px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:15px!important;background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.025))!important;box-shadow:0 8px 24px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.12)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,filter .2s ease!important}
       .contact-socials .pire-social-icon svg{width:26px!important;height:26px!important;display:block!important;overflow:visible}
       .contact-socials .pire-social-icon:hover{transform:translateY(-3px) scale(1.04)!important;border-color:rgba(255,255,255,.28)!important;filter:none!important}
-      .contact-socials .instagram-icon:hover{box-shadow:0 10px 28px rgba(225,48,108,.32),inset 0 1px 0 rgba(255,255,255,.16)!important}
+      .contact-socials .instagram-icon:hover{box-shadow:-7px 8px 24px rgba(255,122,0,.24),0 9px 28px rgba(225,48,108,.34),7px 7px 24px rgba(131,58,180,.28)!important}
       .contact-socials .youtube-icon{color:#ff0033!important}.contact-socials .youtube-icon:hover{box-shadow:0 10px 28px rgba(255,0,51,.32),inset 0 1px 0 rgba(255,255,255,.16)!important}
       .contact-socials .linkedin-icon{color:#1686d9!important}.contact-socials .linkedin-icon:hover{box-shadow:0 10px 28px rgba(10,102,194,.34),inset 0 1px 0 rgba(255,255,255,.16)!important}
       .contact-socials .facebook-icon{color:#2584ff!important}.contact-socials .facebook-icon:hover{box-shadow:0 10px 28px rgba(37,132,255,.32),inset 0 1px 0 rgba(255,255,255,.16)!important}
@@ -210,6 +210,13 @@
     updateButtons();
   }
 
+  function markInstagramIcon(){
+    document.querySelectorAll('.contact-socials a[href*="instagram.com"]').forEach(link=>{
+      link.classList.add('instagram-icon');
+      link.setAttribute('aria-label','Pİ-RE Instagram profilini aç');
+      link.title='Instagram';
+    });
+  }
   function linkFacebookIcon(){
     document.querySelectorAll('.pire-social-icon.facebook-icon:not(a)').forEach(icon=>{
       const link=document.createElement('a');
@@ -279,7 +286,7 @@
     link.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.2 3.5A2.2 2.2 0 1 1 5.2 8a2.2 2.2 0 0 1 0-4.5ZM3.4 9.6H7V21H3.4V9.6Zm5.8 0h3.4v1.6h.1c.5-.9 1.7-2 3.7-2 3.9 0 4.6 2.5 4.6 5.9V21h-3.6v-5.2c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9V21H9.2V9.6Z"/></svg>';
     facebook?facebook.after(link):container.appendChild(link);
   }
-  function sync(){linkFacebookIcon();linkTikTokIcon();linkTwitterIcon();addYouTubeIcon();addLinkedInIcon();if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
+  function sync(){markInstagramIcon();linkFacebookIcon();linkTikTokIcon();linkTwitterIcon();addYouTubeIcon();addLinkedInIcon();if(ready)placeButtons();if(ready&&language()==='en')translate(document);else updateButtons()}
   function queueSync(){if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},90)}
   function loadLoginNotification(){
     if(document.querySelector('script[data-pire-login-notification]'))return;
