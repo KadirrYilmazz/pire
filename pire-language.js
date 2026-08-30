@@ -337,3 +337,17 @@
     document.head.appendChild(script);
   }
 })();
+
+
+;(()=>{
+  if(!document.querySelector('link[data-pire-attendance-tabs]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';link.href='/pire-attendance-tabs.css?v=1';link.dataset.pireAttendanceTabs='true';
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-pire-attendance-tabs]')){
+    const script=document.createElement('script');
+    script.src='/pire-attendance-tabs.js?v=1';script.defer=true;script.dataset.pireAttendanceTabs='true';
+    document.head.appendChild(script);
+  }
+})();
