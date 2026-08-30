@@ -1,5 +1,6 @@
 /* Pİ-RE kompakt yoklama ekranı */
 .attendance-page{gap:12px!important}
+.attendance-page>.pire-attendance-controls{position:relative;width:min(68%,1080px);margin:-104px 0 18px auto;z-index:1000;pointer-events:auto!important}
 .attendance-summary{display:none!important}
 .attendance-list>.panel-title{min-height:76px;padding:16px 20px!important}
 .pire-attendance-controls{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 14px;background:rgba(255,255,255,.015)}
@@ -19,5 +20,5 @@
 html[data-theme=light] .pire-attendance-controls{background:#fff}
 html[data-theme=light] .pire-attendance-tabs button{background:#faf8f2;color:#6e685d}
 html[data-theme=light] .pire-attendance-pagination select,html[data-theme=light] .pire-attendance-pagination button{background:#fff}
-@media(max-width:900px){.pire-attendance-tabs{grid-template-columns:1fr 1fr}}
+@media(max-width:1200px){.attendance-page>.pire-attendance-controls{width:100%;margin:0 0 12px}.pire-attendance-tabs{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.pire-attendance-tabs{display:flex;overflow-x:auto}.pire-attendance-tabs button{min-width:145px}.pire-attendance-pagination{flex-wrap:wrap}.pire-attendance-pagination label{width:100%;justify-content:center}}
