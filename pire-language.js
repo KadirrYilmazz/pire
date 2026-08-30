@@ -191,7 +191,16 @@
       .contact-socials .pire-social-icon:hover{transform:translateY(-2px) scale(1.06)!important;border-color:transparent!important;background:rgba(255,255,255,.035)!important}
       html[data-theme="light"] .contact-socials .pire-social-icon{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
       html[data-theme="light"] .contact-socials .pire-social-icon:hover{background:rgba(20,16,9,.035)!important}
-      @media(max-width:700px){.pire-language-toggle{font-size:10px!important}.contact-socials{gap:12px!important}.contact-socials .pire-social-icon{width:36px!important;height:36px!important;min-width:36px!important;border-radius:9px!important}.contact-socials .pire-social-icon svg{width:22px!important;height:22px!important}}
+      .contact-socials .pire-social-icon{--social-glow:rgba(216,183,94,.28);width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;flex:0 0 44px!important;border-radius:11px!important;line-height:1!important;opacity:1!important;filter:none!important}
+      .contact-socials .pire-social-icon>svg,.contact-socials .pire-social-icon>img,.contact-socials .pire-social-icon>span{width:26px!important;height:26px!important;max-width:26px!important;max-height:26px!important;display:block!important;object-fit:contain!important;flex:0 0 26px!important}
+      .contact-socials .instagram-icon{--social-glow:rgba(225,48,108,.32)}
+      .contact-socials .facebook-icon{--social-glow:rgba(37,132,255,.32)}
+      .contact-socials .linkedin-icon{--social-glow:rgba(10,102,194,.32)}
+      .contact-socials .youtube-icon{--social-glow:rgba(255,0,51,.32)}
+      .contact-socials .x-icon,.contact-socials .twitter-icon{--social-glow:rgba(255,255,255,.25)}
+      .contact-socials .tiktok-icon{--social-glow:rgba(37,244,238,.29)}
+      .contact-socials .pire-social-icon:hover{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;border-radius:11px!important;background:rgba(255,255,255,.055)!important;box-shadow:0 9px 26px var(--social-glow)!important;transform:translateY(-2px) scale(1.04)!important}
+      @media(max-width:700px){.pire-language-toggle{font-size:10px!important}.contact-socials{gap:12px!important}.contact-socials .pire-social-icon,.contact-socials .pire-social-icon:hover{width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;flex-basis:38px!important;border-radius:10px!important}.contact-socials .pire-social-icon>svg,.contact-socials .pire-social-icon>img,.contact-socials .pire-social-icon>span{width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;flex-basis:23px!important}}
     `;
     document.head.appendChild(style);
   }
