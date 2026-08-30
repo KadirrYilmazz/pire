@@ -14,3 +14,29 @@
 .pire-label-receivables-tr::before,.pire-label-receivables-en::before,.pire-label-earnings-tr::before,.pire-label-earnings-en::before{font-size:16px}
 h1.pire-label-earnings-heading-tr::before,h1.pire-label-earnings-heading-en::before{font-size:32px;line-height:1.15}
 .pire-label-receivables-tr>*,.pire-label-receivables-en>*,.pire-label-earnings-tr>*,.pire-label-earnings-en>*{font-size:14px}
+
+
+/* Fix97: Açık Finans menüsünü sayfa içi yapışkan sekmelerin üstünde tut. */
+.app-shell .sidebar:has(.primary-nav .nav-dropdown[open]){
+  z-index:1000!important;
+}
+.primary-nav .nav-dropdown[open]{
+  z-index:1001!important;
+}
+.primary-nav .nav-dropdown[open]>.nav-dropdown-menu{
+  z-index:1002!important;
+  min-width:360px;
+  background:#111212!important;
+  isolation:isolate;
+  overflow:hidden;
+}
+.primary-nav .nav-dropdown[open]>.nav-dropdown-menu button{
+  position:relative;
+  z-index:1;
+  white-space:nowrap;
+}
+@media (max-width:720px){
+  .primary-nav .nav-dropdown[open]>.nav-dropdown-menu{
+    min-width:0;
+  }
+}
