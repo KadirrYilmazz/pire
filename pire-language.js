@@ -185,7 +185,13 @@
       .contact-socials .tiktok-icon:hover{box-shadow:-5px 8px 22px rgba(37,244,238,.22),5px 8px 22px rgba(254,44,85,.22),inset 0 1px 0 rgba(255,255,255,.16)!important}
       html[data-theme="light"] .contact-socials .pire-social-icon{background:linear-gradient(145deg,#fff,#f4f1e9)!important;border-color:rgba(91,69,27,.15)!important;box-shadow:0 8px 20px rgba(60,45,18,.10),inset 0 1px 0 #fff!important}
       html[data-theme="light"] .contact-socials .x-icon,html[data-theme="light"] .contact-socials .twitter-icon{color:#161616!important}
-      @media(max-width:700px){.pire-language-toggle{font-size:10px!important}.contact-socials{gap:9px!important}.contact-socials .pire-social-icon{width:42px!important;height:42px!important;min-width:42px!important;border-radius:13px!important}.contact-socials .pire-social-icon svg{width:23px!important;height:23px!important}}
+      .contact-socials{gap:18px!important}
+      .contact-socials .pire-social-icon{width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;border-color:transparent!important;border-radius:10px!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+      .contact-socials .pire-social-icon svg{width:25px!important;height:25px!important}
+      .contact-socials .pire-social-icon:hover{transform:translateY(-2px) scale(1.06)!important;border-color:transparent!important;background:rgba(255,255,255,.035)!important}
+      html[data-theme="light"] .contact-socials .pire-social-icon{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+      html[data-theme="light"] .contact-socials .pire-social-icon:hover{background:rgba(20,16,9,.035)!important}
+      @media(max-width:700px){.pire-language-toggle{font-size:10px!important}.contact-socials{gap:12px!important}.contact-socials .pire-social-icon{width:36px!important;height:36px!important;min-width:36px!important;border-radius:9px!important}.contact-socials .pire-social-icon svg{width:22px!important;height:22px!important}}
     `;
     document.head.appendChild(style);
   }
