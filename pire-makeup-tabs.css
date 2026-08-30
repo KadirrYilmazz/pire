@@ -1,10 +1,9 @@
 /* Pİ-RE kompakt telafi ekranı */
 .makeups-page{gap:12px!important}
-.makeup-summary{gap:10px!important}
-.makeup-summary article{min-height:72px!important;padding:11px 16px!important;border-radius:12px!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
-.makeup-summary small{margin:0!important;font-size:10px!important}
-.makeup-summary strong{font-size:24px!important}
-.pire-makeup-controls{border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:rgba(255,255,255,.015)}
+.makeup-summary{display:none!important}
+.pire-makeup-heading-host{position:relative!important;padding-right:min(70%,1100px)!important}
+.pire-makeup-heading-host>.pire-makeup-controls{position:absolute;right:0;bottom:18px;width:min(68%,1080px);z-index:2}
+.pire-makeup-controls{border:1px solid var(--line);border-radius:14px;padding:8px 10px;background:rgba(255,255,255,.015)}
 .pire-makeup-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .pire-makeup-tabs button{min-height:42px;border:1px solid rgba(216,183,94,.18);border-radius:10px;background:rgba(255,255,255,.025);color:var(--muted);font:inherit;font-size:12px;font-weight:750;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .pire-makeup-tabs button b{min-width:24px;padding:3px 7px;border-radius:999px;background:rgba(255,255,255,.07);font-size:10px}
@@ -23,5 +22,5 @@
 html[data-theme=light] .pire-makeup-controls,html[data-theme=light] .pire-makeup-pagination{background:#fff}
 html[data-theme=light] .pire-makeup-tabs button{background:#faf8f2;color:#6e685d}
 html[data-theme=light] .pire-makeup-pagination select,html[data-theme=light] .pire-makeup-pagination button{background:#fff}
-@media(max-width:900px){.pire-makeup-tabs{grid-template-columns:1fr 1fr}.makeup-summary{grid-template-columns:1fr 1fr!important}}
+@media(max-width:1200px){.pire-makeup-heading-host{padding-right:0!important}.pire-makeup-heading-host>.pire-makeup-controls{position:static;width:100%;margin-top:14px}.pire-makeup-tabs{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.pire-makeup-tabs{display:flex;overflow-x:auto}.pire-makeup-tabs button{min-width:165px}.pire-makeup-pagination{flex-wrap:wrap}.pire-makeup-pagination label{width:100%;justify-content:center}.makeup-lesson-row,.makeup-right,.change-row{padding:10px 12px!important}}
