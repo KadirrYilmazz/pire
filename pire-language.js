@@ -426,28 +426,14 @@
 
 
 ;(()=>{
-  if(!document.querySelector('link[data-pire-attendance-tabs]')){
+  if(!document.querySelector('link[data-pire-lesson-tabs]')){
     const link=document.createElement('link');
-    link.rel='stylesheet';link.href='/pire-attendance-tabs.css?v=3';link.dataset.pireAttendanceTabs='true';
+    link.rel='stylesheet';link.href='/pire-lesson-tabs.css?v=1';link.dataset.pireLessonTabs='true';
     document.head.appendChild(link);
   }
-  if(!document.querySelector('script[data-pire-attendance-tabs]')){
+  if(!document.querySelector('script[data-pire-lesson-tabs]')){
     const script=document.createElement('script');
-    script.src='/pire-attendance-tabs.js?v=3';script.defer=true;script.dataset.pireAttendanceTabs='true';
-    document.head.appendChild(script);
-  }
-})();
-
-
-;(()=>{
-  if(!document.querySelector('link[data-pire-makeup-tabs]')){
-    const link=document.createElement('link');
-    link.rel='stylesheet';link.href='/pire-makeup-tabs.css?v=4';link.dataset.pireMakeupTabs='true';
-    document.head.appendChild(link);
-  }
-  if(!document.querySelector('script[data-pire-makeup-tabs]')){
-    const script=document.createElement('script');
-    script.src='/pire-makeup-tabs.js?v=4';script.defer=true;script.dataset.pireMakeupTabs='true';
+    script.src='/pire-lesson-tabs.js?v=1';script.defer=true;script.dataset.pireLessonTabs='true';
     document.head.appendChild(script);
   }
 })();
