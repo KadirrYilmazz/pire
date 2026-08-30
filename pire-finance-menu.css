@@ -42,8 +42,8 @@ h1.pire-label-earnings-heading-tr::before,h1.pire-label-earnings-heading-en::bef
 }
 
 
-/* Fix99: Finans açılır menüsü açıkken body'ye eklenen ödeme alt sekmelerini gizle. */
-body:has(.primary-nav .nav-dropdown[open] .pire-finance-income)>.pire-payment-tabs{
+/* Fix101: Herhangi bir üst açılır menü açıkken body seviyesindeki ödeme alt sekmelerini gizle. */
+body:has(.primary-nav .nav-dropdown[open])>.pire-payment-tabs{
   opacity:0!important;
   visibility:hidden!important;
   pointer-events:none!important;
