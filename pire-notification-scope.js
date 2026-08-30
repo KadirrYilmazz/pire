@@ -168,7 +168,9 @@
       headers: { 'content-type': 'application/json;charset=utf-8', 'cache-control': 'no-store' },
     });
   };
-})();\n\n(function () {
+})();
+
+(function () {
   'use strict';
 
   const previousFetch = window.fetch.bind(window);
