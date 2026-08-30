@@ -1258,7 +1258,7 @@ scheduleAiSync(1800);
   const load=()=>{
     if(document.querySelector('script[data-pire-assistant]'))return;
     const script=document.createElement('script');
-    script.src='/pire-assistant.js';
+    script.src='/pire-assistant.js?v=2';
     script.dataset.pireAssistant='true';
     document.body.appendChild(script);
   };
