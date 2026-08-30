@@ -190,7 +190,24 @@
       .contact-socials .pire-social-icon svg{width:25px!important;height:25px!important}
       .contact-socials .pire-social-icon:hover{transform:translateY(-2px) scale(1.06)!important;border-color:transparent!important;background:rgba(255,255,255,.035)!important}
       html[data-theme="light"] .contact-socials .pire-social-icon{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
-      html[data-theme="light"] .contact-socials .pire-social-icon:hover{background:rgba(20,16,9,.035)!important}
+      html[data-theme="light"] .contact-socials .pire-social-icon:hover{background:rgba(255,255,255,.09)!important}
+      html[data-theme="light"] [aria-label="Pİ-RE iletişim bilgileri"]{color:#f5f1e8!important}
+      html[data-theme="light"] [aria-label="Pİ-RE iletişim bilgileri"] a:not([href*="wa.me"]){color:#f5f1e8!important}
+      html[data-theme="light"] [aria-label="Pİ-RE iletişim bilgileri"] a[href*="wa.me"]{color:#18d36b!important}
+      html[data-theme="light"] [aria-label="Pİ-RE iletişim bilgileri"] .contact-socials{color:#eee8dc!important}
+      html[data-theme="light"] .contact-socials .instagram-icon{color:#e1306c!important}
+      html[data-theme="light"] .contact-socials .facebook-icon{color:#1877f2!important}
+      html[data-theme="light"] .contact-socials .linkedin-icon{color:#0a66c2!important}
+      html[data-theme="light"] .contact-socials .youtube-icon{color:#ff0033!important}
+      html[data-theme="light"] .contact-socials .x-icon,html[data-theme="light"] .contact-socials .twitter-icon{color:#f8f5ee!important}
+      html[data-theme="light"] .contact-socials .tiktok-icon{color:#f8f5ee!important;filter:drop-shadow(-1px 0 #25f4ee) drop-shadow(1px 0 #fe2c55)!important}
+      html[data-theme="light"] .app-shell nav button:not([aria-current="page"]){color:#5f5a51!important}
+      html[data-theme="light"] .app-shell nav button:not([aria-current="page"]):hover{color:#171511!important}
+      html[data-theme="light"] .app-shell nav button small,html[data-theme="light"] .app-shell nav button span{opacity:1!important}
+      html[data-theme="light"] .role-view-switch,html[data-theme="light"] .role-view-switch select{color:#6f5218!important;background-color:#fffdf8!important}
+      html[data-theme="light"] input::placeholder{color:#77736b!important;opacity:1!important}
+      html[data-theme="light"] .navbar-tools button{border-color:rgba(111,82,24,.18)!important}
+      html[data-theme="light"] .navbar-tools button:hover{border-color:rgba(111,82,24,.38)!important}
       .contact-socials .pire-social-icon{--social-glow:rgba(216,183,94,.28);width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;flex:0 0 44px!important;border-radius:11px!important;line-height:1!important;opacity:1!important;filter:none!important}
       .contact-socials .pire-social-icon>svg,.contact-socials .pire-social-icon>img,.contact-socials .pire-social-icon>span{width:26px!important;height:26px!important;max-width:26px!important;max-height:26px!important;display:block!important;object-fit:contain!important;flex:0 0 26px!important}
       .contact-socials .instagram-icon{--social-glow:rgba(225,48,108,.32)}
