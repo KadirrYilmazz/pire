@@ -25,18 +25,8 @@ function teacherPayload(body){
 function coursePayload(body){const name=short(body?.name,80);return name?{name,status:["Aktif","Pasif"].includes(short(body?.status,40))?short(body?.status,40):"Aktif",updated_at:new Date().toISOString()}:null}
 async function write(token,path,method,body){return rest(token,path,{method,body:body===undefined?undefined:JSON.stringify(body),headers:body===undefined?{}:{Prefer:"return=representation,resolution=merge-duplicates"}})}
 async function syncTeacherCourses(token,teacherId,courses){
-  await rest(token,`pire_teacher_courses?teacher_id=eq.${teacherId}`,{method:"DELETE"});
-  const names=parseCourses(courses),links=[];
-  if(!names.length)return links;
-  const existing=await rest(token,"pire_courses?select=id,name");
-  const map=new Map((existing||[]).map(row=>[String(row.name||"").trim().toLocaleLowerCase("tr-TR"),row]));
-  for(const name of names){
-    const key=name.toLocaleLowerCase("tr-TR");let course=map.get(key);
-    if(!course){const created=await write(token,"pire_courses","POST",[{name,status:"Aktif"}]);course=Array.isArray(created)?created[0]:created;if(course)map.set(key,course)}
-    if(course?.id)links.push({teacher_id:teacherId,course_id:Number(course.id)});
-  }
-  if(links.length)await write(token,"pire_teacher_courses","POST",links);
-  return links;
+  const names=parseCourses(courses);
+  return rest(token,"rpc/pire_sync_teacher_courses",{method:"POST",body:JSON.stringify({p_teacher_id:teacherId,p_course_names:names}),headers:{Prefer:"return=representation"}});
 }
 async function getCatalog(token){
   const [teachers,courses,links]=await Promise.all([
