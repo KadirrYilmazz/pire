@@ -9,6 +9,7 @@ function date(v){const x=short(v,10);return /^\d{4}-\d{2}-\d{2}$/.test(x)?x:null
 function time(v){const x=short(v,8);return /^\d{2}:\d{2}(:\d{2})?$/.test(x)?x:null}
 function ids(v){if(typeof v==='string'){try{v=JSON.parse(v)}catch(_){v=v.split(',')}}return (Array.isArray(v)?v:[]).map(id).filter(Boolean).slice(0,100)}
 async function write(token,path,method,body){return rest(token,path,{method,body:body===undefined?undefined:JSON.stringify(body),headers:body===undefined?{}:{Prefer:"return=representation,resolution=merge-duplicates"}})}
+async function replaceLessonStudents(token,lessonId,studentIds){return rest(token,'rpc/pire_replace_lesson_students',{method:'POST',body:JSON.stringify({p_lesson_id:lessonId,p_student_ids:studentIds}),headers:{Prefer:'return=representation'}})}
 async function resolveCourse(token,name){const n=short(name,80);if(!n)return null;const rows=await rest(token,"pire_courses?select=id,name");return (rows||[]).find(x=>String(x.name||'').trim().toLocaleLowerCase('tr-TR')===n.toLocaleLowerCase('tr-TR'))||null}
 async function resolveTeacher(token,name){const n=short(name,160);if(!n)return null;const rows=await rest(token,"pire_teachers?select=id,full_name");return (rows||[]).find(x=>String(x.full_name||'').trim().toLocaleLowerCase('tr-TR')===n.toLocaleLowerCase('tr-TR'))||null}
 function lessonPayload(body){
@@ -32,12 +33,12 @@ module.exports=async function handler(req,res){
     const [course,teacher]=await Promise.all([resolveCourse(token,payload.course_name),resolveTeacher(token,payload.teacher_name)]);payload.course_id=course?.id?Number(course.id):null;payload.teacher_id=teacher?.id?Number(teacher.id):null;
     if(method==='POST'){
       const created=await write(token,'pire_lessons','POST',[payload]),lesson=Array.isArray(created)?created[0]:created;if(!lesson?.id)return send(res,502,{error:'Ders oluşturuldu fakat kimliği alınamadı.'});
-      const studentIds=ids(body.studentIds);try{if(studentIds.length)await write(token,'pire_lesson_students','POST',studentIds.map(student_id=>({lesson_id:Number(lesson.id),student_id})))}catch(error){await rest(token,`pire_lessons?id=eq.${lesson.id}`,{method:'DELETE'}).catch(()=>{});throw error}
+      const studentIds=ids(body.studentIds);try{await replaceLessonStudents(token,Number(lesson.id),studentIds)}catch(error){await rest(token,`pire_lessons?id=eq.${lesson.id}`,{method:'DELETE'}).catch(()=>{});throw error}
       return send(res,201,{ok:true,lesson:{...body,id:Number(lesson.id),course:lesson.course_name,teacher:lesson.teacher_name||'',studentIds:JSON.stringify(studentIds)}});
     }
     if(!lessonId)return send(res,400,{error:'Geçerli ders kimliği gerekiyor.'});
     const updated=await write(token,`pire_lessons?id=eq.${lessonId}`,'PATCH',payload);
-    if(body.studentIds!==undefined){await rest(token,`pire_lesson_students?lesson_id=eq.${lessonId}`,{method:'DELETE'});const studentIds=ids(body.studentIds);if(studentIds.length)await write(token,'pire_lesson_students','POST',studentIds.map(student_id=>({lesson_id:lessonId,student_id})))}
+    if(body.studentIds!==undefined)await replaceLessonStudents(token,lessonId,ids(body.studentIds));
     const lesson=Array.isArray(updated)?updated[0]:updated;return send(res,200,{ok:true,lesson:{...body,id:lessonId,course:lesson?.course_name||payload.course_name,teacher:lesson?.teacher_name||payload.teacher_name||''}});
   }catch(error){if(error?.detail)console.error('Canonical lessons failed',String(error.detail).slice(0,500));return send(res,error?.status||500,{error:error?.message||'Ders işlemi tamamlanamadı.'})}
 };
