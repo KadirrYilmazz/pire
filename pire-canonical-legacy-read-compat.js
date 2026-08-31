@@ -34,6 +34,10 @@
     return response.json();
   }
 
+  function exportData(){
+    return mirror?JSON.parse(JSON.stringify(mirror)):{};
+  }
+
   async function refresh(reason='manual'){
     if(refreshing||!canonicalActive())return false;
     refreshing=true;
@@ -61,6 +65,16 @@
     return nativeGetItem.call(this,key);
   };
 
+  // Fix123 geçiş şimi: dashboard takvimi ve genel arama gibi eski UI yardımcıları
+  // __PIRE_RECOVERED_BACKEND__.exportData() bekliyor. Kalıcı local DB yerine yalnızca
+  // canonical bellek aynasını döndürür; reset/write yetenekleri özellikle sağlanmaz.
+  window.__PIRE_RECOVERED_BACKEND__={
+    sourceOfTruth:'supabase-canonical',
+    readOnly:true,
+    exportData,
+    refresh:()=>refresh('legacy-export-refresh')
+  };
+
   window.addEventListener('focus',()=>refresh('focus'));
   window.addEventListener('pire:canonical-response',event=>{
     const detail=event?.detail||{};
@@ -73,6 +87,7 @@
     operationalKey:OPERATIONAL_KEY,
     sourceOfTruth:'supabase-canonical',
     mode:'canonical-memory-mirror',
+    exportData,
     get ready(){return Boolean(mirror)},
     get refreshing(){return refreshing},
     get lastError(){return lastError},
