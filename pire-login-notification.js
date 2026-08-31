@@ -53,18 +53,22 @@
   },500);
   notify().then(done=>{if(done)clearInterval(timer)});
 
-  function load(src,attr){
-    if(document.querySelector(`script[${attr}]`))return;
+  function load(src,attr,onload){
+    if(document.querySelector(`script[${attr}]`)){if(onload)onload();return;}
     const script=document.createElement('script');
     script.src=src;
     script.defer=true;
     script.setAttribute(attr,'true');
+    if(onload)script.addEventListener('load',onload,{once:true});
     (document.head||document.documentElement).appendChild(script);
   }
 
-  // Fix123 preview: canonical veri aktarımı yalnızca açık kullanıcı eylemiyle çalışır.
+  // Fix123: yedek aktarımı yalnızca açık kullanıcı eylemiyle çalışır.
   load('/pire-canonical-migration.js?v=2','data-pire-canonical-migration');
-  // Fix123 preview: ilk aşamada yalnızca GET istekleri canonical Supabase API'ye yönlenir.
-  // Yazma işlemleri hâlâ mevcut local backend'de kalır; bridge hata halinde local okumaya geri döner.
-  load('/pire-canonical-read-bridge.js?v=1','data-pire-canonical-read-bridge');
+
+  // Fix123: operasyonel API'ler canonical Supabase kaynağında fail-closed çalışır.
+  // Bridge aktif olduktan sonra eski cihaz-yedekli operasyonel localStorage anahtarı salt-okunur hale gelir.
+  load('/pire-canonical-read-bridge.js?v=3','data-pire-canonical-read-bridge',()=>{
+    load('/pire-canonical-localstorage-guard.js?v=1','data-pire-canonical-localstorage-guard');
+  });
 })();
