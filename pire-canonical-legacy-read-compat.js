@@ -20,7 +20,8 @@
     settings:'/api/settings',
     announcements:'/api/announcements',
     'security-audit':'/api/security-audit',
-    earnings:'/api/earnings'
+    earnings:'/api/earnings',
+    notifications:'/api/notifications'
   };
 
   function canonicalActive(){
