@@ -54,21 +54,27 @@ for(const marker of ['pire-local-admin-accounts-v2','pire-user-accounts-cache-v1
 }
 fs.writeFileSync(assistantPath,assistant,'utf8');
 
-// Son güvenlik ağı: deploy çıktısında kurumsal/operasyonel kayıtların cihazda
-// kalıcı tutulmasına ait bilinen anahtarlar bulunursa build başarısız olur.
-const operationalLocalKeys=[
-  'pire-recovered-backend-v1',
+// Son güvenlik ağı: tarihsel uyumluluk kodu eski DB anahtarını salt-okunur olarak
+// referanslayabilir; fakat deploy çıktısında operasyonel veriyi localStorage'a
+// kalıcı yazan, silen veya yeniden başlatan kod bulunamaz.
+const deployFiles=['index.html','pire-account-honorific.js','pire-assistant.js','pire-dashboard-calendar.js'];
+const forbiddenPersistentMarkers=[
   'pire-customers-safe-v1',
   'pire-local-admin-accounts-v2',
   'pire-user-accounts-cache-v1',
-  'pire-notification-role-reads-v1'
+  'pire-notification-role-reads-v1',
+  'localStorage.setItem(DBKEY',
+  'localStorage.removeItem(DBKEY',
+  "localStorage.setItem('pire-recovered-backend-v1'",
+  'localStorage.setItem("pire-recovered-backend-v1"',
+  "localStorage.removeItem('pire-recovered-backend-v1'",
+  'localStorage.removeItem("pire-recovered-backend-v1"'
 ];
-const deployFiles=['index.html','pire-account-honorific.js','pire-assistant.js','pire-dashboard-calendar.js'];
 for(const deployFile of deployFiles){
   const text=fs.readFileSync(path.join(process.cwd(),deployFile),'utf8');
-  for(const key of operationalLocalKeys){
-    if(text.includes(key))throw new Error(`Operasyonel localStorage kalıntısı bulundu: ${deployFile} -> ${key}`);
+  for(const marker of forbiddenPersistentMarkers){
+    if(text.includes(marker))throw new Error(`Operasyonel localStorage kalıcı yazma kalıntısı bulundu: ${deployFile} -> ${marker}`);
   }
 }
 
-console.log('Fix123 deploy temizliği doğrulandı: legacy backend/local CRM çıkarıldı; operasyonel localStorage anahtarı kalmadı.');
+console.log('Fix123 deploy temizliği doğrulandı: legacy backend/local CRM çıkarıldı; operasyonel localStorage kalıcı yazması kalmadı.');
