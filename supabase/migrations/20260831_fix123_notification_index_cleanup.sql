@@ -1,0 +1,2 @@
+drop index if exists public.pire_notification_preferences_profile_id_uidx;
+drop index if exists public.pire_notification_reads_profile_key_uidx;
