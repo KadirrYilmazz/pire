@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fix123 Veri Aktarımı</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0b1020;color:#eef2ff}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top,#18213f,#0b1020 55%)}
+    main{width:min(720px,100%);background:rgba(15,23,42,.94);border:1px solid #334155;border-radius:20px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+    h1{margin:0 0 8px;font-size:28px}p{line-height:1.55;color:#cbd5e1}.note{padding:14px 16px;border-radius:12px;background:#111827;border:1px solid #374151;margin:18px 0}.steps{display:grid;gap:10px;margin:18px 0}.step{display:flex;gap:10px;align-items:flex-start}.step b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#1d4ed8;flex:0 0 auto}.picker{border:1px dashed #64748b;border-radius:14px;padding:20px;margin:20px 0;background:#0f172a}input[type=file]{width:100%}button{appearance:none;border:0;border-radius:12px;padding:13px 18px;font-weight:700;cursor:pointer;background:#2563eb;color:#fff;font-size:15px}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#334155;margin-left:8px}pre{white-space:pre-wrap;word-break:break-word;background:#020617;border:1px solid #1e293b;border-radius:12px;padding:14px;min-height:52px;color:#dbeafe}.ok{color:#86efac}.bad{color:#fca5a5}.muted{font-size:13px;color:#94a3b8}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Fix123 · Güvenli Veri Aktarımı</h1>
+  <p>Bu ekran production tarayıcınızdaki localStorage verisini doğrudan okuyamaz. Bunun yerine production Pİ-RE’den aldığınız yedek JSON dosyasını açıkça seçip canonical Supabase tablolarına aktarır.</p>
+  <div class="note"><strong>Production verisi silinmez.</strong> Aktarım yalnızca upsert yapar; mevcut Fix122 çalışma şekli değişmez.</div>
+  <div class="steps">
+    <div class="step"><b>1</b><span>Production Pİ-RE’de <strong>Yedek / Dışa Aktar</strong> ile JSON yedeğini indirin.</span></div>
+    <div class="step"><b>2</b><span>Fix123 preview’de Yönetici hesabıyla giriş yapın.</span></div>
+    <div class="step"><b>3</b><span>Bu sayfaya dönüp yedek dosyasını seçin ve aktarımı başlatın.</span></div>
+  </div>
+  <div class="picker">
+    <input id="backup" type="file" accept="application/json,.json">
+    <p class="muted" id="fileInfo">Henüz dosya seçilmedi.</p>
+  </div>
+  <button id="migrate" disabled>Supabase’e aktar</button>
+  <button id="check" class="secondary" type="button">Oturumu kontrol et</button>
+  <pre id="status">Hazır.</pre>
+</main>
+<script src="/pire-canonical-migration.js"></script>
+<script>
+(()=>{
+  const fileInput=document.getElementById('backup');
+  const migrate=document.getElementById('migrate');
+  const check=document.getElementById('check');
+  const status=document.getElementById('status');
+  const fileInfo=document.getElementById('fileInfo');
+  let parsed=null;
+
+  function say(text,kind=''){
+    status.className=kind;
+    status.textContent=text;
+  }
+  function api(){return window.PIRE_FIX123_CANONICAL_MIGRATION}
+
+  check.addEventListener('click',()=>{
+    if(api()?.tokenAvailable())say('Yönetici oturum tokenı bulundu. Dosya seçip aktarabilirsiniz.','ok');
+    else say('Bu preview origininde oturum bulunamadı. Önce ana Fix123 preview sayfasında Yönetici olarak giriş yapın.','bad');
+  });
+
+  fileInput.addEventListener('change',async()=>{
+    parsed=null;migrate.disabled=true;
+    const file=fileInput.files?.[0];
+    if(!file){fileInfo.textContent='Henüz dosya seçilmedi.';return}
+    fileInfo.textContent=`${file.name} · ${(file.size/1024).toFixed(1)} KB`;
+    try{
+      const raw=await file.text();
+      const json=JSON.parse(raw);
+      const snapshot=api()?.normalizeBackup(json);
+      if(!snapshot)throw new Error('Dosya Pİ-RE yedek yapısıyla eşleşmiyor.');
+      parsed=json;
+      const counts={students:snapshot.students.students.length,teachers:snapshot.catalog.teachers.length,courses:snapshot.catalog.courses.length};
+      migrate.disabled=false;
+      say(`Yedek doğrulandı. Öğrenci: ${counts.students}, Eğitmen: ${counts.teachers}, Branş kaydı: ${counts.courses}. Aktarım henüz başlamadı.`,'ok');
+    }catch(err){say(err.message||'Yedek okunamadı.','bad')}
+  });
+
+  migrate.addEventListener('click',async()=>{
+    if(!parsed)return;
+    migrate.disabled=true;say('Aktarım yapılıyor…');
+    try{
+      const out=await api().runSnapshot(parsed,'backup-file');
+      say(`Aktarım tamamlandı.\n${JSON.stringify(out.counts,null,2)}`,'ok');
+    }catch(err){
+      say(err.message||'Aktarım başarısız.','bad');
+      migrate.disabled=false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
