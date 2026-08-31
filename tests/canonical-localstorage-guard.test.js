@@ -23,7 +23,7 @@ test('setItem removeItem and clear cannot mutate legacy operational snapshot whi
 });
 
 test('guard loads only after canonical bridge',()=>{
-  const bridge=loader.indexOf("load('/pire-canonical-read-bridge.js?v=3'");
+  const bridge=loader.indexOf("load('/pire-canonical-read-bridge.js?v=4'");
   const guardLoad=loader.indexOf("load('/pire-canonical-localstorage-guard.js?v=1'");
   assert.ok(bridge>=0);
   assert.ok(guardLoad>bridge);
