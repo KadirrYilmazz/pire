@@ -4,7 +4,7 @@
 
   const previousFetch=window.fetch.bind(window);
   const READ_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages']);
-  const WRITE_ROUTES=new Set(['/api/students']);
+  const WRITE_ROUTES=new Set(['/api/students','/api/catalog']);
 
   function token(){
     try{
@@ -47,7 +47,7 @@
       return previousFetch(input,init);
     }catch(error){
       window.__PIRE_CANONICAL_READ_STATUS__={ok:false,status:0,path:url.pathname,method,error:String(error?.message||error),at:new Date().toISOString()};
-      if(isWrite)return new Response(JSON.stringify({error:'Canonical öğrenci işlemi sunucuya ulaştırılamadı.'}),{status:503,headers:{'content-type':'application/json'}});
+      if(isWrite)return new Response(JSON.stringify({error:'Canonical veri işlemi sunucuya ulaştırılamadı.'}),{status:503,headers:{'content-type':'application/json'}});
       return previousFetch(input,init);
     }
   };
