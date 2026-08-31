@@ -10,15 +10,17 @@ test('Vercel build always runs the Fix123 legacy-backend stripping guard',()=>{
   assert.equal(vercel.buildCommand,'node scripts/fix123-strip-legacy-backend.js');
 });
 
-test('deploy guard rejects recovered backend, local CRM and local account/read caches',()=>{
+test('deploy guard rejects operational localStorage persistence while allowing read-only compatibility references',()=>{
   for(const marker of [
-    'pire-recovered-backend-v1',
     'pire-customers-safe-v1',
     'pire-local-admin-accounts-v2',
     'pire-user-accounts-cache-v1',
-    'pire-notification-role-reads-v1'
+    'pire-notification-role-reads-v1',
+    'localStorage.setItem(DBKEY',
+    'localStorage.removeItem(DBKEY'
   ])assert.match(script,new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
-  assert.match(script,/Operasyonel localStorage kalıntısı bulundu/);
+  assert.match(script,/Operasyonel localStorage kalıcı yazma kalıntısı bulundu/);
+  assert.match(script,/tarihsel uyumluluk kodu eski DB anahtarını salt-okunur olarak/);
 });
 
 test('smart-alert read state is converted to sessionStorage during deploy',()=>{
