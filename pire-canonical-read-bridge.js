@@ -3,8 +3,8 @@
   if(window.__PIRE_CANONICAL_READ_BRIDGE__)return;
 
   const previousFetch=window.fetch.bind(window);
-  const READ_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups','/api/settings','/api/announcements','/api/security-audit','/api/earnings','/api/notifications','/api/backup']);
-  const WRITE_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups','/api/settings','/api/announcements','/api/earnings','/api/notifications','/api/backup']);
+  const READ_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups','/api/settings','/api/announcements','/api/security-audit','/api/earnings','/api/notifications','/api/backup','/api/customers']);
+  const WRITE_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups','/api/settings','/api/announcements','/api/earnings','/api/notifications','/api/backup','/api/customers']);
 
   function jsonResponse(status,error){
     return new Response(JSON.stringify({error}),{status,headers:{'content-type':'application/json'}});
