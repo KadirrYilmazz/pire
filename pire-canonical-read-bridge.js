@@ -3,8 +3,8 @@
   if(window.__PIRE_CANONICAL_READ_BRIDGE__)return;
 
   const previousFetch=window.fetch.bind(window);
-  const READ_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups']);
-  const WRITE_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups']);
+  const READ_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups','/api/settings','/api/announcements','/api/security-audit','/api/earnings']);
+  const WRITE_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages','/api/finance','/api/expenses','/api/attendance','/api/makeups','/api/settings','/api/announcements','/api/earnings']);
 
   function token(){
     try{
