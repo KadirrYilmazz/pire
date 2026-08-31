@@ -10,13 +10,32 @@ permissions:
   contents: read
 
 jobs:
+  enumerate-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.tests.outputs.files }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: tests
+        name: Enumerate Node test files
+        shell: bash
+        run: |
+          files=$(find tests -maxdepth 1 -type f -name '*.test.js' -printf '%f\n' | sort | jq -R -s -c 'split("\n")[:-1]')
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
   test:
+    needs: enumerate-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        file: ${{ fromJSON(needs.enumerate-tests.outputs.files) }}
+    name: test (${{ matrix.file }})
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run Node regression tests
-        run: node --test tests/*.test.js
+      - name: Run Node regression test
+        run: node --test "tests/${{ matrix.file }}"
