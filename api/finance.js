@@ -2,6 +2,7 @@
 
 const {send,rest,authenticate,asNumber,dateOnly}=require("./_canonical");
 const {attendanceHandler,makeupsHandler}=require('../lib/canonical-ops');
+const {settingsHandler,announcementsHandler,auditHandler,earningsHandler}=require('../lib/canonical-admin-ops');
 function short(v,m=500){return String(v??"").replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,m)}
 function id(v){const n=Number(v);return Number.isSafeInteger(n)&&n>0?n:null}
 function amount(v){const n=Number(v);return Number.isFinite(n)&&n>0&&n<=1_000_000_000?Math.round(n*100)/100:null}
@@ -24,6 +25,10 @@ module.exports=async function handler(req,res){
   const op=String(req.query?.op||'').toLowerCase();
   if(op==='attendance')return attendanceHandler(req,res);
   if(op==='makeups')return makeupsHandler(req,res);
+  if(op==='settings')return settingsHandler(req,res);
+  if(op==='announcements')return announcementsHandler(req,res);
+  if(op==='security-audit')return auditHandler(req,res);
+  if(op==='earnings')return earningsHandler(req,res);
   const method=String(req.method||'GET').toUpperCase();
   if(!['GET','POST'].includes(method))return send(res,405,{error:'Desteklenmeyen istek yöntemi.'},{Allow:'GET, POST'});
   try{
