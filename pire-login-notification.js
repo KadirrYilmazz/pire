@@ -53,13 +53,18 @@
   },500);
   notify().then(done=>{if(done)clearInterval(timer)});
 
-  // Fix123 preview branch: mevcut tarayıcı localStorage verisini canonical Supabase
-  // tablolarına bir kez taşıyan ayrı istemciyi yükler. main/Fix122 bu değişikliği içermez.
-  if(!document.querySelector('script[data-pire-canonical-migration]')){
+  function load(src,attr){
+    if(document.querySelector(`script[${attr}]`))return;
     const script=document.createElement('script');
-    script.src='/pire-canonical-migration.js?v=1';
+    script.src=src;
     script.defer=true;
-    script.dataset.pireCanonicalMigration='true';
+    script.setAttribute(attr,'true');
     (document.head||document.documentElement).appendChild(script);
   }
+
+  // Fix123 preview: canonical veri aktarımı yalnızca açık kullanıcı eylemiyle çalışır.
+  load('/pire-canonical-migration.js?v=2','data-pire-canonical-migration');
+  // Fix123 preview: ilk aşamada yalnızca GET istekleri canonical Supabase API'ye yönlenir.
+  // Yazma işlemleri hâlâ mevcut local backend'de kalır; bridge hata halinde local okumaya geri döner.
+  load('/pire-canonical-read-bridge.js?v=1','data-pire-canonical-read-bridge');
 })();
