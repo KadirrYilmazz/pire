@@ -5,6 +5,7 @@
     { "source": "/api/settings", "destination": "/api/finance?op=settings" },
     { "source": "/api/announcements", "destination": "/api/finance?op=announcements" },
     { "source": "/api/security-audit", "destination": "/api/finance?op=security-audit" },
-    { "source": "/api/earnings", "destination": "/api/finance?op=earnings" }
+    { "source": "/api/earnings", "destination": "/api/finance?op=earnings" },
+    { "source": "/api/notifications", "destination": "/api/finance?op=notifications" }
   ]
 }
