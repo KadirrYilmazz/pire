@@ -67,8 +67,10 @@
   load('/pire-canonical-migration.js?v=2','data-pire-canonical-migration');
 
   // Fix123: operasyonel API'ler canonical Supabase kaynağında fail-closed çalışır.
-  // Bridge aktif olduktan sonra eski cihaz-yedekli operasyonel localStorage anahtarı salt-okunur hale gelir.
-  load('/pire-canonical-read-bridge.js?v=3','data-pire-canonical-read-bridge',()=>{
-    load('/pire-canonical-localstorage-guard.js?v=1','data-pire-canonical-localstorage-guard');
+  // Eski patch'ler localStorage anahtarını okursa kalıcı cihaz verisi yerine canonical bellek aynasını görür.
+  load('/pire-canonical-read-bridge.js?v=4','data-pire-canonical-read-bridge',()=>{
+    load('/pire-canonical-localstorage-guard.js?v=1','data-pire-canonical-localstorage-guard',()=>{
+      load('/pire-canonical-legacy-read-compat.js?v=1','data-pire-canonical-legacy-read-compat');
+    });
   });
 })();
