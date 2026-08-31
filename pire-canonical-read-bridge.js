@@ -10,6 +10,11 @@
     return new Response(JSON.stringify({error}),{status,headers:{'content-type':'application/json'}});
   }
 
+  function publish(detail){
+    window.__PIRE_CANONICAL_READ_STATUS__={...detail,at:new Date().toISOString()};
+    try{window.dispatchEvent(new CustomEvent('pire:canonical-response',{detail:window.__PIRE_CANONICAL_READ_STATUS__}))}catch(_){}
+  }
+
   function token(){
     try{
       for(let i=0;i<localStorage.length;i+=1){
@@ -61,7 +66,7 @@
 
     const access=token();
     if(!access){
-      window.__PIRE_CANONICAL_READ_STATUS__={ok:false,status:401,path:url.pathname,method,error:'missing_session',at:new Date().toISOString()};
+      publish({ok:false,status:401,path:url.pathname,method,error:'missing_session'});
       return jsonResponse(401,'Oturum doğrulanmadan merkezi verilere erişilemez.');
     }
 
@@ -69,10 +74,10 @@
     if(body!=null&&typeof body!=='string'){try{body=JSON.stringify(body)}catch(_){}}
     try{
       const response=await requestWithXhr(url.pathname+url.search,access,method,body,init?.headers||(typeof input!=='string'?input?.headers:null));
-      window.__PIRE_CANONICAL_READ_STATUS__={ok:response.ok,status:response.status,path:url.pathname,method,at:new Date().toISOString()};
+      publish({ok:response.ok,status:response.status,path:url.pathname,method});
       return response;
     }catch(error){
-      window.__PIRE_CANONICAL_READ_STATUS__={ok:false,status:0,path:url.pathname,method,error:String(error?.message||error),at:new Date().toISOString()};
+      publish({ok:false,status:0,path:url.pathname,method,error:String(error?.message||error)});
       return jsonResponse(503,'Merkezi veri servisine ulaşılamadı. Yerel veri kaynağına geri dönülmedi.');
     }
   };
