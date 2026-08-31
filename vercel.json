@@ -1,4 +1,5 @@
 {
+  "buildCommand": "node scripts/fix123-strip-legacy-backend.js",
   "rewrites": [
     { "source": "/api/attendance", "destination": "/api/finance?op=attendance" },
     { "source": "/api/makeups", "destination": "/api/finance?op=makeups" },
