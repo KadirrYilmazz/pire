@@ -28,7 +28,7 @@ async function syncTeacherCourses(token,teacherId,courses){
   const names=parseCourses(courses);
   return rest(token,"rpc/pire_sync_teacher_courses",{method:"POST",body:JSON.stringify({p_teacher_id:teacherId,p_course_names:names}),headers:{Prefer:"return=representation"}});
 }
-async function getCatalog(token){
+async function getAdminCatalog(token){
   const [teachers,courses,links]=await Promise.all([
     rest(token,"pire_teachers?select=*&order=full_name.asc"),rest(token,"pire_courses?select=*&order=name.asc"),rest(token,"pire_teacher_courses?select=teacher_id,course_id")
   ]);
@@ -36,13 +36,21 @@ async function getCatalog(token){
   for(const link of links||[]){const key=String(link.teacher_id);if(!courseNamesByTeacher.has(key))courseNamesByTeacher.set(key,[]);const name=courseById.get(String(link.course_id));if(name)courseNamesByTeacher.get(key).push(name)}
   return {teachers:(teachers||[]).map(row=>({id:Number(row.id),type:"teacher",name:row.full_name,phone:row.phone,backupPhone:row.backup_phone,nationalId:row.national_id,birthDate:dateOnly(row.birth_date),courses:JSON.stringify(courseNamesByTeacher.get(String(row.id))||[]),startDate:dateOnly(row.start_date),address:row.address,emergencyContact:row.emergency_contact,availability:row.availability,iban:row.iban,compensationType:row.compensation_type,compensationAmount:asNumber(row.compensation_amount),groupCompensationAmount:asNumber(row.group_compensation_amount),cancellationRule:row.cancellation_rule,status:row.status,notes:row.notes})),courses:(courses||[]).map(row=>({id:Number(row.id),type:"course",name:row.name,status:row.status}))};
 }
+async function getSafeCatalog(token){
+  const result=await rest(token,"rpc/pire_get_safe_catalog",{method:"POST",body:"{}",headers:{Prefer:"return=representation"}});
+  const data=Array.isArray(result)?result[0]:result||{};
+  return {
+    teachers:(data.teachers||[]).map(row=>({id:Number(row.id),type:"teacher",name:row.name,courses:JSON.stringify(Array.isArray(row.courses)?row.courses:[]),status:row.status||"Aktif"})),
+    courses:(data.courses||[]).map(row=>({id:Number(row.id),type:"course",name:row.name,status:row.status||"Aktif"}))
+  };
+}
 
 module.exports=async function handler(req,res){
   const method=String(req.method||"GET").toUpperCase();
   if(!["GET","POST","PATCH","PUT","DELETE"].includes(method))return send(res,405,{error:"Desteklenmeyen istek yöntemi."},{Allow:"GET, POST, PATCH, PUT, DELETE"});
   try{
     const {token,identity}=await authenticate(req);
-    if(method==="GET")return send(res,200,await getCatalog(token));
+    if(method==="GET")return send(res,200,identity.roles.includes("Yönetici")?await getAdminCatalog(token):await getSafeCatalog(token));
     if(!identity.roles.includes("Yönetici"))return send(res,403,{error:"Katalog değişiklikleri yalnızca Yönetici tarafından yapılabilir."});
     const body=req.body||{},type=short(body.type||body.kind||body.entityType,20).toLocaleLowerCase("tr-TR");
     const teacherMode=type==="teacher"||type==="eğitmen"||body.teacherId!=null||body.compensationType!=null||body.courses!=null;
@@ -85,4 +93,4 @@ module.exports=async function handler(req,res){
   }catch(error){if(error?.detail)console.error("Canonical catalog failed",String(error.detail).slice(0,500));return send(res,error?.status||500,{error:error?.message||"Katalog işlemi tamamlanamadı."})}
 };
 
-module.exports._test={teacherPayload,coursePayload,parseCourses};
+module.exports._test={teacherPayload,coursePayload,parseCourses,getSafeCatalog};
