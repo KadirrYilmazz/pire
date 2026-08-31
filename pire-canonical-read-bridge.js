@@ -4,7 +4,7 @@
 
   const previousFetch=window.fetch.bind(window);
   const READ_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages']);
-  const WRITE_ROUTES=new Set(['/api/students','/api/catalog']);
+  const WRITE_ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages']);
 
   function token(){
     try{
