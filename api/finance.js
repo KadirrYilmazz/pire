@@ -1,7 +1,8 @@
 "use strict";
 
 const {send,rest,authenticate,asNumber,dateOnly}=require("./_canonical");
-const {attendanceHandler,makeupsHandler}=require('../lib/canonical-ops');
+const {attendanceHandler}=require('../lib/canonical-attendance');
+const {makeupsHandler}=require('../lib/canonical-ops');
 const {settingsHandler,announcementsHandler,auditHandler,earningsHandler}=require('../lib/canonical-admin-ops');
 const {notificationsHandler}=require('../lib/canonical-notifications');
 const {backupHandler}=require('../lib/canonical-backup');
