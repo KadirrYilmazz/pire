@@ -52,4 +52,14 @@
     if(await notify()||attempts>=20)clearInterval(timer);
   },500);
   notify().then(done=>{if(done)clearInterval(timer)});
+
+  // Fix123 preview branch: mevcut tarayıcı localStorage verisini canonical Supabase
+  // tablolarına bir kez taşıyan ayrı istemciyi yükler. main/Fix122 bu değişikliği içermez.
+  if(!document.querySelector('script[data-pire-canonical-migration]')){
+    const script=document.createElement('script');
+    script.src='/pire-canonical-migration.js?v=1';
+    script.defer=true;
+    script.dataset.pireCanonicalMigration='true';
+    (document.head||document.documentElement).appendChild(script);
+  }
 })();
