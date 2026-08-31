@@ -1,0 +1,63 @@
+(()=>{
+  'use strict';
+  if(window.__PIRE_CANONICAL_READ_BRIDGE__)return;
+
+  const previousFetch=window.fetch.bind(window);
+  const ROUTES=new Set(['/api/students','/api/catalog','/api/lessons','/api/packages']);
+
+  function token(){
+    try{
+      for(let i=0;i<localStorage.length;i+=1){
+        const key=localStorage.key(i)||'';
+        if(!/^sb-.*-auth-token$/.test(key))continue;
+        const value=JSON.parse(localStorage.getItem(key)||'null');
+        const access=value?.access_token||value?.currentSession?.access_token;
+        if(access)return access;
+      }
+    }catch(_){}
+    return '';
+  }
+
+  function requestWithXhr(url,access){
+    return new Promise((resolve,reject)=>{
+      try{
+        const xhr=new XMLHttpRequest();
+        xhr.open('GET',url,true);
+        xhr.setRequestHeader('Authorization','Bearer '+access);
+        xhr.setRequestHeader('Accept','application/json');
+        xhr.onload=()=>{
+          const headers=new Headers();
+          const raw=xhr.getAllResponseHeaders()||'';
+          raw.trim().split(/[\r\n]+/).forEach(line=>{const index=line.indexOf(':');if(index>0)headers.append(line.slice(0,index).trim(),line.slice(index+1).trim())});
+          resolve(new Response(xhr.responseText,{status:xhr.status,statusText:xhr.statusText,headers}));
+        };
+        xhr.onerror=()=>reject(new Error('canonical_xhr_failed'));
+        xhr.ontimeout=()=>reject(new Error('canonical_xhr_timeout'));
+        xhr.timeout=12000;
+        xhr.send();
+      }catch(error){reject(error)}
+    });
+  }
+
+  window.fetch=async function(input,init){
+    const method=String(init?.method||input?.method||'GET').toUpperCase();
+    if(method!=='GET')return previousFetch(input,init);
+    let url;
+    try{url=new URL(typeof input==='string'?input:input?.url||String(input),location.origin)}catch(_){return previousFetch(input,init)}
+    if(url.origin!==location.origin||!ROUTES.has(url.pathname))return previousFetch(input,init);
+    const access=token();
+    if(!access)return previousFetch(input,init);
+    try{
+      const response=await requestWithXhr(url.pathname+url.search,access);
+      window.__PIRE_CANONICAL_READ_STATUS__={ok:response.ok,status:response.status,path:url.pathname,at:new Date().toISOString()};
+      if(response.ok)return response;
+      if(response.status===401||response.status===403)return response;
+      return previousFetch(input,init);
+    }catch(error){
+      window.__PIRE_CANONICAL_READ_STATUS__={ok:false,status:0,path:url.pathname,error:String(error?.message||error),at:new Date().toISOString()};
+      return previousFetch(input,init);
+    }
+  };
+
+  window.__PIRE_CANONICAL_READ_BRIDGE__={enabled:true,routes:[...ROUTES],mode:'get-only-fail-open'};
+})();
