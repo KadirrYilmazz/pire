@@ -70,7 +70,10 @@
   // Eski patch'ler localStorage anahtarını okursa kalıcı cihaz verisi yerine canonical bellek aynasını görür.
   load('/pire-canonical-read-bridge.js?v=4','data-pire-canonical-read-bridge',()=>{
     load('/pire-canonical-localstorage-guard.js?v=1','data-pire-canonical-localstorage-guard',()=>{
-      load('/pire-canonical-legacy-read-compat.js?v=1','data-pire-canonical-legacy-read-compat');
+      load('/pire-canonical-legacy-read-compat.js?v=1','data-pire-canonical-legacy-read-compat',()=>{
+        // Legacy SEED/local backend deploy çıktısından çıkarıldığı için AI snapshotı doğrudan canonical API'lerden üretilir.
+        load('/pire-canonical-ai-sync.js?v=1','data-pire-canonical-ai-sync');
+      });
     });
   });
 })();
