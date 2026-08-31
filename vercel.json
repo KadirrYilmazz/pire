@@ -9,6 +9,7 @@
     { "source": "/api/security-audit", "destination": "/api/finance?op=security-audit" },
     { "source": "/api/earnings", "destination": "/api/finance?op=earnings" },
     { "source": "/api/notifications", "destination": "/api/finance?op=notifications" },
-    { "source": "/api/backup", "destination": "/api/finance?op=backup" }
+    { "source": "/api/backup", "destination": "/api/finance?op=backup" },
+    { "source": "/api/customers", "destination": "/api/finance?op=customers" }
   ]
 }
