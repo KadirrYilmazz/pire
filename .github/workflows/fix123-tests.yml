@@ -32,6 +32,7 @@ jobs:
           tests/canonical-legacy-read-compat.test.js
           tests/canonical-localstorage-guard.test.js
           tests/canonical-makeups.test.js
+          tests/canonical-role-data-safety.test.js
           tests/canonical-sync.test.js
           tests/fix123-deploy-guard.test.js
           tests/notification-canonical-state.test.js
