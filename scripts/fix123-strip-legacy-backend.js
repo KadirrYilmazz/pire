@@ -54,4 +54,21 @@ for(const marker of ['pire-local-admin-accounts-v2','pire-user-accounts-cache-v1
 }
 fs.writeFileSync(assistantPath,assistant,'utf8');
 
-console.log('Fix123 deploy temizliği: legacy backend, local CRM ve operasyonel localStorage fallbackleri çıkarıldı.');
+// Son güvenlik ağı: deploy çıktısında kurumsal/operasyonel kayıtların cihazda
+// kalıcı tutulmasına ait bilinen anahtarlar bulunursa build başarısız olur.
+const operationalLocalKeys=[
+  'pire-recovered-backend-v1',
+  'pire-customers-safe-v1',
+  'pire-local-admin-accounts-v2',
+  'pire-user-accounts-cache-v1',
+  'pire-notification-role-reads-v1'
+];
+const deployFiles=['index.html','pire-account-honorific.js','pire-assistant.js','pire-dashboard-calendar.js'];
+for(const deployFile of deployFiles){
+  const text=fs.readFileSync(path.join(process.cwd(),deployFile),'utf8');
+  for(const key of operationalLocalKeys){
+    if(text.includes(key))throw new Error(`Operasyonel localStorage kalıntısı bulundu: ${deployFile} -> ${key}`);
+  }
+}
+
+console.log('Fix123 deploy temizliği doğrulandı: legacy backend/local CRM çıkarıldı; operasyonel localStorage anahtarı kalmadı.');
