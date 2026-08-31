@@ -21,6 +21,7 @@ jobs:
         run: >-
           node --test
           tests/account-honorific.test.js
+          tests/canonical-ai-sync.test.js
           tests/canonical-attendance-atomic.test.js
           tests/canonical-backup.test.js
           tests/canonical-bridge-failclosed.test.js
