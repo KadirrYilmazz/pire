@@ -33,6 +33,7 @@ jobs:
           tests/canonical-localstorage-guard.test.js
           tests/canonical-makeups.test.js
           tests/canonical-role-data-safety.test.js
+          tests/canonical-rls-role-guard.test.js
           tests/canonical-student-access.test.js
           tests/canonical-sync.test.js
           tests/fix123-deploy-guard.test.js
