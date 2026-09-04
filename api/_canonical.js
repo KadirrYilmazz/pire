@@ -45,7 +45,11 @@ function sameOrigin(req){
 }
 
 async function authenticate(req){
-  if(!originAllowed(req)&&!sameOrigin(req))throw Object.assign(new Error("İstek kaynağına izin verilmiyor."),{status:403});
+  // Same-origin GET/fetch requests from browsers may legitimately omit Origin.
+  // Only enforce source validation when an Origin header is actually present;
+  // every canonical request must still present and verify a Bearer session token.
+  const origin=String(req.headers.origin||"").trim();
+  if(origin&&!originAllowed(req)&&!sameOrigin(req))throw Object.assign(new Error("İstek kaynağına izin verilmiyor."),{status:403});
   const authorization=String(req.headers.authorization||"");
   if(!authorization.startsWith("Bearer "))throw Object.assign(new Error("Geçerli Pİ-RE oturumu gerekiyor."),{status:401});
   const token=authorization.slice(7).trim();
