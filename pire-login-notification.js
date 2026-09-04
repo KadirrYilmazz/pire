@@ -67,6 +67,8 @@
   load('/pire-canonical-migration.js?v=2','data-pire-canonical-migration');
   // Fix127: hızlı erişim, senkron durumu ve kaydetme geri bildirimi.
   load('/pire-ux-feedback.js?v=1','data-pire-ux-feedback');
+  // Fix131: yalnız ziyaretçi ana sayfasını zenginleştirir; mevcut detay sekmelerine bağlanır.
+  load('/pire-visitor-home-v2.js?v=1','data-pire-visitor-home-v2');
 
   // Fix123: operasyonel API'ler canonical Supabase kaynağında fail-closed çalışır.
   // Eski patch'ler localStorage anahtarını okursa kalıcı cihaz verisi yerine canonical bellek aynasını görür.
