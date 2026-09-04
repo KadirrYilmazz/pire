@@ -21,6 +21,11 @@ const customerEndIndex=html.indexOf(customerEnd,customerStartIndex);
 if(customerStartIndex<0||customerEndIndex<0)throw new Error('Fix123 legacy müşteri CRM işaretleri bulunamadı.');
 html=html.slice(0,customerStartIndex)+'<script src="/pire-canonical-customers.js?v=1" defer data-pire-canonical-customers="true"></script>\n'+html.slice(customerEndIndex);
 
+// Fix126: Yönetici option'ı zaten sayfa açılışında ve kullanıcı etkileşiminde kontrol ediliyor.
+// Her 1.2 saniyede tüm select'leri tarayan kör polling production çıktısından kaldırılır.
+html=html.replace('  setInterval(ensureAdminOption,1200);','  /* Fix126: periodic admin-option polling removed; event-driven checks remain. */');
+if(html.includes('setInterval(ensureAdminOption,1200)'))throw new Error('Fix126 admin option polling temizlenemedi.');
+
 const forbidden=['const SEED=','async function localApi(','pire-recovered-backend-v1\';\nlet db','window.fetch=function(input,init)','pire-customers-safe-v1'];
 for(const marker of forbidden){if(html.includes(marker))throw new Error('Legacy işareti temizlenemedi: '+marker)}
 if(!html.includes('id="pire-header-safety-fix"'))throw new Error('Temizlik sonrası UI patch zinciri korunamadı.');
@@ -77,4 +82,4 @@ for(const deployFile of deployFiles){
   }
 }
 
-console.log('Fix123 deploy temizliği doğrulandı: legacy backend/local CRM çıkarıldı; operasyonel localStorage kalıcı yazması kalmadı.');
+console.log('Fix126 deploy temizliği doğrulandı: legacy backend/local CRM çıkarıldı; kör admin polling kaldırıldı; operasyonel localStorage kalıcı yazması kalmadı.');
