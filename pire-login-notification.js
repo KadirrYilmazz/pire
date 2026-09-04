@@ -10,6 +10,7 @@
   function load(src,attr,onload){if(document.querySelector(`script[${attr}]`)){if(onload)onload();return}const script=document.createElement('script');script.src=src;script.defer=true;script.setAttribute(attr,'true');if(onload)script.addEventListener('load',onload,{once:true});(document.head||document.documentElement).appendChild(script)}
   load('/pire-canonical-migration.js?v=2','data-pire-canonical-migration');
   load('/pire-visitor-home-v2.js?v=1','data-pire-visitor-home-v2');
-  load('/pire-visitor-detail-v1.js?v=1','data-pire-visitor-detail-v1');
+  load('/pire-visitor-detail-v1.js?v=2','data-pire-visitor-detail-v1');
+  load('/pire-visitor-nav-layout.js?v=1','data-pire-visitor-nav-layout');
   load('/pire-canonical-read-bridge.js?v=4','data-pire-canonical-read-bridge',()=>{load('/pire-canonical-localstorage-guard.js?v=1','data-pire-canonical-localstorage-guard',()=>{load('/pire-canonical-legacy-read-compat.js?v=1','data-pire-canonical-legacy-read-compat',()=>{load('/pire-canonical-ai-sync.js?v=1','data-pire-canonical-ai-sync')})})});
 })();
