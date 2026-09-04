@@ -39,12 +39,14 @@
   }
 })();
 
-
 ;(()=>{
   if(!document.querySelector('link[data-pire-payment-tabs]')){
     const link=document.createElement('link');link.rel='stylesheet';link.href='/pire-payment-tabs.css?v=7';link.dataset.pirePaymentTabs='true';document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-pire-payment-tabs]')){
     const script=document.createElement('script');script.src='/pire-payment-tabs.js?v=5';script.defer=true;script.dataset.pirePaymentTabs='true';document.head.appendChild(script);
+  }
+  if(!document.querySelector('script[data-pire-admin-finance-center]')){
+    const script=document.createElement('script');script.src='/pire-admin-finance-center.js?v=1';script.defer=true;script.dataset.pireAdminFinanceCenter='true';document.head.appendChild(script);
   }
 })();
