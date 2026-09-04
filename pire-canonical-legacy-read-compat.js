@@ -4,9 +4,13 @@
 
   const OPERATIONAL_KEY='pire-recovered-backend-v1';
   const nativeGetItem=Storage.prototype.getItem;
+  const FOCUS_STALE_MS=120000;
+  const WRITE_DEBOUNCE_MS=350;
   let mirror=null;
   let refreshing=false;
   let lastError='';
+  let lastRefreshAt=0;
+  let writeRefreshTimer=null;
 
   const ROUTES={
     students:'/api/students',
@@ -45,7 +49,8 @@
       const entries=await Promise.all(Object.entries(ROUTES).map(async([key,route])=>[key,await readJson(route)]));
       mirror=Object.fromEntries(entries);
       lastError='';
-      const detail={reason,at:new Date().toISOString(),keys:Object.keys(mirror)};
+      lastRefreshAt=Date.now();
+      const detail={reason,at:new Date(lastRefreshAt).toISOString(),keys:Object.keys(mirror)};
       window.__PIRE_CANONICAL_LEGACY_READ_STATUS__={ok:true,...detail};
       try{window.dispatchEvent(new CustomEvent('pire:canonical-legacy-mirror-ready',{detail}))}catch(_){}
       return true;
@@ -65,9 +70,7 @@
     return nativeGetItem.call(this,key);
   };
 
-  // Fix123 geçiş şimi: dashboard takvimi ve genel arama gibi eski UI yardımcıları
-  // __PIRE_RECOVERED_BACKEND__.exportData() bekliyor. Kalıcı local DB yerine yalnızca
-  // canonical bellek aynasını döndürür; reset/write yetenekleri özellikle sağlanmaz.
+  // Legacy UI yardımcıları kalıcı cihaz DB'si yerine yalnızca canonical bellek aynasını okur.
   window.__PIRE_RECOVERED_BACKEND__={
     sourceOfTruth:'supabase-canonical',
     readOnly:true,
@@ -75,25 +78,33 @@
     refresh:()=>refresh('legacy-export-refresh')
   };
 
-  window.addEventListener('focus',()=>refresh('focus'));
+  // Kör 30 sn polling kaldırıldı. Yalnızca ihtiyaç olduğunda yenilenir.
+  window.addEventListener('focus',()=>{
+    if(Date.now()-lastRefreshAt>=FOCUS_STALE_MS)refresh('focus-stale');
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'&&Date.now()-lastRefreshAt>=FOCUS_STALE_MS)refresh('visible-stale');
+  });
   window.addEventListener('pire:canonical-response',event=>{
     const detail=event?.detail||{};
-    if(detail.ok && detail.method && detail.method!=='GET')refresh('canonical-write');
+    if(!(detail.ok&&detail.method&&detail.method!=='GET'))return;
+    clearTimeout(writeRefreshTimer);
+    writeRefreshTimer=setTimeout(()=>refresh('canonical-write'),WRITE_DEBOUNCE_MS);
   });
-  const timer=setInterval(()=>refresh('interval'),30000);
 
   window.__PIRE_CANONICAL_LEGACY_READ_COMPAT__={
     enabled:true,
     operationalKey:OPERATIONAL_KEY,
     sourceOfTruth:'supabase-canonical',
-    mode:'canonical-memory-mirror',
+    mode:'canonical-memory-mirror-event-driven',
     exportData,
     get ready(){return Boolean(mirror)},
     get refreshing(){return refreshing},
     get lastError(){return lastError},
+    get lastRefreshAt(){return lastRefreshAt},
     refresh
   };
 
   refresh('startup');
-  window.addEventListener('beforeunload',()=>clearInterval(timer),{once:true});
+  window.addEventListener('beforeunload',()=>clearTimeout(writeRefreshTimer),{once:true});
 })();
