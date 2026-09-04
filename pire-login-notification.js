@@ -65,8 +65,6 @@
 
   // Fix123: yedek aktarımı yalnızca açık kullanıcı eylemiyle çalışır.
   load('/pire-canonical-migration.js?v=2','data-pire-canonical-migration');
-  // Fix127: hızlı erişim, senkron durumu ve kaydetme geri bildirimi.
-  load('/pire-ux-feedback.js?v=1','data-pire-ux-feedback');
   // Fix131: yalnız ziyaretçi ana sayfasını zenginleştirir; mevcut detay sekmelerine bağlanır.
   load('/pire-visitor-home-v2.js?v=1','data-pire-visitor-home-v2');
 
