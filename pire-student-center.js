@@ -1,0 +1,76 @@
+(()=>{
+  'use strict';
+  if(window.__PIRE_STUDENT_CENTER__)return;
+  const TABS=[['overview','Genel Bilgi'],['package','Paket'],['payments','Ödemeler'],['lessons','Dersler'],['attendance','Yoklama & Gelişim']];
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const num=v=>Number(v||0);
+  const norm=v=>String(v??'').trim().toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i');
+  const db=()=>{try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()||{}}catch(_){return {}}};
+  const rows=(section,key)=>{const d=db();return Array.isArray(d?.[section]?.[key])?d[section][key]:[]};
+  const students=()=>rows('students','students');
+  let root=null,selectedId=null,activeTab='overview',bound=false;
+
+  function style(){if(document.querySelector('style[data-pire-student-center]'))return;const s=document.createElement('style');s.dataset.pireStudentCenter='1';s.textContent=`
+    .pire-student-center-btn{height:34px;border:1px solid rgba(212,180,92,.28);border-radius:11px;background:rgba(212,180,92,.08);color:inherit;padding:0 11px;font:750 11px/1 inherit;cursor:pointer}.pire-student-center-btn:hover{background:rgba(212,180,92,.16)}
+    .pire-sc-backdrop{position:fixed;inset:0;z-index:12000;background:rgba(3,7,12,.68);backdrop-filter:blur(8px);display:grid;place-items:center;padding:22px}.pire-sc-backdrop[hidden]{display:none}
+    .pire-sc{width:min(1120px,96vw);height:min(760px,92vh);display:grid;grid-template-columns:280px 1fr;background:#11161e;color:#eef2f6;border:1px solid rgba(212,180,92,.24);border-radius:22px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.5)}
+    .pire-sc-side{padding:18px;border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;min-width:0}.pire-sc-brand small,.pire-sc-head small{display:block;color:#d5b15e;font-weight:800;letter-spacing:.08em;font-size:10px}.pire-sc-brand h3{margin:5px 0 14px;font-size:19px}.pire-sc-search{width:100%;box-sizing:border-box;height:40px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055);color:inherit;padding:0 11px;outline:none}.pire-sc-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;overflow:auto}.pire-sc-person{border:1px solid transparent;background:transparent;color:inherit;text-align:left;border-radius:11px;padding:10px;cursor:pointer}.pire-sc-person:hover{background:rgba(255,255,255,.05)}.pire-sc-person.active{background:rgba(212,180,92,.13);border-color:rgba(212,180,92,.25)}.pire-sc-person b{display:block;font-size:12px}.pire-sc-person small{display:block;opacity:.62;margin-top:3px;font-size:10px}
+    .pire-sc-main{display:flex;flex-direction:column;min-width:0}.pire-sc-head{padding:18px 20px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.pire-sc-head h2{margin:4px 0 4px;font-size:23px}.pire-sc-head p{margin:0;opacity:.66;font-size:11px}.pire-sc-close{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:inherit;font-size:18px;cursor:pointer}.pire-sc-tabs{display:flex;gap:7px;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,.07);overflow:auto}.pire-sc-tab{border:0;background:transparent;color:inherit;opacity:.68;border-radius:9px;padding:8px 10px;font-weight:750;font-size:11px;white-space:nowrap;cursor:pointer}.pire-sc-tab.active{opacity:1;background:rgba(212,180,92,.14);color:#f1d783}.pire-sc-body{padding:18px 20px 24px;overflow:auto}.pire-sc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.pire-sc-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);border-radius:14px;padding:13px}.pire-sc-card small{display:block;opacity:.58;font-size:10px}.pire-sc-card b{display:block;margin-top:5px;font-size:15px}.pire-sc-wide{grid-column:span 2}.pire-sc-section{margin-top:14px}.pire-sc-section h4{font-size:12px;margin:0 0 8px;color:#e6c970}.pire-sc-table{width:100%;border-collapse:collapse;font-size:11px}.pire-sc-table th,.pire-sc-table td{padding:9px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,.065)}.pire-sc-table th{opacity:.55;font-size:9px;text-transform:uppercase;letter-spacing:.06em}.pire-sc-empty{padding:30px;border:1px dashed rgba(255,255,255,.12);border-radius:14px;text-align:center;opacity:.6;font-size:12px}.pire-sc-badge{display:inline-flex;padding:4px 7px;border-radius:999px;background:rgba(212,180,92,.12);font-size:9px;font-weight:800}.pire-sc-progress{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:8px}.pire-sc-progress i{display:block;height:100%;background:#d5b15e;border-radius:999px}
+    html[data-theme="light"] .pire-sc{background:#fff;color:#1d2630;border-color:rgba(108,79,15,.18);box-shadow:0 28px 80px rgba(35,30,18,.18)}html[data-theme="light"] .pire-sc-card,html[data-theme="light"] .pire-sc-search,html[data-theme="light"] .pire-sc-close{background:rgba(50,40,15,.035);border-color:rgba(80,60,20,.11)}html[data-theme="light"] .pire-sc-side,html[data-theme="light"] .pire-sc-head,html[data-theme="light"] .pire-sc-tabs,html[data-theme="light"] .pire-sc-table th,html[data-theme="light"] .pire-sc-table td{border-color:rgba(60,45,15,.09)}
+    @media(max-width:780px){.pire-sc-backdrop{padding:8px}.pire-sc{height:96vh;grid-template-columns:1fr}.pire-sc-side{max-height:190px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}.pire-sc-list{display:grid;grid-template-columns:1fr 1fr}.pire-sc-grid{grid-template-columns:1fr 1fr}.pire-sc-wide{grid-column:span 2}}
+  `;document.head.appendChild(s)}
+
+  function allData(id){
+    const student=students().find(x=>String(x.id)===String(id));if(!student)return null;
+    const packages=rows('packages','packages').filter(x=>String(x.studentId)===String(id));
+    const payments=[...rows('students','payments'),...rows('finance','transactions')].filter(x=>String(x.studentId)===String(id));
+    const lessons=rows('lessons','lessons').filter(x=>{let ids=x.studentIds;try{if(typeof ids==='string')ids=JSON.parse(ids)}catch(_){ids=[]}return Array.isArray(ids)&&ids.map(String).includes(String(id))});
+    const lessonIds=new Set(lessons.map(x=>String(x.id)));
+    const attendance=rows('attendance','attendance').filter(x=>String(x.studentId)===String(id)||lessonIds.has(String(x.lessonId))&&String(x.studentId)===String(id));
+    const progress=rows('attendance','progress').filter(x=>String(x.studentId)===String(id));
+    const ledger=rows('finance','ledgers').find(x=>String(x.studentId)===String(id));
+    return{student,packages,payments,lessons,attendance,progress,ledger};
+  }
+  const money=v=>`${num(v).toLocaleString('tr-TR',{maximumFractionDigits:2})} ₺`;
+  const date=v=>v?new Date(String(v).length===10?`${v}T12:00:00`:v).toLocaleDateString('tr-TR'):'—';
+  function selectedPackage(d){return d.packages.find(x=>x.status==='Aktif')||d.packages[0]||null}
+
+  function renderList(filter=''){
+    if(!root)return;const box=root.querySelector('[data-sc-list]'),needle=norm(filter);const list=students().filter(s=>!needle||norm([s.name,s.fullName,s.course,s.teacher,s.phone,s.guardianName].join(' ')).includes(needle));
+    box.innerHTML=list.length?list.map(s=>`<button class="pire-sc-person ${String(s.id)===String(selectedId)?'active':''}" data-id="${esc(s.id)}"><b>${esc(s.name||s.fullName||'Öğrenci')}</b><small>${esc([s.course,s.teacher,s.status].filter(Boolean).join(' · '))}</small></button>`).join(''):'<div class="pire-sc-empty">Eşleşen öğrenci yok.</div>';
+    box.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{selectedId=b.dataset.id;activeTab='overview';renderList(root.querySelector('[data-sc-search]').value);renderDetail()});
+  }
+  function cards(items){return `<div class="pire-sc-grid">${items.map(x=>`<div class="pire-sc-card ${x.wide?'pire-sc-wide':''}"><small>${esc(x.label)}</small><b>${esc(x.value||'—')}</b></div>`).join('')}</div>`}
+  function table(headers,rowsHtml){return rowsHtml?`<table class="pire-sc-table"><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rowsHtml}</tbody></table>`:'<div class="pire-sc-empty">Bu öğrenci için kayıt bulunmuyor.</div>'}
+
+  function content(d){const s=d.student,p=selectedPackage(d);if(activeTab==='overview')return `${cards([
+    {label:'Durum',value:s.status},{label:'Branş',value:s.course||s.courseName},{label:'Eğitmen',value:s.teacher},{label:'Aylık Ücret',value:s.monthlyFee?money(s.monthlyFee):'—'},
+    {label:'Telefon',value:s.phone},{label:'E-posta',value:s.email},{label:'Veli',value:s.guardianName},{label:'Veli Telefon',value:s.guardianPhone},
+    {label:'Kayıt Tarihi',value:date(s.enrollmentDate||s.createdAt)},{label:'Paket Kalan',value:p?`${num(p.remainingLessons)} / ${num(p.totalLessons)} ders`:'Paket yok'},{label:'Toplam Ders',value:String(d.lessons.length)},{label:'Yoklama Kaydı',value:String(d.attendance.length)}
+  ])}`;
+  if(activeTab==='package'){
+    if(!d.packages.length)return '<div class="pire-sc-empty">Bu öğrenciye ait paket bulunmuyor.</div>';
+    return d.packages.map(x=>{const total=Math.max(1,num(x.totalLessons)),remaining=num(x.remainingLessons),used=Math.max(0,total-remaining),pct=Math.min(100,Math.round(used/total*100));return `<div class="pire-sc-card pire-sc-section"><span class="pire-sc-badge">${esc(x.status||'—')}</span><b style="font-size:17px;margin-top:9px">${esc(x.course||'Ders Paketi')}</b><small style="margin-top:5px">${esc(date(x.startDate))} – ${esc(date(x.endDate))}</small><div class="pire-sc-progress"><i style="width:${pct}%"></i></div><small style="margin-top:7px">${used} kullanıldı · ${remaining} kaldı · ${total} toplam</small></div>`}).join('');
+  }
+  if(activeTab==='payments'){
+    const ledger=d.ledger;const summary=cards([{label:'Toplam Borç',value:ledger?money(ledger.totalDebt):'—'},{label:'Ödenen',value:ledger?money(ledger.paid):'—'},{label:'Kalan Bakiye',value:ledger?money(ledger.balance):'—'},{label:'İşlem Sayısı',value:String(d.payments.length)}]);
+    const body=d.payments.slice().sort((a,b)=>String(b.paymentDate||b.createdAt||b.month||'').localeCompare(String(a.paymentDate||a.createdAt||a.month||''))).map(x=>`<tr><td>${esc(date(x.paymentDate||x.createdAt||x.month))}</td><td>${esc(x.method||x.status||'—')}</td><td>${esc(money(x.amount??x.amountPaid??x.amountDue))}</td><td>${esc(x.notes||'')}</td></tr>`).join('');return `${summary}<div class="pire-sc-section"><h4>Ödeme Geçmişi</h4>${table(['Tarih','Durum / Yöntem','Tutar','Not'],body)}</div>`;
+  }
+  if(activeTab==='lessons'){
+    const body=d.lessons.slice().sort((a,b)=>String(b.lessonDate||'').localeCompare(String(a.lessonDate||''))).map(x=>`<tr><td>${esc(date(x.lessonDate))}</td><td>${esc((x.startTime||'').slice(0,5))}</td><td>${esc(x.course||'Ders')}</td><td>${esc(x.teacher||'—')}</td><td>${esc(x.status||'—')}</td></tr>`).join('');return table(['Tarih','Saat','Ders','Eğitmen','Durum'],body);
+  }
+  const joined=d.attendance.slice().sort((a,b)=>String(b.enteredAt||b.updatedAt||'').localeCompare(String(a.enteredAt||a.updatedAt||''))).map(a=>{const l=d.lessons.find(x=>String(x.id)===String(a.lessonId));return `<tr><td>${esc(date(l?.lessonDate||a.enteredAt))}</td><td>${esc(l?.course||'Ders')}</td><td>${esc(a.status||'—')}</td><td>${esc(a.lateMinutes?`${a.lateMinutes} dk`:'—')}</td><td>${esc(a.absenceReason||'')}</td></tr>`}).join('');const progress=d.progress.slice(0,6).map(x=>`<div class="pire-sc-card pire-sc-section"><small>${esc(x.performance||'Gelişim kaydı')}</small><b>${esc(x.topic||x.nextTopic||'Ders gelişimi')}</b><small style="margin-top:6px">${esc(x.visibleNote||x.homework||x.objective||'Not bulunmuyor')}</small></div>`).join('');return `<div class="pire-sc-section"><h4>Yoklama</h4>${table(['Tarih','Ders','Durum','Geç Kalma','Açıklama'],joined)}</div><div class="pire-sc-section"><h4>Son Gelişim Notları</h4>${progress||'<div class="pire-sc-empty">Gelişim kaydı bulunmuyor.</div>'}</div>`;
+  }
+
+  function renderDetail(){if(!root)return;const d=allData(selectedId);const head=root.querySelector('[data-sc-title]'),sub=root.querySelector('[data-sc-sub]'),body=root.querySelector('[data-sc-body]');if(!d){head.textContent='Öğrenci seçin';sub.textContent='Detayları görüntülemek için soldaki listeden bir öğrenci seçin.';body.innerHTML='<div class="pire-sc-empty">Öğrenci seçilmedi.</div>';return}const s=d.student;head.textContent=s.name||s.fullName||'Öğrenci';sub.textContent=[s.course,s.teacher,s.status].filter(Boolean).join(' · ');root.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===activeTab));body.innerHTML=content(d)}
+  function close(){if(root)root.hidden=true;document.documentElement.style.overflow=''}
+  function open(id){mount();if(id)selectedId=id;if(!selectedId&&students()[0])selectedId=students()[0].id;root.hidden=false;document.documentElement.style.overflow='hidden';renderList();renderDetail();root.querySelector('[data-sc-search]')?.focus()}
+
+  function mount(){style();if(!root){root=document.createElement('div');root.className='pire-sc-backdrop';root.hidden=true;root.innerHTML=`<section class="pire-sc" role="dialog" aria-modal="true" aria-label="Öğrenci Detay Merkezi"><aside class="pire-sc-side"><div class="pire-sc-brand"><small>FIX129</small><h3>Öğrenci Merkezi</h3></div><input class="pire-sc-search" data-sc-search placeholder="Öğrenci ara…" autocomplete="off"><div class="pire-sc-list" data-sc-list></div></aside><main class="pire-sc-main"><header class="pire-sc-head"><div><small>ÖĞRENCİ DETAYI</small><h2 data-sc-title>Öğrenci seçin</h2><p data-sc-sub></p></div><button class="pire-sc-close" data-sc-close aria-label="Kapat">×</button></header><nav class="pire-sc-tabs">${TABS.map(([k,l])=>`<button class="pire-sc-tab ${k==='overview'?'active':''}" data-tab="${k}">${l}</button>`).join('')}</nav><div class="pire-sc-body" data-sc-body></div></main></section>`;document.body.appendChild(root);root.querySelector('[data-sc-close]').onclick=close;root.addEventListener('mousedown',e=>{if(e.target===root)close()});root.querySelector('[data-sc-search]').oninput=e=>renderList(e.target.value);root.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;renderDetail()})}
+    if(!document.querySelector('.pire-student-center-btn')){const tools=document.querySelector('.navbar-tools');if(tools){const btn=document.createElement('button');btn.className='pire-student-center-btn';btn.type='button';btn.textContent='Öğrenci Merkezi';btn.title='Öğrenci detaylarını tek ekranda aç';btn.onclick=()=>open();tools.appendChild(btn)}}
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root&&!root.hidden)close()});
+  window.addEventListener('pire:canonical-legacy-mirror-ready',()=>{if(root&&!root.hidden){renderList(root.querySelector('[data-sc-search]')?.value||'');renderDetail()}});
+  const obs=new MutationObserver(()=>mount());const boot=()=>{mount();obs.observe(document.body,{childList:true,subtree:true})};if(document.body)boot();else document.addEventListener('DOMContentLoaded',boot,{once:true});
+  window.__PIRE_STUDENT_CENTER__={open,close};
+})();
