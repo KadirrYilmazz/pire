@@ -12,6 +12,6 @@
   load('/pire-visitor-home-v2.js?v=1','data-pire-visitor-home-v2');
   load('/pire-visitor-detail-v1.js?v=2','data-pire-visitor-detail-v1');
   load('/pire-visitor-nav-layout.js?v=8','data-pire-visitor-nav-layout-v8');
-  load('/pire-visitor-marquee-global.js?v=5','data-pire-visitor-marquee-global-v5');
+  load('/pire-visitor-marquee-global.js?v=6','data-pire-visitor-marquee-global-v6');
   load('/pire-canonical-read-bridge.js?v=4','data-pire-canonical-read-bridge',()=>{load('/pire-canonical-localstorage-guard.js?v=1','data-pire-canonical-localstorage-guard',()=>{load('/pire-canonical-legacy-read-compat.js?v=1','data-pire-canonical-legacy-read-compat',()=>{load('/pire-canonical-ai-sync.js?v=1','data-pire-canonical-ai-sync')})})});
 })();
