@@ -12,7 +12,7 @@ test('Facebook ikonu gerçek Pİ-RE sayfasına güvenli bağlantı verir',()=>{
   assert.match(source,/link\.target='_blank'/);
   assert.match(source,/link\.rel='noopener noreferrer'/);
   assert.match(source,/Pİ-RE Facebook sayfasını aç/);
-  assert.match(source,/function sync\(\)\{linkFacebookIcon\(\)/);
+  assert.match(source,/function sync\(\)\{markInstagramIcon\(\);linkFacebookIcon\(\)/);
 });
 
 
@@ -31,7 +31,7 @@ test('LinkedIn ikonu Pİ-RE profiline güvenli bağlantı verir',()=>{
   assert.match(source,/facebook\?facebook\.after\(link\):container\.appendChild\(link\)/);
   assert.match(source,/link\.target='_blank'/);
   assert.match(source,/link\.rel='noopener noreferrer'/);
-  assert.match(source,/function sync\(\)\{linkFacebookIcon\(\);addLinkedInIcon\(\)/);
+  assert.match(source,/function sync\(\)\{markInstagramIcon\(\);linkFacebookIcon\(\);linkTikTokIcon\(\);linkTwitterIcon\(\);addYouTubeIcon\(\);addLinkedInIcon\(\)/);
 });
 
 test('TikTok ikonu Pİ-RE profiline güvenli bağlantı verir',()=>{
@@ -42,5 +42,5 @@ test('TikTok ikonu Pİ-RE profiline güvenli bağlantı verir',()=>{
   assert.match(source,/a\.pire-social-icon\.tiktok-icon\{cursor:pointer!important/);
   assert.match(source,/link\.target='_blank'/);
   assert.match(source,/link\.rel='noopener noreferrer'/);
-  assert.match(source,/function sync\(\)\{linkFacebookIcon\(\);linkTikTokIcon\(\);addLinkedInIcon\(\)/);
+  assert.match(source,/function sync\(\)\{markInstagramIcon\(\);linkFacebookIcon\(\);linkTikTokIcon\(\)/);
 });

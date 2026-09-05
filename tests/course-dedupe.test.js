@@ -1,7 +1,7 @@
 const fs = require('fs');
 const vm = require('vm');
 
-const source = fs.readFileSync(require('path').join(__dirname, 'fix74-pire-course-dedupe.js'), 'utf8');
+const source = fs.readFileSync(require('path').join(__dirname, '..', 'pire-course-dedupe.js'), 'utf8');
 const catalog = {
   teachers: [{ id: 1, name: 'Kadir Yılmaz' }],
   courses: [

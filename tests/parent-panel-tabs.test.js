@@ -21,7 +21,7 @@ test('veli paneli React içinde beş bilgi sekmesi sunar',()=>{
 test('veli sekmesi yenilemede korunur ve yalnızca veli görünümüne uygulanır',()=>{
   assert.match(bundle,/sessionStorage\.getItem\(\`pire-parent-tab\`\)/);
   assert.match(bundle,/sessionStorage\.setItem\(\`pire-parent-tab\`,parentTab\)/);
-  assert.match(bundle,/T===\`parentPanel\`\?\`parent-tab-\$\{parentTab\}\`:\`\`/);
+  assert.match(bundle,/T===\`parentPanel\`\?\`parent-tab-\$\{parentTab\} parent-sub-\$\{parentSubTab\}\`/);
 });
 
 test('kartlar dersler, gelişim, ödemeler ve bilgiler sekmelerine dağıtılır',()=>{
