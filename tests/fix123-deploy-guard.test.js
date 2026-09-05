@@ -27,3 +27,9 @@ test('smart-alert read state is converted to sessionStorage during deploy',()=>{
   assert.match(script,/sessionStorage\.getItem\(SMART_READ_KEY\)/);
   assert.match(script,/sessionStorage\.setItem\(SMART_READ_KEY/);
 });
+
+test('deploy output removes temporary theme mutations before React hydration',()=>{
+  assert.match(script,/replace\('<html lang="tr" data-theme="dark">','<html lang="tr">'\)/);
+  assert.match(script,/data-pire-hydration-theme/);
+  assert.match(script,/RSC kökünde beklenmeyen data-theme niteliği kaldı/);
+});
