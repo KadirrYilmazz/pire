@@ -13,7 +13,7 @@ test('legacy reads use an in-memory canonical mirror instead of persisted operat
   assert.match(compat,/pire-recovered-backend-v1/);
   assert.match(compat,/Storage\.prototype\.getItem/);
   assert.match(compat,/return mirror\?JSON\.stringify\(mirror\):null/);
-  assert.match(compat,/mode:'canonical-memory-mirror'/);
+  assert.match(compat,/mode:'canonical-memory-mirror-event-driven'/);
   assert.match(compat,/sourceOfTruth:'supabase-canonical'/);
 });
 
@@ -25,7 +25,7 @@ test('canonical mirror covers all legacy operational modules',()=>{
 
 test('successful canonical writes trigger legacy mirror refresh',()=>{
   assert.match(bridge,/pire:canonical-response/);
-  assert.match(compat,/detail\.ok && detail\.method && detail\.method!=='GET'/);
+  assert.match(compat,/detail\.ok&&detail\.method&&detail\.method!=='GET'/);
   assert.match(compat,/refresh\('canonical-write'\)/);
 });
 

@@ -36,7 +36,8 @@ test('program bilgileri bugün ve hafta alt sekmelerine ayrılır',()=>{
 test('her ana sekmede yalnızca ilgili eğitmen bilgisi görünür',()=>{
   assert.match(css,/teacher-tab-overview[\s\S]*teacher-panel-summary/);
   assert.match(css,/teacher-tab-students[\s\S]*teacher-my-students/);
-  assert.match(css,/teacher-tab-earnings[\s\S]*teacher-earning-card/);
+  assert.match(css,/teacher-tab-earnings \.teacher-panel-secondary-grid\{display:grid/);
+  assert.match(css,/teacher-tab-earnings \.teacher-week-program\{display:none/);
   assert.match(css,/teacher-tab-permissions[\s\S]*teacher-permissions/);
   assert.match(css,/@media \(max-width:760px\)/);
 });
