@@ -8,7 +8,6 @@
     production:"/production-studio.webp",
     event:"/organization.webp"
   };
-  const overlay='linear-gradient(180deg,rgba(4,6,5,.10) 5%,rgba(4,6,5,.32) 48%,rgba(4,6,5,.88) 100%)';
 
   function apply(){
     if(!document.querySelector('.app-shell.visitor-mode'))return;
@@ -16,11 +15,13 @@
       const card=document.querySelector(`#pire-vh2 .pvh-card[data-go="${key}"]`);
       const media=card?.querySelector('.pvh-card-media');
       if(!media)continue;
-      media.style.backgroundImage=`${overlay},url('${url}')`;
+      media.style.backgroundImage=`url('${url}')`;
       media.style.backgroundSize='cover';
       media.style.backgroundPosition=key==='academic'?'center 42%':key==='production'?'center 55%':'center 50%';
       media.style.backgroundRepeat='no-repeat';
-      media.style.opacity='.62';
+      media.style.opacity='1';
+      media.style.filter='none';
+      media.style.imageRendering='auto';
     }
   }
 
