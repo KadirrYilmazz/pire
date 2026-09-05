@@ -1,9 +1,9 @@
 (()=>{
   'use strict';
   const images={
-    academic:'/academic-coaching.webp?v=5',
-    production:'/production-studio.webp?v=5',
-    event:'/organization.webp?v=5'
+    academic:'/academic-coaching.webp?v=6',
+    production:'/production-studio.webp?v=6',
+    event:'/organization.webp?v=6'
   };
 
   function mountMedia(media,url,key){
