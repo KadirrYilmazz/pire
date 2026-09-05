@@ -1,154 +1,46 @@
 (()=>{
 'use strict';
-if(window.__PIRE_LOGIN_SCREEN_FIX132__)return;
-window.__PIRE_LOGIN_SCREEN_FIX132__=true;
-
+if(window.__PIRE_LOGIN_SCREEN_FIX132_V2__)return;
+window.__PIRE_LOGIN_SCREEN_FIX132_V2__=true;
 const norm=s=>String(s||'').replace(/\s+/g,' ').trim();
-const visible=el=>{if(!el)return false;const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return r.width>0&&r.height>0&&cs.display!=='none'&&cs.visibility!=='hidden'};
-
-function ensureStyle(){
-  if(document.getElementById('pire-login-screen-fix132-style'))return;
-  const s=document.createElement('style');
-  s.id='pire-login-screen-fix132-style';
-  s.textContent=`
-[data-pire-login132-modal="1"]{
-  width:min(920px,calc(100vw - 32px))!important;
-  max-height:min(92vh,820px)!important;
-  padding:30px 36px 32px!important;
-  border-radius:26px!important;
-  border:1px solid rgba(214,181,95,.28)!important;
-  background:linear-gradient(180deg,rgba(18,20,19,.985),rgba(12,14,13,.99))!important;
-  box-shadow:0 28px 90px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.025)!important;
-  overflow:auto!important;
+const visible=el=>{if(!el||!(el instanceof Element))return false;const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return r.width>0&&r.height>0&&cs.display!=='none'&&cs.visibility!=='hidden'&&cs.opacity!=='0'};
+const all=sel=>[...document.querySelectorAll(sel)];
+function style(){
+ if(document.getElementById('pire-login132-v2-style'))return;
+ const s=document.createElement('style');s.id='pire-login132-v2-style';s.textContent=`
+[data-pire-login132-modal="1"]{width:min(1040px,calc(100vw - 40px))!important;max-width:1040px!important;max-height:92vh!important;padding:34px 42px 30px!important;border-radius:28px!important;border:1px solid rgba(214,181,95,.30)!important;background:linear-gradient(145deg,#151816 0%,#0d0f0e 72%)!important;box-shadow:0 34px 110px rgba(0,0,0,.60),inset 0 1px rgba(255,255,255,.035)!important;box-sizing:border-box!important;overflow:auto!important}
+[data-pire-login132-title="1"]{font-size:42px!important;line-height:1.04!important;letter-spacing:-.045em!important;margin:12px 0 12px!important;font-weight:760!important}
+[data-pire-login132-subtitle="1"]{font-size:15px!important;line-height:1.55!important;color:rgba(240,236,226,.56)!important;margin:0!important}
+[data-pire-login132-roles="1"]{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important;width:100%!important;margin:26px 0 28px!important}
+[data-pire-login132-role="1"]{width:100%!important;min-width:0!important;height:148px!important;min-height:148px!important;padding:20px 18px!important;box-sizing:border-box!important;border-radius:14px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:space-between!important;text-align:left!important;transition:.18s ease!important}
+[data-pire-login132-role="1"]:hover{transform:translateY(-2px)!important;border-color:rgba(214,181,95,.48)!important;background:rgba(214,181,95,.055)!important}
+[data-pire-login132-role="1"][data-pire-selected="1"]{border-color:#d6b55f!important;background:linear-gradient(145deg,rgba(214,181,95,.16),rgba(214,181,95,.07))!important;box-shadow:inset 0 0 0 1px rgba(214,181,95,.09)!important}
+[data-pire-login132-fields="1"]{display:grid!important;grid-template-columns:1fr 1fr!important;gap:16px!important;width:100%!important;align-items:end!important}
+[data-pire-login132-field="1"]{width:100%!important;min-width:0!important;margin:0!important;box-sizing:border-box!important}
+[data-pire-login132-field="1"] input{width:100%!important;height:60px!important;min-height:60px!important;box-sizing:border-box!important;border-radius:12px!important;padding-inline:17px!important;font-size:16px!important}
+[data-pire-login132-field="1"]>span,[data-pire-login132-field="1"]>label{display:block!important;margin-bottom:8px!important}
+[data-pire-login132-helper="1"]{display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;min-height:34px!important;margin:8px 0 10px!important}
+[data-pire-login132-submit="1"]{width:100%!important;height:64px!important;min-height:64px!important;border-radius:12px!important;padding:0 22px!important;margin:0!important;font-size:15px!important;font-weight:800!important}
+[data-pire-login132-adminlink="1"]{display:flex!important;justify-content:center!important;width:100%!important;margin:17px 0 8px!important}
+[data-pire-login132-security="1"]{display:block!important;text-align:center!important;width:100%!important;margin:0 auto!important;max-width:760px!important;line-height:1.5!important}
+[data-pire-login132-close="1"]{width:48px!important;height:48px!important;min-width:48px!important;border-radius:13px!important;display:grid!important;place-items:center!important}
+@media(max-width:820px){[data-pire-login132-modal="1"]{padding:28px 22px!important}[data-pire-login132-roles="1"]{grid-template-columns:1fr 1fr!important}[data-pire-login132-fields="1"]{grid-template-columns:1fr!important}}
+@media(max-width:520px){[data-pire-login132-roles="1"]{grid-template-columns:1fr!important}[data-pire-login132-role="1"]{height:112px!important;min-height:112px!important}[data-pire-login132-title="1"]{font-size:34px!important}}
+`;document.head.appendChild(s)
 }
-[data-pire-login132-head="1"]{margin:0 0 24px!important;max-width:760px!important}
-[data-pire-login132-title="1"]{font-size:clamp(34px,3.2vw,48px)!important;line-height:1.02!important;letter-spacing:-.045em!important;margin:8px 0 12px!important}
-[data-pire-login132-subtitle="1"]{font-size:15px!important;line-height:1.65!important;max-width:660px!important;margin:0!important;color:rgba(235,231,220,.58)!important}
-[data-pire-login132-roles="1"]{
-  display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:12px!important;
-  margin:24px 0 28px!important;
+function exactText(text){return all('body *').find(el=>visible(el)&&norm(el.textContent)===text)||null}
+function modalFromTitle(title){let el=title;while(el&&el!==document.body){const r=el.getBoundingClientRect(),t=norm(el.textContent);if(r.width>650&&r.height>500&&t.includes('Yönetici')&&t.includes('Eğitmen')&&t.includes('Öğrenci')&&t.includes('Veli')&&t.includes('Telefon numarası'))return el;el=el.parentElement}return null}
+function roleCard(modal,name){const text=[...modal.querySelectorAll('*')].find(el=>visible(el)&&norm(el.textContent)===name);if(!text)return null;let el=text;while(el&&el!==modal){const r=el.getBoundingClientRect(),t=norm(el.textContent);if(r.width>120&&r.width<300&&r.height>85&&r.height<220&&t.includes(name))return el;el=el.parentElement}return text.closest('button,[role="button"]')}
+function fieldWrap(input,modal){let el=input.parentElement,best=input.parentElement;while(el&&el!==modal){const r=el.getBoundingClientRect();if(r.width>250&&r.width<600&&r.height>60&&r.height<125)best=el;if(r.height>150)break;el=el.parentElement}return best}
+function enhance(){style();const title=exactText('Rolünüzü seçin');if(!title)return;const modal=modalFromTitle(title);if(!modal)return;modal.setAttribute('data-pire-login132-modal','1');title.setAttribute('data-pire-login132-title','1');
+ const subtitle=[...modal.querySelectorAll('*')].find(el=>visible(el)&&norm(el.textContent).startsWith('Size ayrılan çalışma alanına giriş yapmak'));if(subtitle)subtitle.setAttribute('data-pire-login132-subtitle','1');
+ const close=all('button').find(b=>modal.contains(b)&&visible(b)&&(norm(b.textContent)==='×'||norm(b.textContent)==='✕'||/kapat/i.test(b.getAttribute('aria-label')||'')));if(close)close.setAttribute('data-pire-login132-close','1');
+ const names=['Yönetici','Eğitmen','Öğrenci','Veli'];const cards=names.map(n=>roleCard(modal,n)).filter(Boolean);if(cards.length===4){let p=cards[0].parentElement;while(p&&p!==modal&&!cards.every(c=>p.contains(c)))p=p.parentElement;if(p)p.setAttribute('data-pire-login132-roles','1');cards.forEach((c,i)=>{c.setAttribute('data-pire-login132-role','1');const selected=c.getAttribute('aria-pressed')==='true'||String(c.className).toLowerCase().includes('active')||i===0&&/Yönetici olarak giriş yap/i.test(norm(modal.textContent));c.toggleAttribute('data-pire-selected',selected)})}
+ const inputs=[...modal.querySelectorAll('input')].filter(visible);const phone=inputs.find(i=>(i.type||'').toLowerCase()==='tel'||/5xx|telefon/i.test(i.placeholder||''));const pass=inputs.find(i=>(i.type||'').toLowerCase()==='password');if(phone&&pass){const pw=fieldWrap(phone,modal),sw=fieldWrap(pass,modal);if(pw)pw.setAttribute('data-pire-login132-field','1');if(sw)sw.setAttribute('data-pire-login132-field','1');let row=pw?.parentElement;while(row&&row!==modal&&!(row.contains(pw)&&row.contains(sw)))row=row.parentElement;if(row&&row!==modal)row.setAttribute('data-pire-login132-fields','1')}
+ const remember=[...modal.querySelectorAll('*')].find(el=>visible(el)&&norm(el.textContent)==='Beni hatırla');const support=[...modal.querySelectorAll('*')].find(el=>visible(el)&&norm(el.textContent)==='Giriş desteği');if(remember&&support){let row=remember.parentElement;while(row&&row!==modal&&!row.contains(support))row=row.parentElement;if(row&&row!==modal)row.setAttribute('data-pire-login132-helper','1')}
+ const submit=[...modal.querySelectorAll('button')].find(b=>visible(b)&&/olarak giriş yap/i.test(norm(b.textContent)));if(submit)submit.setAttribute('data-pire-login132-submit','1');
+ const admin=[...modal.querySelectorAll('a,button')].find(el=>visible(el)&&/İlk yönetici hesabını oluştur/i.test(norm(el.textContent)));if(admin)admin.parentElement?.setAttribute('data-pire-login132-adminlink','1');
+ const sec=[...modal.querySelectorAll('*')].find(el=>visible(el)&&/Supabase Auth üzerinden güvenli/i.test(norm(el.textContent)));if(sec)sec.setAttribute('data-pire-login132-security','1');
 }
-[data-pire-login132-role="1"]{
-  min-width:0!important;
-  width:100%!important;
-  min-height:142px!important;
-  height:142px!important;
-  padding:18px 17px!important;
-  border-radius:14px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:flex-start!important;
-  justify-content:space-between!important;
-  text-align:left!important;
-  box-sizing:border-box!important;
-  transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease!important;
-}
-[data-pire-login132-role="1"]:hover{transform:translateY(-2px)!important;border-color:rgba(214,181,95,.38)!important}
-[data-pire-login132-role="1"][data-pire-selected="1"]{background:linear-gradient(145deg,rgba(214,181,95,.16),rgba(214,181,95,.07))!important;border-color:rgba(214,181,95,.72)!important;box-shadow:inset 0 0 0 1px rgba(214,181,95,.08)!important}
-[data-pire-login132-form="1"]{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:14px 16px!important;margin-top:0!important}
-[data-pire-login132-field="1"]{min-width:0!important;width:100%!important;margin:0!important}
-[data-pire-login132-field="1"] input{width:100%!important;min-height:62px!important;height:62px!important;box-sizing:border-box!important;border-radius:12px!important;padding:0 16px!important;font-size:16px!important}
-[data-pire-login132-field="1"]>span,[data-pire-login132-field="1"]>label{display:block!important;margin-bottom:8px!important;font-size:13px!important}
-[data-pire-login132-wide="1"]{grid-column:1/-1!important}
-[data-pire-login132-submit="1"]{grid-column:1/-1!important;width:100%!important;min-height:64px!important;height:64px!important;border-radius:12px!important;margin-top:4px!important;font-size:15px!important;font-weight:800!important;padding:0 20px!important}
-[data-pire-login132-helperrow="1"]{grid-column:1/-1!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;min-height:28px!important;margin:0!important}
-[data-pire-login132-footer="1"]{grid-column:1/-1!important;text-align:center!important;margin-top:2px!important}
-[data-pire-login132-close="1"]{width:46px!important;height:46px!important;min-width:46px!important;border-radius:12px!important;display:grid!important;place-items:center!important}
-@media(max-width:820px){
- [data-pire-login132-modal="1"]{padding:24px 20px 26px!important}
- [data-pire-login132-roles="1"]{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- [data-pire-login132-form="1"]{grid-template-columns:1fr!important}
- [data-pire-login132-wide="1"],[data-pire-login132-submit="1"],[data-pire-login132-helperrow="1"],[data-pire-login132-footer="1"]{grid-column:1!important}
-}
-@media(max-width:520px){
- [data-pire-login132-roles="1"]{grid-template-columns:1fr!important}
- [data-pire-login132-role="1"]{height:112px!important;min-height:112px!important}
-}
-`;
-  document.head.appendChild(s);
-}
-
-function findModal(){
-  const title=[...document.querySelectorAll('h1,h2,h3')].find(el=>visible(el)&&norm(el.textContent).includes('Rolünüzü seçin'));
-  if(!title)return null;
-  let modal=title.parentElement;
-  while(modal&&modal!==document.body){
-    const r=modal.getBoundingClientRect();
-    const txt=norm(modal.textContent);
-    if(r.width>620&&r.height>420&&txt.includes('Yönetici')&&txt.includes('Eğitmen')&&txt.includes('Öğrenci')&&txt.includes('Veli'))break;
-    modal=modal.parentElement;
-  }
-  if(!modal||modal===document.body)return null;
-  return {modal,title};
-}
-
-function markRoleCards(modal){
-  const roleNames=['Yönetici','Eğitmen','Öğrenci','Veli'];
-  const cards=roleNames.map(name=>[...modal.querySelectorAll('button,[role="button"],div')].find(el=>{
-    if(!visible(el))return false;
-    const t=norm(el.textContent);
-    if(!t.startsWith(name))return false;
-    const r=el.getBoundingClientRect();
-    return r.width>110&&r.width<260&&r.height>90&&r.height<220;
-  })).filter(Boolean);
-  const uniq=[...new Set(cards)];
-  if(uniq.length<4)return;
-  let parent=uniq[0].parentElement;
-  while(parent&&parent!==modal&&!uniq.every(x=>parent.contains(x)))parent=parent.parentElement;
-  if(parent&&parent!==modal)parent.setAttribute('data-pire-login132-roles','1');
-  uniq.forEach(card=>{
-    card.setAttribute('data-pire-login132-role','1');
-    const active=card.getAttribute('aria-pressed')==='true'||String(card.className).toLowerCase().includes('active')||getComputedStyle(card).borderColor.includes('214');
-    if(active)card.setAttribute('data-pire-selected','1');else card.removeAttribute('data-pire-selected');
-  });
-}
-
-function markForm(modal){
-  const phone=[...modal.querySelectorAll('input')].find(el=>visible(el)&&((el.type||'').toLowerCase()==='tel'||/5xx|telefon/i.test(el.placeholder||'')));
-  const pass=[...modal.querySelectorAll('input')].find(el=>visible(el)&&el.type==='password');
-  if(!phone||!pass)return;
-  let form=phone.closest('form')||phone.parentElement;
-  if(!form)return;
-  form.setAttribute('data-pire-login132-form','1');
-  [phone,pass].forEach(input=>{
-    const wrap=input.closest('label')||input.parentElement;
-    if(wrap)wrap.setAttribute('data-pire-login132-field','1');
-  });
-  const submit=[...form.querySelectorAll('button')].find(b=>/olarak giriş yap/i.test(norm(b.textContent)));
-  if(submit)submit.setAttribute('data-pire-login132-submit','1');
-  const remember=[...form.querySelectorAll('label,div')].find(el=>/Beni hatırla/i.test(norm(el.textContent))&&el.querySelector('input[type="checkbox"]'));
-  const support=[...form.querySelectorAll('a,button,span')].find(el=>norm(el.textContent)==='Giriş desteği');
-  if(remember||support){
-    let row=remember?.parentElement||support?.parentElement;
-    if(row&&row!==form)row.setAttribute('data-pire-login132-helperrow','1');
-  }
-  const firstAdmin=[...form.querySelectorAll('a,button')].find(el=>/İlk yönetici hesabını oluştur/i.test(norm(el.textContent)));
-  if(firstAdmin){const wrap=firstAdmin.parentElement;if(wrap)wrap.setAttribute('data-pire-login132-footer','1')}
-}
-
-function markHeader(modal,title){
-  modal.setAttribute('data-pire-login132-modal','1');
-  title.setAttribute('data-pire-login132-title','1');
-  const p=[...modal.querySelectorAll('p')].find(el=>visible(el)&&/çalışma alanına giriş/i.test(norm(el.textContent)));
-  if(p)p.setAttribute('data-pire-login132-subtitle','1');
-  const head=title.parentElement;if(head)head.setAttribute('data-pire-login132-head','1');
-  const close=[...modal.querySelectorAll('button')].find(b=>{const t=norm(b.textContent);return t==='×'||t==='✕'||b.getAttribute('aria-label')?.toLowerCase().includes('kapat')});
-  if(close)close.setAttribute('data-pire-login132-close','1');
-}
-
-function enhance(){
-  ensureStyle();
-  const found=findModal();
-  if(!found)return;
-  markHeader(found.modal,found.title);
-  markRoleCards(found.modal);
-  markForm(found.modal);
-}
-
-let timer;
-const schedule=()=>{clearTimeout(timer);timer=setTimeout(enhance,40)};
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enhance,{once:true});else enhance();
-new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','aria-pressed']});
+let timer;const schedule=()=>{clearTimeout(timer);timer=setTimeout(enhance,30)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enhance,{once:true});else enhance();new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','aria-pressed','style']});
 })();
