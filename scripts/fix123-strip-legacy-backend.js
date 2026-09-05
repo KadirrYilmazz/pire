@@ -6,6 +6,18 @@ const path=require('path');
 const file=path.join(process.cwd(),'index.html');
 let html=fs.readFileSync(file,'utf8');
 
+// Fix133: React RSC root layout yalnızca <html lang="tr"> üretir. Kaynak
+// snapshot'taki tema niteliği ve onu sonradan kaldıran ek script, hydration
+// başlamadan önce iki ayrı kök ağaç farkı oluşturuyordu. Deploy çıktısını RSC
+// köküyle fiziksel olarak aynı hale getir; React tema effect'i daha sonra
+// kayıtlı light/dark tercihini güvenle uygular.
+const hydrationThemePatch="<script data-pire-hydration-theme>document.documentElement.removeAttribute('data-theme')</script>\n";
+html=html
+  .replace('<html lang="tr" data-theme="dark">','<html lang="tr">')
+  .replace(hydrationThemePatch,'');
+if(html.includes('data-pire-hydration-theme'))throw new Error('Fix133 geçici hydration tema scripti temizlenemedi.');
+if(/<html[^>]*data-theme=/.test(html))throw new Error('Fix133 RSC kökünde beklenmeyen data-theme niteliği kaldı.');
+
 const backendStart='</main><script>\n(function(){\nconst SEED=';
 const backendEnd='</script><script id="pire-header-safety-fix">';
 const startIndex=html.indexOf(backendStart);
@@ -82,4 +94,4 @@ for(const deployFile of deployFiles){
   }
 }
 
-console.log('Fix126 deploy temizliği doğrulandı: legacy backend/local CRM çıkarıldı; kör admin polling kaldırıldı; operasyonel localStorage kalıcı yazması kalmadı.');
+console.log('Fix133 deploy temizliği doğrulandı: RSC kökü eşitlendi; legacy backend/local CRM çıkarıldı; operasyonel localStorage kalıcı yazması kalmadı.');
