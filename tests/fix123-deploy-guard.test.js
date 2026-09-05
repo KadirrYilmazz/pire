@@ -33,3 +33,9 @@ test('deploy output removes temporary theme mutations before React hydration',()
   assert.match(script,/data-pire-hydration-theme/);
   assert.match(script,/RSC kökünde beklenmeyen data-theme niteliği kaldı/);
 });
+
+test('React bootstrap blocks DOMContentLoaded compatibility patches until hydration starts',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  assert.match(html,/<script type="module" id="_R_">import "\/assets\/index-BS0ANsbn\.js";<\/script>/);
+  assert.doesNotMatch(html,/<script id="_R_">import\("\/assets\/index-BS0ANsbn\.js"\)<\/script>/);
+});
