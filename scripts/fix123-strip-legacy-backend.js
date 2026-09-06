@@ -53,6 +53,7 @@ const serializedScripts=JSON.stringify([...postHydrationScripts,'/pire-canonical
 const serializedStyles=JSON.stringify(postHydrationStyles);
 const safeBootstrap=`<script type="module" id="_R_">
 await import("/assets/index-BS0ANsbn.js");
+await new Promise(resolve=>setTimeout(resolve,10000));
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 for(const [id,code] of __PIRE_INLINE_PATCHES__){
   const script=document.createElement("script");script.id=id;script.textContent=code;document.body.appendChild(script);
