@@ -158,6 +158,15 @@ fs.writeFileSync(assistantPath,assistant,'utf8');
 // güvenilir biçimde hydrate edilemiyor. React aynı RSC ağacını kullanmaya devam
 // eder; yalnızca bozuk server snapshot'ını eşleştirmek yerine temiz document
 // köküne render eder. Böylece #418 recovery döngüsü ortadan kalkar.
+const frameworkBundlePath=path.join(process.cwd(),'assets','framework-CXnKph_e.js');
+let frameworkBundle=fs.readFileSync(frameworkBundlePath,'utf8');
+const hydrateExportMarker='e.hydrateRoot=function(e,t,n){';
+const createRootExport='e.createRoot=function(e,t){if(!s(e))throw Error(a(299));var n=!1,r=``,i=Qs,o=$s,c=ec,l=null;return t!=null&&(!0===t.unstable_strictMode&&(n=!0),t.identifierPrefix!==void 0&&(r=t.identifierPrefix),t.onUncaughtError!==void 0&&(i=t.onUncaughtError),t.onCaughtError!==void 0&&(o=t.onCaughtError),t.onRecoverableError!==void 0&&(c=t.onRecoverableError),t.unstable_transitionCallbacks!==void 0&&(l=t.unstable_transitionCallbacks)),t=ep(e,1,!1,null,t??null,n,r,null,i,o,c,l),e[yt]=t.current,Sd(e),new Ip(t)};';
+if(frameworkBundle.split(hydrateExportMarker).length!==2)throw new Error('Fix136 tekil React hydrateRoot exportu bulunamadı.');
+frameworkBundle=frameworkBundle.replace(hydrateExportMarker,createRootExport+hydrateExportMarker);
+if(!frameworkBundle.includes(createRootExport))throw new Error('Fix136 React createRoot exportu eklenemedi.');
+fs.writeFileSync(frameworkBundlePath,frameworkBundle,'utf8');
+
 const clientBundlePath=path.join(process.cwd(),'assets','index-BS0ANsbn.js');
 let clientBundle=fs.readFileSync(clientBundlePath,'utf8');
 const hydrateDocumentCall='window.__VINEXT_RSC_ROOT__=(0,Zr.hydrateRoot)(document,(0,F.createElement)(Yi,{initialElements:t,initialNavigationSnapshot:n}),i)';
