@@ -54,6 +54,9 @@ const serializedStyles=JSON.stringify(postHydrationStyles);
 const safeBootstrap=`<script type="module" id="_R_">
 await import("/assets/index-BS0ANsbn.js");
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+for(const [id,code] of __PIRE_INLINE_PATCHES__){
+  const script=document.createElement("script");script.id=id;script.textContent=code;document.body.appendChild(script);
+}
 for(const [href,attribute] of ${serializedStyles}){
   const link=document.createElement("link");link.rel="stylesheet";link.href=href;link.setAttribute(attribute,"true");document.head.appendChild(link);
 }
@@ -80,6 +83,18 @@ const customerEndIndex=html.indexOf(customerEnd,customerStartIndex);
 if(customerStartIndex<0||customerEndIndex<0)throw new Error('Fix123 legacy müşteri CRM işaretleri bulunamadı.');
 html=html.slice(0,customerStartIndex)+html.slice(customerEndIndex);
 
+const postHydrationInlineScripts=[];
+html=html.replace(/<script id="(pire-[^"]+)">([\s\S]*?)<\/script>\n?/g,(_,id,code)=>{
+  postHydrationInlineScripts.push([id,code]);
+  return '';
+});
+const inlinePatchIds=new Set(postHydrationInlineScripts.map(([id])=>id));
+if(!inlinePatchIds.has('pire-header-safety-fix'))throw new Error('Fix135 header güvenlik yaması hydration sonrası listeye taşınamadı.');
+if(!inlinePatchIds.has('pire-student-edit-fix'))throw new Error('Fix135 öğrenci düzenleme yaması hydration sonrası listeye taşınamadı.');
+const serializedInlineScripts=JSON.stringify(postHydrationInlineScripts).replace(/</g,'\\u003c');
+if(!html.includes('__PIRE_INLINE_PATCHES__'))throw new Error('Fix135 inline patch yer tutucusu bulunamadı.');
+html=html.replace('__PIRE_INLINE_PATCHES__',serializedInlineScripts);
+
 // Fix126: Yönetici option'ı zaten sayfa açılışında ve kullanıcı etkileşiminde kontrol ediliyor.
 // Her 1.2 saniyede tüm select'leri tarayan kör polling production çıktısından kaldırılır.
 html=html.replace('  setInterval(ensureAdminOption,1200);','  /* Fix126: periodic admin-option polling removed; event-driven checks remain. */');
@@ -87,8 +102,7 @@ if(html.includes('setInterval(ensureAdminOption,1200)'))throw new Error('Fix126 
 
 const forbidden=['const SEED=','async function localApi(','pire-recovered-backend-v1\';\nlet db','window.fetch=function(input,init)','pire-customers-safe-v1'];
 for(const marker of forbidden){if(html.includes(marker))throw new Error('Legacy işareti temizlenemedi: '+marker)}
-if(!html.includes('id="pire-header-safety-fix"'))throw new Error('Temizlik sonrası UI patch zinciri korunamadı.');
-if(!html.includes('id="pire-student-edit-fix"'))throw new Error('Temizlik sonrası öğrenci düzenleme uyumluluğu korunamadı.');
+if(!safeBootstrap.includes('__PIRE_INLINE_PATCHES__'))throw new Error('Temizlik sonrası UI patch bootstrap zinciri korunamadı.');
 if(!safeBootstrap.includes('/pire-canonical-customers.js?v=1'))throw new Error('Canonical müşteri CRM hydration sonrası loader listesine eklenemedi.');
 fs.writeFileSync(file,html,'utf8');
 
