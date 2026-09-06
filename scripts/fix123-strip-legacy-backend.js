@@ -54,7 +54,6 @@ const serializedStyles=JSON.stringify(postHydrationStyles);
 const safeBootstrap=`<script type="module" id="_R_">
 await import("/assets/index-BS0ANsbn.js");
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-await new Promise(resolve=>setTimeout(resolve,10000)); // Fix135 diagnostic preview; remove before release.
 for(const [id,code] of __PIRE_INLINE_PATCHES__){
   const script=document.createElement("script");script.id=id;script.textContent=code;document.body.appendChild(script);
 }
@@ -68,6 +67,15 @@ html=html.replace(reactBootstrap,safeBootstrap);
 for(const src of postHydrationScripts){
   if(new RegExp(`<script src="${src.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')}"`).test(html))throw new Error(`Fix134 hydration öncesi script kaldı: ${src}`);
 }
+
+const hydrationMain=fs.readFileSync(path.join(process.cwd(),'pire-hydration-main.html'),'utf8').trim();
+if(!hydrationMain.startsWith('<main ')||!hydrationMain.endsWith('</main>'))throw new Error('Fix135 kanonik hydration main biçimi geçersiz.');
+if(!hydrationMain.includes('class="visitor-workspace"'))throw new Error('Fix135 kanonik hydration main ziyaretçi çalışma alanını içermiyor.');
+if(/<script\b|localStorage|sessionStorage|access_token/i.test(hydrationMain))throw new Error('Fix135 kanonik hydration main güvenli olmayan içerik barındırıyor.');
+const staticMainStart=html.indexOf('<main ');
+const staticMainEnd=html.indexOf('</main>',staticMainStart);
+if(staticMainStart<0||staticMainEnd<0)throw new Error('Fix135 değiştirilecek statik main bulunamadı.');
+html=html.slice(0,staticMainStart)+hydrationMain+html.slice(staticMainEnd+'</main>'.length);
 
 const backendStart='</main><script>\n(function(){\nconst SEED=';
 const backendEnd='</script><script id="pire-header-safety-fix">';
