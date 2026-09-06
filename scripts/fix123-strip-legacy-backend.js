@@ -53,7 +53,6 @@ const serializedScripts=JSON.stringify([...postHydrationScripts,'/pire-canonical
 const serializedStyles=JSON.stringify(postHydrationStyles);
 const safeBootstrap=`<script type="module" id="_R_">
 await import("/assets/index-BS0ANsbn.js");
-await new Promise(resolve=>setTimeout(resolve,10000));
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 for(const [id,code] of __PIRE_INLINE_PATCHES__){
   const script=document.createElement("script");script.id=id;script.textContent=code;document.body.appendChild(script);
@@ -114,6 +113,19 @@ const forbidden=['const SEED=','async function localApi(','pire-recovered-backen
 for(const marker of forbidden){if(html.includes(marker))throw new Error('Legacy işareti temizlenemedi: '+marker)}
 if(!safeBootstrap.includes('__PIRE_INLINE_PATCHES__'))throw new Error('Temizlik sonrası UI patch bootstrap zinciri korunamadı.');
 if(!safeBootstrap.includes('/pire-canonical-customers.js?v=1'))throw new Error('Canonical müşteri CRM hydration sonrası loader listesine eklenemedi.');
+
+// Fix135: Kurtarılan snapshot RSC taşıma scriptlerini kapanmış belgenin dışına
+// yazıyordu. HTML ayrıştırıcısı bu düğümleri yeniden konumlandırdığı için React
+// hydrateRoot(document) farklı bir kök ağaç görüyordu. Veri scriptlerini kaynak
+// sırasını bozmadan body kapanışının içine al.
+const closedDocument='</body></html>';
+const rscOutsideMarker=closedDocument+'<script>self.__VINEXT_RSC_CHUNKS__';
+const rscOutsideIndex=html.indexOf(rscOutsideMarker);
+if(rscOutsideIndex<0)throw new Error('Fix135 belge dışındaki RSC taşıma scriptleri bulunamadı.');
+const rscTransport=html.slice(rscOutsideIndex+closedDocument.length);
+if(!rscTransport.includes('self.__VINEXT_RSC_DONE__=true'))throw new Error('Fix135 RSC tamamlanma işareti bulunamadı.');
+html=html.slice(0,rscOutsideIndex)+rscTransport+closedDocument;
+if(!html.endsWith(closedDocument))throw new Error('Fix135 geçerli belge kapanışı oluşturulamadı.');
 fs.writeFileSync(file,html,'utf8');
 
 // Akıllı uyarıların "okundu" görünümü kurumsal veri değildir; kalıcı cihaz DB'si
