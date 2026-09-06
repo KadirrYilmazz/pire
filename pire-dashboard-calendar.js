@@ -5,268 +5,30 @@
   let viewDate=new Date(),selected='';
   let movedActions=null,actionsHome=null,syncQueued=false,smartAlertCount='',openSmartAlertsAfterNavigation=false;
   const boundPanels=new WeakSet();
-
   const iso=(year,month,day)=>`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
   const data=()=>{try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()||{}}catch(_){return {}}};
   const lessons=()=>Array.isArray(data()?.lessons?.lessons)?data().lessons.lessons:[];
   const trTime=value=>String(value||'').slice(0,5);
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-
-  function openFullCalendar(){
-    const lessonMenu=[...document.querySelectorAll('.primary-nav details')].find(item=>item.querySelector('summary')?.textContent?.trim().startsWith('Dersler'));
-    const calendarButton=[...(lessonMenu?.querySelectorAll('button')||[])].find(button=>button.textContent?.trim()==='Takvim');
-    if(calendarButton){calendarButton.click();return}
-    lessonMenu?.querySelector('summary')?.click();
-  }
-
-  function render(panel){
-    const year=viewDate.getFullYear(),month=viewDate.getMonth();
-    const first=(new Date(year,month,1).getDay()+6)%7;
-    const count=new Date(year,month+1,0).getDate();
-    const currentLessons=lessons();
-    const byDate=new Map();
-    currentLessons.forEach(lesson=>{if(!lesson?.lessonDate)return;const rows=byDate.get(lesson.lessonDate)||[];rows.push(lesson);byDate.set(lesson.lessonDate,rows)});
-    const today=new Date(),todayKey=iso(today.getFullYear(),today.getMonth(),today.getDate());
-    if(!selected||!selected.startsWith(`${year}-${String(month+1).padStart(2,'0')}`))selected=todayKey.startsWith(`${year}-${String(month+1).padStart(2,'0')}`)?todayKey:iso(year,month,1);
-
-    panel.querySelector('[data-calendar-title]').textContent=`${MONTHS[month]} ${year}`;
-    const grid=panel.querySelector('[data-calendar-grid]');
-    grid.innerHTML=DAYS.map(day=>`<span class="pire-calendar-weekday">${day}</span>`).join('');
-    for(let i=0;i<first;i++)grid.insertAdjacentHTML('beforeend','<span class="pire-calendar-blank" aria-hidden="true"></span>');
-    for(let day=1;day<=count;day++){
-      const key=iso(year,month,day),items=byDate.get(key)||[];
-      const button=document.createElement('button');
-      button.type='button';button.className='pire-calendar-day';button.dataset.date=key;
-      if(key===todayKey)button.classList.add('is-today');
-      if(key===selected)button.classList.add('is-selected');
-      button.setAttribute('aria-label',`${day} ${MONTHS[month]}${items.length?`, ${items.length} ders`:''}`);
-      button.innerHTML=`<b>${day}</b>${items.length?`<span class="pire-calendar-dots">${items.slice(0,3).map(()=>'<i></i>').join('')}</span><small>${items.length} ders</small>`:''}`;
-      grid.appendChild(button);
-    }
-    renderSelected(panel,byDate.get(selected)||[]);
-  }
-
-  function renderSelected(panel,items){
-    const area=panel.querySelector('[data-calendar-selected]');
-    const date=new Date(`${selected}T12:00:00`);
-    const title=date.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});
-    if(!items.length)area.innerHTML=`<div><small>${title}</small><b>Bu gün için ders planlanmamış</b></div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;
-    else area.innerHTML=`<div><small>${title}</small><b>${items.length} ders planlandı</b></div><div class="pire-calendar-selected-lessons">${items.slice(0,2).map(item=>`<span><time>${trTime(item.startTime)}</time><b>${String(item.course||'Ders')}</b><small>${String(item.teacher||'')}</small></span>`).join('')}</div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;
-    area.querySelector('[data-open-full-calendar]').onclick=openFullCalendar;
-  }
-
-  function showDayDetails(panel,key,items){
-    const popover=panel.querySelector('[data-calendar-popover]');
-    const date=new Date(`${key}T12:00:00`).toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});
-    popover.innerHTML=`
-      <header><div><small>${esc(date)}</small><h4>${items.length} ders planlandı</h4></div><button type="button" data-close-calendar-details aria-label="Ders ayrıntılarını kapat">×</button></header>
-      <div class="pire-calendar-detail-list">${items.map(item=>`<article><time>${esc(trTime(item.startTime))}</time><div><b>${esc(item.course||'Ders')}</b><small>${esc(item.teacher||'Eğitmen belirtilmemiş')}${item.room?` · ${esc(item.room)}`:''}</small></div></article>`).join('')}</div>
-      <footer><button type="button" data-open-full-calendar>Tam takvimde aç →</button></footer>`;
-    popover.hidden=false;
-    popover.querySelector('[data-close-calendar-details]').onclick=()=>{popover.hidden=true};
-    popover.querySelector('[data-open-full-calendar]').onclick=openFullCalendar;
-  }
-
-  function makePanel(dashboard){
-    let panel=dashboard.querySelector(':scope > .pire-dashboard-calendar');
-    if(panel){bindPanel(panel,dashboard);return panel}
-    panel=document.createElement('section');panel.className='pire-dashboard-calendar';panel.setAttribute('aria-label','Aylık ders takvimi');
-    panel.innerHTML=`
-      <header>
-        <div><small>DERS PROGRAMI</small><h3 data-calendar-title></h3></div>
-        <div class="pire-calendar-actions">
-          <button type="button" data-calendar-prev aria-label="Önceki ay">←</button>
-          <button type="button" data-calendar-today>Bugün</button>
-          <button type="button" data-calendar-next aria-label="Sonraki ay">→</button>
-        </div>
-      </header>
-      <div class="pire-calendar-grid" data-calendar-grid></div>
-      <footer data-calendar-selected></footer>
-      <aside class="pire-calendar-popover" data-calendar-popover hidden></aside>`;
-    dashboard.appendChild(panel);
-    bindPanel(panel,dashboard);
-    render(panel);return panel;
-  }
-
-  function bindPanel(panel,dashboard){
-    if(boundPanels.has(panel))return;
-    boundPanels.add(panel);
-    panel.addEventListener('click',event=>{
-      const target=event.target.closest('button');
-      if(!target||!panel.contains(target))return;
-      if(target.matches('[data-calendar-prev]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);selected='';render(panel);return}
-      if(target.matches('[data-calendar-next]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);selected='';render(panel);return}
-      if(target.matches('[data-calendar-today]')){viewDate=new Date();selected='';render(panel);return}
-      const day=target.closest('.pire-calendar-day');
-      if(day){
-        const key=day.dataset.date,items=lessons().filter(item=>item?.lessonDate===key);
-        selected=key;render(panel);if(items.length)showDayDetails(panel,key,items);
-      }
-    });
-  }
-
-  function restoreNewActions(){
-    if(movedActions&&actionsHome?.isConnected&&movedActions.parentElement!==actionsHome)actionsHome.appendChild(movedActions);
-  }
-
-  function placeNewActions(){
-    const shell=document.querySelector('.app-shell');
-    const sidebar=shell?.querySelector('.sidebar');
-    const header=shell?.querySelector('.content > header');
-    const actions=header?.querySelector(':scope > .top-actions')||sidebar?.querySelector(':scope > .pire-nav-new-actions')||(movedActions?.isConnected?movedActions:null);
-    if(!shell||!sidebar||!header||!actions?.querySelector('.pire-new-menu')){
-      shell?.classList.remove('pire-persistent-header');
-      restoreNewActions();
-      return false;
-    }
-    if(!movedActions||movedActions!==actions){movedActions=actions;actionsHome=actions.parentElement}
-    if(!actionsHome?.isConnected)actionsHome=header;
-    shell.classList.add('pire-persistent-header');
-    header.classList.add('pire-dashboard-actions-home');
-    if(actions.parentElement!==sidebar)sidebar.appendChild(actions);
-    actions.classList.add('pire-nav-new-actions');
-    return true;
-  }
-
-  function sync(){
-    const hasPersistentHeader=placeNewActions();
-    let dashboard=null;
-    document.querySelectorAll('.premium-dashboard').forEach(dashboard=>{
-      const panel=makePanel(dashboard),badge=dashboard.querySelector('.dashboard-alerts .dashboard-section-head > span');
-      smartAlertCount=badge?.textContent||'';
-      if(openSmartAlertsAfterNavigation){dashboard.classList.add('compact-alerts-open');openSmartAlertsAfterNavigation=false}
-    });
-    dashboard=document.querySelector('.premium-dashboard');
-    if(hasPersistentHeader)placeSmartAlertButton(dashboard,smartAlertCount);
-    else document.querySelectorAll('.pire-smart-alert-button,.pire-alert-chooser').forEach(button=>button.remove());
-  }
-
+  function openFullCalendar(){const lessonMenu=[...document.querySelectorAll('.primary-nav details')].find(item=>item.querySelector('summary')?.textContent?.trim().startsWith('Dersler'));const calendarButton=[...(lessonMenu?.querySelectorAll('button')||[])].find(button=>button.textContent?.trim()==='Takvim');if(calendarButton){calendarButton.click();return}lessonMenu?.querySelector('summary')?.click()}
+  function render(panel){const year=viewDate.getFullYear(),month=viewDate.getMonth(),first=(new Date(year,month,1).getDay()+6)%7,count=new Date(year,month+1,0).getDate(),currentLessons=lessons(),byDate=new Map();currentLessons.forEach(lesson=>{if(!lesson?.lessonDate)return;const rows=byDate.get(lesson.lessonDate)||[];rows.push(lesson);byDate.set(lesson.lessonDate,rows)});const today=new Date(),todayKey=iso(today.getFullYear(),today.getMonth(),today.getDate());if(!selected||!selected.startsWith(`${year}-${String(month+1).padStart(2,'0')}`))selected=todayKey.startsWith(`${year}-${String(month+1).padStart(2,'0')}`)?todayKey:iso(year,month,1);panel.querySelector('[data-calendar-title]').textContent=`${MONTHS[month]} ${year}`;const grid=panel.querySelector('[data-calendar-grid]');grid.innerHTML=DAYS.map(day=>`<span class="pire-calendar-weekday">${day}</span>`).join('');for(let i=0;i<first;i++)grid.insertAdjacentHTML('beforeend','<span class="pire-calendar-blank" aria-hidden="true"></span>');for(let day=1;day<=count;day++){const key=iso(year,month,day),items=byDate.get(key)||[],button=document.createElement('button');button.type='button';button.className='pire-calendar-day';button.dataset.date=key;if(key===todayKey)button.classList.add('is-today');if(key===selected)button.classList.add('is-selected');button.setAttribute('aria-label',`${day} ${MONTHS[month]}${items.length?`, ${items.length} ders`:''}`);button.innerHTML=`<b>${day}</b>${items.length?`<span class="pire-calendar-dots">${items.slice(0,3).map(()=>'<i></i>').join('')}</span><small>${items.length} ders</small>`:''}`;grid.appendChild(button)}renderSelected(panel,byDate.get(selected)||[])}
+  function renderSelected(panel,items){const area=panel.querySelector('[data-calendar-selected]'),date=new Date(`${selected}T12:00:00`),title=date.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});if(!items.length)area.innerHTML=`<div><small>${title}</small><b>Bu gün için ders planlanmamış</b></div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;else area.innerHTML=`<div><small>${title}</small><b>${items.length} ders planlandı</b></div><div class="pire-calendar-selected-lessons">${items.slice(0,2).map(item=>`<span><time>${trTime(item.startTime)}</time><b>${String(item.course||'Ders')}</b><small>${String(item.teacher||'')}</small></span>`).join('')}</div><button type="button" data-open-full-calendar>Takvimde aç →</button>`;area.querySelector('[data-open-full-calendar]').onclick=openFullCalendar}
+  function showDayDetails(panel,key,items){const popover=panel.querySelector('[data-calendar-popover]'),date=new Date(`${key}T12:00:00`).toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});popover.innerHTML=`<header><div><small>${esc(date)}</small><h4>${items.length} ders planlandı</h4></div><button type="button" data-close-calendar-details aria-label="Ders ayrıntılarını kapat">×</button></header><div class="pire-calendar-detail-list">${items.map(item=>`<article><time>${esc(trTime(item.startTime))}</time><div><b>${esc(item.course||'Ders')}</b><small>${esc(item.teacher||'Eğitmen belirtilmemiş')}${item.room?` · ${esc(item.room)}`:''}</small></div></article>`).join('')}</div><footer><button type="button" data-open-full-calendar>Tam takvimde aç →</button></footer>`;popover.hidden=false;popover.querySelector('[data-close-calendar-details]').onclick=()=>{popover.hidden=true};popover.querySelector('[data-open-full-calendar]').onclick=openFullCalendar}
+  function makePanel(dashboard){let panel=dashboard.querySelector(':scope > .pire-dashboard-calendar');if(panel){bindPanel(panel,dashboard);return panel}panel=document.createElement('section');panel.className='pire-dashboard-calendar';panel.setAttribute('aria-label','Aylık ders takvimi');panel.innerHTML=`<header><div><small>DERS PROGRAMI</small><h3 data-calendar-title></h3></div><div class="pire-calendar-actions"><button type="button" data-calendar-prev aria-label="Önceki ay">←</button><button type="button" data-calendar-today>Bugün</button><button type="button" data-calendar-next aria-label="Sonraki ay">→</button></div></header><div class="pire-calendar-grid" data-calendar-grid></div><footer data-calendar-selected></footer><aside class="pire-calendar-popover" data-calendar-popover hidden></aside>`;dashboard.appendChild(panel);bindPanel(panel,dashboard);render(panel);return panel}
+  function bindPanel(panel,dashboard){if(boundPanels.has(panel))return;boundPanels.add(panel);panel.addEventListener('click',event=>{const target=event.target.closest('button');if(!target||!panel.contains(target))return;if(target.matches('[data-calendar-prev]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);selected='';render(panel);return}if(target.matches('[data-calendar-next]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);selected='';render(panel);return}if(target.matches('[data-calendar-today]')){viewDate=new Date();selected='';render(panel);return}const day=target.closest('.pire-calendar-day');if(day){const key=day.dataset.date,items=lessons().filter(item=>item?.lessonDate===key);selected=key;render(panel);if(items.length)showDayDetails(panel,key,items)}})}
+  function restoreNewActions(){if(movedActions&&actionsHome?.isConnected&&movedActions.parentElement!==actionsHome)actionsHome.appendChild(movedActions)}
+  function placeNewActions(){const shell=document.querySelector('.app-shell'),sidebar=shell?.querySelector('.sidebar'),header=shell?.querySelector('.content > header'),actions=header?.querySelector(':scope > .top-actions')||sidebar?.querySelector(':scope > .pire-nav-new-actions')||(movedActions?.isConnected?movedActions:null);if(!shell||!sidebar||!header||!actions?.querySelector('.pire-new-menu')){shell?.classList.remove('pire-persistent-header');restoreNewActions();return false}if(!movedActions||movedActions!==actions){movedActions=actions;actionsHome=actions.parentElement}if(!actionsHome?.isConnected)actionsHome=header;shell.classList.add('pire-persistent-header');header.classList.add('pire-dashboard-actions-home');if(actions.parentElement!==sidebar)sidebar.appendChild(actions);actions.classList.add('pire-nav-new-actions');return true}
+  function sync(){const hasPersistentHeader=placeNewActions();let dashboard=null;document.querySelectorAll('.premium-dashboard').forEach(dashboard=>{makePanel(dashboard);const badge=dashboard.querySelector('.dashboard-alerts .dashboard-section-head > span');smartAlertCount=badge?.textContent||'';if(openSmartAlertsAfterNavigation){dashboard.classList.add('compact-alerts-open');openSmartAlertsAfterNavigation=false}});dashboard=document.querySelector('.premium-dashboard');if(hasPersistentHeader)placeSmartAlertButton(dashboard,smartAlertCount);else document.querySelectorAll('.pire-smart-alert-button,.pire-alert-chooser').forEach(button=>button.remove())}
   const SMART_READ_KEY='pire-smart-alert-read-v2';
   const smartAlertSignature=element=>(element?.textContent||'').replace(/\s+/g,' ').trim();
-  function readSmartAlertSignatures(){
-    try{const value=JSON.parse(localStorage.getItem(SMART_READ_KEY)||'[]');return new Set(Array.isArray(value)?value:[])}catch(_){return new Set()}
-  }
-  function smartAlertState(dashboard,fallbackCount){
-    const items=[...(dashboard?.querySelectorAll('.dashboard-alerts .alert-stream > button')||[])];
-    const read=readSmartAlertSignatures();
-    if(!items.length)return{unread:Number(fallbackCount||0),total:Number(fallbackCount||0)};
-    let unread=0,total=0;
-    for(const item of items){
-      const signature=smartAlertSignature(item);
-      const match=signature.match(/(\d+)\s+(?:öğrenci|ders|kayıt)/i);
-      const amount=Number(match?.[1]||1);
-      total+=amount;if(!read.has(signature))unread+=amount;
-    }
-    return{unread,total};
-  }
-  function markSmartAlertRead(item){
-    const signature=smartAlertSignature(item);if(!signature)return;
-    const read=readSmartAlertSignatures();read.add(signature);
-    localStorage.setItem(SMART_READ_KEY,JSON.stringify([...read].slice(-100)));
-  }
-
-  function placeSmartAlertButton(dashboard,count){
-    const tools=document.querySelector('.app-shell.pire-persistent-header .navbar-tools');
-    const wrap=tools?.querySelector('.notification-wrap');
-    const button=wrap?.querySelector('.notification-bell');
-    if(!tools||!wrap||!button)return;
-    tools.querySelectorAll('.pire-smart-alert-button').forEach(item=>item.remove());
-
-    const smartState=smartAlertState(dashboard,count);
-    const currentBadge=button.querySelector(':scope > b');
-    const currentText=currentBadge?.textContent?.trim()||'0';
-    const lastCombined=button.dataset.pireCombinedCount;
-    if(!button.dataset.pireUnifiedReady||currentText!==lastCombined){
-      button.dataset.pireNotificationCount=String(Number(currentText)||0);
-    }
-    const notificationUnread=Number(button.dataset.pireNotificationCount||0);
-    const total=notificationUnread+smartState.unread;
-
-    button.dataset.pireSmartCount=String(smartState.unread);
-    button.dataset.pireSmartTotal=String(smartState.total);
-    button.dataset.pireUnifiedReady='1';
-    button.dataset.pireCombinedCount=String(total);
-    button.setAttribute('aria-label',`Bildirim merkezi, ${total} okunmamış kayıt`);
-    button.title='Bildirim merkezi';
-    button.classList.toggle('pire-alert-pulse',total>0);
-    let badge=button.querySelector(':scope > b');
-    if(!badge&&total){badge=document.createElement('b');button.appendChild(badge)}
-    if(badge){badge.textContent=String(total);badge.hidden=total===0}
-
-    if(!document.documentElement.dataset.pireUnifiedOutsideClose){
-      document.documentElement.dataset.pireUnifiedOutsideClose='1';
-      document.addEventListener('pointerdown',event=>{
-        const activeWrap=document.querySelector('.notification-wrap');
-        if(!activeWrap||activeWrap.contains(event.target))return;
-        activeWrap.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());
-        if(activeWrap.querySelector('.notification-popover')){
-          const activeButton=activeWrap.querySelector('.notification-bell');
-          if(activeButton){activeButton.dataset.pireAllowNative='1';activeButton.click();delete activeButton.dataset.pireAllowNative}
-        }
-      },true);
-      document.addEventListener('keydown',event=>{
-        if(event.key!=='Escape')return;
-        const activeWrap=document.querySelector('.notification-wrap');
-        activeWrap?.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());
-        if(activeWrap?.querySelector('.notification-popover')){
-          const activeButton=activeWrap.querySelector('.notification-bell');
-          if(activeButton){activeButton.dataset.pireAllowNative='1';activeButton.click();delete activeButton.dataset.pireAllowNative}
-        }
-      });
-    }
-    if(!button.dataset.pireUnifiedBound){
-      button.dataset.pireUnifiedBound='1';
-      button.addEventListener('click',event=>{
-        if(button.dataset.pireAllowNative==='1')return;
-        event.preventDefault();event.stopImmediatePropagation();
-        if(wrap.querySelector('.notification-popover')){
-          button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative;return;
-        }
-        document.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());
-        const menu=document.createElement('div');menu.className='pire-alert-chooser';
-        const notificationsItem=document.createElement('button');notificationsItem.type='button';
-        notificationsItem.innerHTML=`<span><i>♢</i><strong>Bildirimler</strong><small>Mesajlar ve kurum bildirimleri</small></span><b>${button.dataset.pireNotificationCount||0}</b>`;
-        const smartItem=document.createElement('button');smartItem.type='button';
-        smartItem.innerHTML=`<span><i>✦</i><strong>Akıllı Uyarılar</strong><small>Paket, tahsilat ve yoklama uyarıları</small></span><b>${button.dataset.pireSmartCount||0}</b>`;
-        notificationsItem.onclick=event=>{
-          event.preventDefault();event.stopPropagation();
-          menu.remove();button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative;
-        };
-        smartItem.onclick=event=>{
-          event.preventDefault();event.stopPropagation();
-          menu.remove();
-          const currentDashboard=document.querySelector('.premium-dashboard');
-          if(currentDashboard?.isConnected){currentDashboard.classList.add('compact-alerts-open')}
-          else{const dashboardButton=[...document.querySelectorAll('.primary-nav button')].find(item=>item.textContent?.trim()==='Genel Bakış');if(dashboardButton){openSmartAlertsAfterNavigation=true;dashboardButton.click()}}
-          setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),Number(button.dataset.pireSmartCount||0)),0);
-        };
-        menu.append(notificationsItem,smartItem);wrap.appendChild(menu);
-      },true);
-    }
-  }
-
-  document.addEventListener('click',event=>document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(dashboard=>{const path=typeof event.composedPath==='function'?event.composedPath():[];const fromNotification=path.some(node=>node?.classList?.contains?.('notification-wrap'));if(!dashboard.querySelector('.dashboard-alerts')?.contains(event.target)&&!fromNotification&&!event.target.closest?.('.notification-wrap'))dashboard.classList.remove('compact-alerts-open')}));
+  function readSmartAlertSignatures(){try{const value=JSON.parse(localStorage.getItem(SMART_READ_KEY)||'[]');return new Set(Array.isArray(value)?value:[])}catch(_){return new Set()}}
+  function smartAlertState(dashboard,fallbackCount){const items=[...(dashboard?.querySelectorAll('.dashboard-alerts .alert-stream > button')||[])],read=readSmartAlertSignatures();if(!items.length)return{unread:Number(fallbackCount||0),total:Number(fallbackCount||0)};let unread=0,total=0;for(const item of items){const signature=smartAlertSignature(item),match=signature.match(/(\d+)\s+(?:öğrenci|ders|kayıt)/i),amount=Number(match?.[1]||1);total+=amount;if(!read.has(signature))unread+=amount}return{unread,total}}
+  function markSmartAlertRead(item){const signature=smartAlertSignature(item);if(!signature)return;const read=readSmartAlertSignatures();read.add(signature);localStorage.setItem(SMART_READ_KEY,JSON.stringify([...read].slice(-100)))}
+  function placeSmartAlertButton(dashboard,count){const tools=document.querySelector('.app-shell.pire-persistent-header .navbar-tools'),wrap=tools?.querySelector('.notification-wrap'),button=wrap?.querySelector('.notification-bell');if(!tools||!wrap||!button)return;tools.querySelectorAll('.pire-smart-alert-button').forEach(item=>item.remove());const smartState=smartAlertState(dashboard,count),currentBadge=button.querySelector(':scope > b'),currentText=currentBadge?.textContent?.trim()||'0',lastCombined=button.dataset.pireCombinedCount;if(!button.dataset.pireUnifiedReady||currentText!==lastCombined)button.dataset.pireNotificationCount=String(Number(currentText)||0);const notificationUnread=Number(button.dataset.pireNotificationCount||0),total=notificationUnread+smartState.unread;button.dataset.pireSmartCount=String(smartState.unread);button.dataset.pireSmartTotal=String(smartState.total);button.dataset.pireUnifiedReady='1';button.dataset.pireCombinedCount=String(total);button.setAttribute('aria-label',`Bildirim merkezi, ${total} okunmamış kayıt`);button.title='Bildirim merkezi';button.classList.toggle('pire-alert-pulse',total>0);let badge=button.querySelector(':scope > b');if(!badge&&total){badge=document.createElement('b');button.appendChild(badge)}if(badge){badge.textContent=String(total);badge.hidden=total===0}if(!document.documentElement.dataset.pireUnifiedOutsideClose){document.documentElement.dataset.pireUnifiedOutsideClose='1';document.addEventListener('pointerdown',event=>{const activeWrap=document.querySelector('.notification-wrap');if(!activeWrap||activeWrap.contains(event.target))return;activeWrap.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());if(activeWrap.querySelector('.notification-popover')){const activeButton=activeWrap.querySelector('.notification-bell');if(activeButton){activeButton.dataset.pireAllowNative='1';activeButton.click();delete activeButton.dataset.pireAllowNative}}},true);document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;const activeWrap=document.querySelector('.notification-wrap');activeWrap?.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());if(activeWrap?.querySelector('.notification-popover')){const activeButton=activeWrap.querySelector('.notification-bell');if(activeButton){activeButton.dataset.pireAllowNative='1';activeButton.click();delete activeButton.dataset.pireAllowNative}}})}if(!button.dataset.pireUnifiedBound){button.dataset.pireUnifiedBound='1';button.addEventListener('click',event=>{if(button.dataset.pireAllowNative==='1')return;event.preventDefault();event.stopImmediatePropagation();if(wrap.querySelector('.notification-popover')){button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative;return}document.querySelectorAll('.pire-alert-chooser').forEach(menu=>menu.remove());const menu=document.createElement('div');menu.className='pire-alert-chooser';const notificationsItem=document.createElement('button');notificationsItem.type='button';notificationsItem.innerHTML=`<span><i>♢</i><strong>Bildirimler</strong><small>Mesajlar ve kurum bildirimleri</small></span><b>${button.dataset.pireNotificationCount||0}</b>`;const smartItem=document.createElement('button');smartItem.type='button';smartItem.innerHTML=`<span><i>✦</i><strong>Akıllı Uyarılar</strong><small>Paket, tahsilat ve yoklama uyarıları</small></span><b>${button.dataset.pireSmartCount||0}</b>`;notificationsItem.onclick=event=>{event.preventDefault();event.stopPropagation();menu.remove();button.dataset.pireAllowNative='1';button.click();delete button.dataset.pireAllowNative};smartItem.onclick=event=>{event.preventDefault();event.stopPropagation();menu.remove();const currentDashboard=document.querySelector('.premium-dashboard');if(currentDashboard?.isConnected)currentDashboard.classList.add('compact-alerts-open');else{const dashboardButton=[...document.querySelectorAll('.primary-nav button')].find(item=>item.textContent?.trim()==='Genel Bakış');if(dashboardButton){openSmartAlertsAfterNavigation=true;dashboardButton.click()}}setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),Number(button.dataset.pireSmartCount||0)),0)};menu.append(notificationsItem,smartItem);wrap.appendChild(menu)},true)}}
+  /* React/Vinext owns primary navigation. Do not move .top-actions back to the React header during capture-phase navigation events. */
+  document.addEventListener('click',event=>{const smartAlert=event.target.closest?.('.dashboard-alerts .alert-stream > button');if(smartAlert){markSmartAlertRead(smartAlert);setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),0),0)}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.premium-dashboard.compact-alerts-open').forEach(x=>x.classList.remove('compact-alerts-open'))});
-  document.addEventListener('click',event=>{
-    const nav=event.target.closest?.('.primary-nav');
-    const notification=event.target.closest?.('.notification-list > button');
-    const smartAlert=event.target.closest?.('.dashboard-alerts .alert-stream > button');
-    if(smartAlert){markSmartAlertRead(smartAlert);setTimeout(()=>placeSmartAlertButton(document.querySelector('.premium-dashboard'),0),0)}
-    const lessonCalendarCard=event.target.closest?.('.premium-dashboard .kpi-lessons');
-    const previewStart=event.target.closest?.('.admin-preview-actions .start');
-    if((nav&&!event.target.closest('.pire-nav-new-actions'))||notification||smartAlert||lessonCalendarCard||previewStart)restoreNewActions();
-  },true);
-  document.addEventListener('change',event=>{
-    if(event.target.closest?.('.role-view-switch'))restoreNewActions();
-  },true);
-  document.addEventListener('keydown',event=>{
-    if((event.key==='Enter'||event.key===' ')&&event.target.closest?.('.premium-dashboard .kpi-lessons'))restoreNewActions();
-  },true);
   const queueSync=()=>{if(syncQueued)return;syncQueued=true;requestAnimationFrame(()=>{syncQueued=false;sync()})};
-  const boot=()=>{
-    queueSync();
-    new MutationObserver(queueSync).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
-    [100,300,800,1600].forEach(delay=>setTimeout(queueSync,delay));
-  };
+  const boot=()=>{queueSync();new MutationObserver(queueSync).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});[100,300,800,1600].forEach(delay=>setTimeout(queueSync,delay))};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
