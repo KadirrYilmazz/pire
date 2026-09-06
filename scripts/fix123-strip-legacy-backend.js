@@ -18,6 +18,39 @@ html=html
 if(html.includes('data-pire-hydration-theme'))throw new Error('Fix133 geçici hydration tema scripti temizlenemedi.');
 if(/<html[^>]*data-theme=/.test(html))throw new Error('Fix133 RSC kökünde beklenmeyen data-theme niteliği kaldı.');
 
+// Fix134: Bu uyumluluk dosyaları defer ile head içinde çalıştığında, özellikle
+// language/student-wizard/login-notification yükleyicileri React hydration
+// başlamadan DOM ve head yapısını değiştiriyordu. Etiketleri ilk HTML'den
+// çıkarıp React istemcisi başladıktan ve iki frame tamamlandıktan sonra aynı
+// sırayla module olarak yükle. Böylece özellikler korunur, hydration girdisi
+// ise sunucunun ürettiği DOM ile aynı kalır.
+const postHydrationScripts=[
+  '/pire-notification-scope.js',
+  '/pire-dashboard-calendar.js',
+  '/pire-global-search.js',
+  '/pire-student-wizard.js',
+  '/pire-background-music.js',
+  '/pire-language.js',
+  '/pire-login-notification.js'
+];
+for(const src of postHydrationScripts){
+  const tagPattern=new RegExp(`<script src="${src.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')}" defer[^>]*><\\/script>\\n?`);
+  if(!tagPattern.test(html))throw new Error(`Fix134 ertelenecek script etiketi bulunamadı: ${src}`);
+  html=html.replace(tagPattern,'');
+}
+const reactBootstrap='<script type="module" id="_R_">import "/assets/index-BS0ANsbn.js";</script>';
+const serializedScripts=JSON.stringify([...postHydrationScripts,'/pire-canonical-customers.js?v=1']);
+const safeBootstrap=`<script type="module" id="_R_">
+await import("/assets/index-BS0ANsbn.js");
+await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+for(const src of ${serializedScripts}) await import(src);
+</script>`;
+if(!html.includes(reactBootstrap))throw new Error('Fix134 React module başlangıcı bulunamadı.');
+html=html.replace(reactBootstrap,safeBootstrap);
+for(const src of postHydrationScripts){
+  if(new RegExp(`<script src="${src.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')}"`).test(html))throw new Error(`Fix134 hydration öncesi script kaldı: ${src}`);
+}
+
 const backendStart='</main><script>\n(function(){\nconst SEED=';
 const backendEnd='</script><script id="pire-header-safety-fix">';
 const startIndex=html.indexOf(backendStart);
@@ -31,7 +64,7 @@ const customerEnd='<script id="pire-fix17b-remove-customer-discover">';
 const customerStartIndex=html.indexOf(customerStart);
 const customerEndIndex=html.indexOf(customerEnd,customerStartIndex);
 if(customerStartIndex<0||customerEndIndex<0)throw new Error('Fix123 legacy müşteri CRM işaretleri bulunamadı.');
-html=html.slice(0,customerStartIndex)+'<script src="/pire-canonical-customers.js?v=1" defer data-pire-canonical-customers="true"></script>\n'+html.slice(customerEndIndex);
+html=html.slice(0,customerStartIndex)+html.slice(customerEndIndex);
 
 // Fix126: Yönetici option'ı zaten sayfa açılışında ve kullanıcı etkileşiminde kontrol ediliyor.
 // Her 1.2 saniyede tüm select'leri tarayan kör polling production çıktısından kaldırılır.
@@ -42,7 +75,7 @@ const forbidden=['const SEED=','async function localApi(','pire-recovered-backen
 for(const marker of forbidden){if(html.includes(marker))throw new Error('Legacy işareti temizlenemedi: '+marker)}
 if(!html.includes('id="pire-header-safety-fix"'))throw new Error('Temizlik sonrası UI patch zinciri korunamadı.');
 if(!html.includes('id="pire-student-edit-fix"'))throw new Error('Temizlik sonrası öğrenci düzenleme uyumluluğu korunamadı.');
-if(!html.includes('data-pire-canonical-customers="true"'))throw new Error('Canonical müşteri CRM loader eklenemedi.');
+if(!safeBootstrap.includes('/pire-canonical-customers.js?v=1'))throw new Error('Canonical müşteri CRM hydration sonrası loader listesine eklenemedi.');
 fs.writeFileSync(file,html,'utf8');
 
 // Akıllı uyarıların "okundu" görünümü kurumsal veri değildir; kalıcı cihaz DB'si
