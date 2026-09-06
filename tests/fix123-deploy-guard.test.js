@@ -50,6 +50,12 @@ test('React bootstrap loads compatibility patches only after hydration frames',(
   assert.match(script,/script\.textContent=code/);
   assert.match(script,/pire-header-safety-fix/);
   assert.match(script,/pire-student-edit-fix/);
+  assert.match(script,/pire-hydration-main\.html/);
+  assert.match(script,/class="visitor-workspace"/);
+  assert.match(script,/kanonik hydration main güvenli olmayan içerik barındırıyor/);
+  const hydrationMain=fs.readFileSync(path.join(__dirname,'..','pire-hydration-main.html'),'utf8');
+  assert.match(hydrationMain,/^<main [\s\S]*class="visitor-workspace"[\s\S]*<\/main>$/);
+  assert.doesNotMatch(hydrationMain,/<script\b|localStorage|sessionStorage|access_token/i);
   for(const src of [
     '/pire-notification-scope.js',
     '/pire-dashboard-calendar.js',
