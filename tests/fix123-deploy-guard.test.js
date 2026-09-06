@@ -34,8 +34,21 @@ test('deploy output removes temporary theme mutations before React hydration',()
   assert.match(script,/RSC kökünde beklenmeyen data-theme niteliği kaldı/);
 });
 
-test('React bootstrap blocks DOMContentLoaded compatibility patches until hydration starts',()=>{
+test('React bootstrap loads compatibility patches only after hydration frames',()=>{
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.match(html,/<script type="module" id="_R_">import "\/assets\/index-BS0ANsbn\.js";<\/script>/);
   assert.doesNotMatch(html,/<script id="_R_">import\("\/assets\/index-BS0ANsbn\.js"\)<\/script>/);
+  assert.match(script,/await import\("\/assets\/index-BS0ANsbn\.js"\)/);
+  assert.match(script,/requestAnimationFrame\(\(\)=>requestAnimationFrame\(resolve\)\)/);
+  for(const src of [
+    '/pire-notification-scope.js',
+    '/pire-dashboard-calendar.js',
+    '/pire-global-search.js',
+    '/pire-student-wizard.js',
+    '/pire-background-music.js',
+    '/pire-language.js',
+    '/pire-login-notification.js',
+    '/pire-canonical-customers.js?v=1'
+  ])assert.match(script,new RegExp(src.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  assert.match(script,/Fix134 hydration öncesi script kaldı/);
 });
