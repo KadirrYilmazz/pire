@@ -154,6 +154,19 @@ for(const marker of ['pire-local-admin-accounts-v2','pire-user-accounts-cache-v1
 }
 fs.writeFileSync(assistantPath,assistant,'utf8');
 
+// Fix136: Kurtarılan statik belge, güncel Vinext RSC ağacıyla document seviyesinde
+// güvenilir biçimde hydrate edilemiyor. React aynı RSC ağacını kullanmaya devam
+// eder; yalnızca bozuk server snapshot'ını eşleştirmek yerine temiz document
+// köküne render eder. Böylece #418 recovery döngüsü ortadan kalkar.
+const clientBundlePath=path.join(process.cwd(),'assets','index-BS0ANsbn.js');
+let clientBundle=fs.readFileSync(clientBundlePath,'utf8');
+const hydrateDocumentCall='window.__VINEXT_RSC_ROOT__=(0,Zr.hydrateRoot)(document,(0,F.createElement)(Yi,{initialElements:t,initialNavigationSnapshot:n}),i)';
+const renderDocumentCall='window.__VINEXT_RSC_ROOT__=(0,Zr.createRoot)(document,i),window.__VINEXT_RSC_ROOT__.render((0,F.createElement)(Yi,{initialElements:t,initialNavigationSnapshot:n}))';
+if(clientBundle.split(hydrateDocumentCall).length!==2)throw new Error('Fix136 tekil Vinext document hydration çağrısı bulunamadı.');
+clientBundle=clientBundle.replace(hydrateDocumentCall,renderDocumentCall);
+if(clientBundle.includes(hydrateDocumentCall)||!clientBundle.includes(renderDocumentCall))throw new Error('Fix136 Vinext client render geçişi doğrulanamadı.');
+fs.writeFileSync(clientBundlePath,clientBundle,'utf8');
+
 // Son güvenlik ağı: tarihsel uyumluluk kodu eski DB anahtarını salt-okunur olarak
 // referanslayabilir; fakat deploy çıktısında operasyonel veriyi localStorage'a
 // kalıcı yazan, silen veya yeniden başlatan kod bulunamaz.
