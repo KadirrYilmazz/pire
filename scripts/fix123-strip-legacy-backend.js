@@ -18,6 +18,65 @@ html=html
 if(html.includes('data-pire-hydration-theme'))throw new Error('Fix133 geçici hydration tema scripti temizlenemedi.');
 if(/<html[^>]*data-theme=/.test(html))throw new Error('Fix133 RSC kökünde beklenmeyen data-theme niteliği kaldı.');
 
+// Fix134: Bu uyumluluk dosyaları defer ile head içinde çalıştığında, özellikle
+// language/student-wizard/login-notification yükleyicileri React hydration
+// başlamadan DOM ve head yapısını değiştiriyordu. Etiketleri ilk HTML'den
+// çıkarıp React istemcisi başladıktan ve iki frame tamamlandıktan sonra aynı
+// sırayla module olarak yükle. Böylece özellikler korunur, hydration girdisi
+// ise sunucunun ürettiği DOM ile aynı kalır.
+const postHydrationScripts=[
+  '/pire-notification-scope.js',
+  '/pire-dashboard-calendar.js',
+  '/pire-global-search.js',
+  '/pire-student-wizard.js',
+  '/pire-background-music.js',
+  '/pire-language.js',
+  '/pire-login-notification.js'
+];
+const postHydrationStyles=[
+  ['/pire-dashboard-compact.css','data-pire-dashboard-compact'],
+  ['/pire-global-search.css','data-pire-global-search'],
+  ['/pire-student-wizard.css','data-pire-student-wizard']
+];
+for(const src of postHydrationScripts){
+  const tagPattern=new RegExp(`<script src="${src.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')}" defer[^>]*><\\/script>\\n?`);
+  if(!tagPattern.test(html))throw new Error(`Fix134 ertelenecek script etiketi bulunamadı: ${src}`);
+  html=html.replace(tagPattern,'');
+}
+for(const [href,attribute] of postHydrationStyles){
+  const tag=`<link rel="stylesheet" href="${href}" ${attribute}="true" />\n`;
+  if(!html.includes(tag))throw new Error(`Fix135 ertelenecek stil etiketi bulunamadı: ${href}`);
+  html=html.replace(tag,'');
+}
+const reactBootstrap='<script type="module" id="_R_">import "/assets/index-BS0ANsbn.js";</script>';
+const serializedScripts=JSON.stringify([...postHydrationScripts,'/pire-canonical-customers.js?v=1']);
+const serializedStyles=JSON.stringify(postHydrationStyles);
+const safeBootstrap=`<script type="module" id="_R_">
+await import("/assets/index-BS0ANsbn.js");
+await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+for(const [id,code] of __PIRE_INLINE_PATCHES__){
+  const script=document.createElement("script");script.id=id;script.textContent=code;document.body.appendChild(script);
+}
+for(const [href,attribute] of ${serializedStyles}){
+  const link=document.createElement("link");link.rel="stylesheet";link.href=href;link.setAttribute(attribute,"true");document.head.appendChild(link);
+}
+for(const src of ${serializedScripts}) await import(src);
+</script>`;
+if(!html.includes(reactBootstrap))throw new Error('Fix134 React module başlangıcı bulunamadı.');
+html=html.replace(reactBootstrap,safeBootstrap);
+for(const src of postHydrationScripts){
+  if(new RegExp(`<script src="${src.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')}"`).test(html))throw new Error(`Fix134 hydration öncesi script kaldı: ${src}`);
+}
+
+const hydrationMain=fs.readFileSync(path.join(process.cwd(),'pire-hydration-main.html'),'utf8').trim();
+if(!hydrationMain.startsWith('<main ')||!hydrationMain.endsWith('</main>'))throw new Error('Fix135 kanonik hydration main biçimi geçersiz.');
+if(!hydrationMain.includes('class="visitor-workspace"'))throw new Error('Fix135 kanonik hydration main ziyaretçi çalışma alanını içermiyor.');
+if(/<script\b|localStorage|sessionStorage|access_token/i.test(hydrationMain))throw new Error('Fix135 kanonik hydration main güvenli olmayan içerik barındırıyor.');
+const staticMainStart=html.indexOf('<main ');
+const staticMainEnd=html.indexOf('</main>',staticMainStart);
+if(staticMainStart<0||staticMainEnd<0)throw new Error('Fix135 değiştirilecek statik main bulunamadı.');
+html=html.slice(0,staticMainStart)+hydrationMain+html.slice(staticMainEnd+'</main>'.length);
+
 const backendStart='</main><script>\n(function(){\nconst SEED=';
 const backendEnd='</script><script id="pire-header-safety-fix">';
 const startIndex=html.indexOf(backendStart);
@@ -31,7 +90,19 @@ const customerEnd='<script id="pire-fix17b-remove-customer-discover">';
 const customerStartIndex=html.indexOf(customerStart);
 const customerEndIndex=html.indexOf(customerEnd,customerStartIndex);
 if(customerStartIndex<0||customerEndIndex<0)throw new Error('Fix123 legacy müşteri CRM işaretleri bulunamadı.');
-html=html.slice(0,customerStartIndex)+'<script src="/pire-canonical-customers.js?v=1" defer data-pire-canonical-customers="true"></script>\n'+html.slice(customerEndIndex);
+html=html.slice(0,customerStartIndex)+html.slice(customerEndIndex);
+
+const postHydrationInlineScripts=[];
+html=html.replace(/<script id="(pire-[^"]+)">([\s\S]*?)<\/script>\n?/g,(_,id,code)=>{
+  postHydrationInlineScripts.push([id,code]);
+  return '';
+});
+const inlinePatchIds=new Set(postHydrationInlineScripts.map(([id])=>id));
+if(!inlinePatchIds.has('pire-header-safety-fix'))throw new Error('Fix135 header güvenlik yaması hydration sonrası listeye taşınamadı.');
+if(!inlinePatchIds.has('pire-student-edit-fix'))throw new Error('Fix135 öğrenci düzenleme yaması hydration sonrası listeye taşınamadı.');
+const serializedInlineScripts=JSON.stringify(postHydrationInlineScripts).replace(/</g,'\\u003c');
+if(!html.includes('__PIRE_INLINE_PATCHES__'))throw new Error('Fix135 inline patch yer tutucusu bulunamadı.');
+html=html.replace('__PIRE_INLINE_PATCHES__',serializedInlineScripts);
 
 // Fix126: Yönetici option'ı zaten sayfa açılışında ve kullanıcı etkileşiminde kontrol ediliyor.
 // Her 1.2 saniyede tüm select'leri tarayan kör polling production çıktısından kaldırılır.
@@ -40,9 +111,21 @@ if(html.includes('setInterval(ensureAdminOption,1200)'))throw new Error('Fix126 
 
 const forbidden=['const SEED=','async function localApi(','pire-recovered-backend-v1\';\nlet db','window.fetch=function(input,init)','pire-customers-safe-v1'];
 for(const marker of forbidden){if(html.includes(marker))throw new Error('Legacy işareti temizlenemedi: '+marker)}
-if(!html.includes('id="pire-header-safety-fix"'))throw new Error('Temizlik sonrası UI patch zinciri korunamadı.');
-if(!html.includes('id="pire-student-edit-fix"'))throw new Error('Temizlik sonrası öğrenci düzenleme uyumluluğu korunamadı.');
-if(!html.includes('data-pire-canonical-customers="true"'))throw new Error('Canonical müşteri CRM loader eklenemedi.');
+if(!safeBootstrap.includes('__PIRE_INLINE_PATCHES__'))throw new Error('Temizlik sonrası UI patch bootstrap zinciri korunamadı.');
+if(!safeBootstrap.includes('/pire-canonical-customers.js?v=1'))throw new Error('Canonical müşteri CRM hydration sonrası loader listesine eklenemedi.');
+
+// Fix135: Kurtarılan snapshot RSC taşıma scriptlerini kapanmış belgenin dışına
+// yazıyordu. HTML ayrıştırıcısı bu düğümleri yeniden konumlandırdığı için React
+// hydrateRoot(document) farklı bir kök ağaç görüyordu. Veri scriptlerini kaynak
+// sırasını bozmadan body kapanışının içine al.
+const closedDocument='</body></html>';
+const rscOutsideMarker=closedDocument+'<script>self.__VINEXT_RSC_CHUNKS__';
+const rscOutsideIndex=html.indexOf(rscOutsideMarker);
+if(rscOutsideIndex<0)throw new Error('Fix135 belge dışındaki RSC taşıma scriptleri bulunamadı.');
+const rscTransport=html.slice(rscOutsideIndex+closedDocument.length);
+if(!rscTransport.includes('self.__VINEXT_RSC_DONE__=true'))throw new Error('Fix135 RSC tamamlanma işareti bulunamadı.');
+html=html.slice(0,rscOutsideIndex)+rscTransport+closedDocument;
+if(!html.endsWith(closedDocument))throw new Error('Fix135 geçerli belge kapanışı oluşturulamadı.');
 fs.writeFileSync(file,html,'utf8');
 
 // Akıllı uyarıların "okundu" görünümü kurumsal veri değildir; kalıcı cihaz DB'si
@@ -70,6 +153,28 @@ for(const marker of ['pire-local-admin-accounts-v2','pire-user-accounts-cache-v1
   if(assistant.includes(marker))throw new Error('Asistan local profil fallback temizlenemedi: '+marker);
 }
 fs.writeFileSync(assistantPath,assistant,'utf8');
+
+// Fix136: Kurtarılan statik belge, güncel Vinext RSC ağacıyla document seviyesinde
+// güvenilir biçimde hydrate edilemiyor. React aynı RSC ağacını kullanmaya devam
+// eder; yalnızca bozuk server snapshot'ını eşleştirmek yerine temiz document
+// köküne render eder. Böylece #418 recovery döngüsü ortadan kalkar.
+const frameworkBundlePath=path.join(process.cwd(),'assets','framework-CXnKph_e.js');
+let frameworkBundle=fs.readFileSync(frameworkBundlePath,'utf8');
+const hydrateExportMarker='e.hydrateRoot=function(e,t,n){';
+const createRootExport='e.createRoot=function(e,t){if(!s(e))throw Error(a(299));var n=!1,r=``,i=Qs,o=$s,c=ec,l=null;return t!=null&&(!0===t.unstable_strictMode&&(n=!0),t.identifierPrefix!==void 0&&(r=t.identifierPrefix),t.onUncaughtError!==void 0&&(i=t.onUncaughtError),t.onCaughtError!==void 0&&(o=t.onCaughtError),t.onRecoverableError!==void 0&&(c=t.onRecoverableError),t.unstable_transitionCallbacks!==void 0&&(l=t.unstable_transitionCallbacks)),t=ep(e,1,!1,null,t??null,n,r,null,i,o,c,l),e[yt]=t.current,Sd(e),new Ip(t)};';
+if(frameworkBundle.split(hydrateExportMarker).length!==2)throw new Error('Fix136 tekil React hydrateRoot exportu bulunamadı.');
+frameworkBundle=frameworkBundle.replace(hydrateExportMarker,createRootExport+hydrateExportMarker);
+if(!frameworkBundle.includes(createRootExport))throw new Error('Fix136 React createRoot exportu eklenemedi.');
+fs.writeFileSync(frameworkBundlePath,frameworkBundle,'utf8');
+
+const clientBundlePath=path.join(process.cwd(),'assets','index-BS0ANsbn.js');
+let clientBundle=fs.readFileSync(clientBundlePath,'utf8');
+const hydrateDocumentCall='window.__VINEXT_RSC_ROOT__=(0,Zr.hydrateRoot)(document,(0,F.createElement)(Yi,{initialElements:t,initialNavigationSnapshot:n}),i)';
+const renderDocumentCall='window.__VINEXT_RSC_ROOT__=(0,Zr.createRoot)(document,i),window.__VINEXT_RSC_ROOT__.render((0,F.createElement)(Yi,{initialElements:t,initialNavigationSnapshot:n}))';
+if(clientBundle.split(hydrateDocumentCall).length!==2)throw new Error('Fix136 tekil Vinext document hydration çağrısı bulunamadı.');
+clientBundle=clientBundle.replace(hydrateDocumentCall,renderDocumentCall);
+if(clientBundle.includes(hydrateDocumentCall)||!clientBundle.includes(renderDocumentCall))throw new Error('Fix136 Vinext client render geçişi doğrulanamadı.');
+fs.writeFileSync(clientBundlePath,clientBundle,'utf8');
 
 // Son güvenlik ağı: tarihsel uyumluluk kodu eski DB anahtarını salt-okunur olarak
 // referanslayabilir; fakat deploy çıktısında operasyonel veriyi localStorage'a
