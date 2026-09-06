@@ -33,16 +33,30 @@ const postHydrationScripts=[
   '/pire-language.js',
   '/pire-login-notification.js'
 ];
+const postHydrationStyles=[
+  ['/pire-dashboard-compact.css','data-pire-dashboard-compact'],
+  ['/pire-global-search.css','data-pire-global-search'],
+  ['/pire-student-wizard.css','data-pire-student-wizard']
+];
 for(const src of postHydrationScripts){
   const tagPattern=new RegExp(`<script src="${src.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')}" defer[^>]*><\\/script>\\n?`);
   if(!tagPattern.test(html))throw new Error(`Fix134 ertelenecek script etiketi bulunamadı: ${src}`);
   html=html.replace(tagPattern,'');
 }
+for(const [href,attribute] of postHydrationStyles){
+  const tag=`<link rel="stylesheet" href="${href}" ${attribute}="true" />\n`;
+  if(!html.includes(tag))throw new Error(`Fix135 ertelenecek stil etiketi bulunamadı: ${href}`);
+  html=html.replace(tag,'');
+}
 const reactBootstrap='<script type="module" id="_R_">import "/assets/index-BS0ANsbn.js";</script>';
 const serializedScripts=JSON.stringify([...postHydrationScripts,'/pire-canonical-customers.js?v=1']);
+const serializedStyles=JSON.stringify(postHydrationStyles);
 const safeBootstrap=`<script type="module" id="_R_">
 await import("/assets/index-BS0ANsbn.js");
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+for(const [href,attribute] of ${serializedStyles}){
+  const link=document.createElement("link");link.rel="stylesheet";link.href=href;link.setAttribute(attribute,"true");document.head.appendChild(link);
+}
 for(const src of ${serializedScripts}) await import(src);
 </script>`;
 if(!html.includes(reactBootstrap))throw new Error('Fix134 React module başlangıcı bulunamadı.');
