@@ -53,6 +53,9 @@ test('React bootstrap loads compatibility patches only after hydration frames',(
   assert.match(script,/pire-hydration-main\.html/);
   assert.match(script,/class="visitor-workspace"/);
   assert.match(script,/kanonik hydration main güvenli olmayan içerik barındırıyor/);
+  assert.match(script,/rscOutsideMarker/);
+  assert.match(script,/self\.__VINEXT_RSC_DONE__=true/);
+  assert.match(script,/html\.endsWith\(closedDocument\)/);
   const hydrationMain=fs.readFileSync(path.join(__dirname,'..','pire-hydration-main.html'),'utf8');
   assert.match(hydrationMain,/^<main [\s\S]*class="visitor-workspace"[\s\S]*<\/main>$/);
   assert.doesNotMatch(hydrationMain,/<script\b|localStorage|sessionStorage|access_token/i);
