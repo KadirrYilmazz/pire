@@ -45,6 +45,11 @@ test('React bootstrap loads compatibility patches only after hydration frames',(
     assert.match(script,new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   }
   assert.match(script,/document\.head\.appendChild\(link\)/);
+  assert.match(script,/postHydrationInlineScripts/);
+  assert.match(script,/__PIRE_INLINE_PATCHES__/);
+  assert.match(script,/script\.textContent=code/);
+  assert.match(script,/pire-header-safety-fix/);
+  assert.match(script,/pire-student-edit-fix/);
   for(const src of [
     '/pire-notification-scope.js',
     '/pire-dashboard-calendar.js',
