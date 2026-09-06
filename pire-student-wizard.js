@@ -1,4 +1,4 @@
-/* Pİ-RE öğrenci kayıt sihirbazı — kaldırıldığında klasik form aynen geri gelir. */
+/* Pİ-RE öğrenci kayıt sihirbazı — React navigasyonu sırasında DOM taşımayı geciktirir. */
 (()=>{
   const PENDING='__PIRE_STUDENT_WIZARD_PENDING__';
   let catalog={courses:[],teachers:[]},settings={rooms:['Derslik 1','Derslik 2','Müzik Stüdyosu']};
@@ -15,9 +15,7 @@
     }catch(_){}
   }
 
-  function stepFields(form){
-    return [...form.querySelectorAll('[data-wizard-step]')];
-  }
+  function stepFields(form){return [...form.querySelectorAll('[data-wizard-step]')]}
 
   function showStep(form,index){
     const steps=stepFields(form),max=steps.length-1,next=Math.max(0,Math.min(index,max));
@@ -40,9 +38,7 @@
     return [...label.childNodes].filter(node=>node.nodeType===Node.TEXT_NODE).map(node=>node.textContent.trim()).filter(Boolean).join(' ')||label.querySelector('strong')?.textContent||field.name;
   }
 
-  function invalidFields(form){
-    return [...form.querySelectorAll('input,select,textarea')].filter(field=>!field.disabled&&!field.checkValidity());
-  }
+  function invalidFields(form){return [...form.querySelectorAll('input,select,textarea')].filter(field=>!field.disabled&&!field.checkValidity())}
 
   function renderMissing(form){
     const box=form.querySelector('.pire-wizard-missing'),invalid=invalidFields(form);
@@ -181,9 +177,19 @@
     }
   };
 
-  function scan(){document.querySelectorAll('form.student-form').forEach(enhance)}
-  loadOptions().finally(scan);
-  new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
+  let scanFrame=0;
+  function scan(){
+    scanFrame=0;
+    document.querySelectorAll('form.student-form').forEach(enhance);
+  }
+  function scheduleScan(){
+    if(scanFrame)return;
+    scanFrame=requestAnimationFrame(()=>{
+      scanFrame=requestAnimationFrame(scan);
+    });
+  }
+  loadOptions().finally(scheduleScan);
+  new MutationObserver(scheduleScan).observe(document.documentElement,{childList:true,subtree:true});
 })();
 
 ;(()=>{
@@ -203,7 +209,6 @@
     const script=document.createElement('script');script.src='/pire-customer-archive.js';script.defer=true;script.dataset.pireCustomerArchive='true';document.head.appendChild(script);
   }
 })();
-
 
 ;(()=>{
   if(!document.querySelector('link[data-pire-finance-menu]')){
