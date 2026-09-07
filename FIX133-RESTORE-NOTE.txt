@@ -1,0 +1,1 @@
+Restoring known-good visible image blobs from commit 38607c4f before further quality work.

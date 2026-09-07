@@ -1,0 +1,1 @@
+Restore known-good visible service-card image blobs before quality refinement.
