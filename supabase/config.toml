@@ -1,0 +1,7 @@
+project_id = "pire"
+
+[functions.pire-manage-users]
+verify_jwt = true
+
+[functions.pire-phone-login]
+verify_jwt = false

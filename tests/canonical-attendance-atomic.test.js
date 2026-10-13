@@ -7,7 +7,7 @@ const path=require('node:path');
 
 const attendance=fs.readFileSync(path.join(__dirname,'..','lib','canonical-attendance.js'),'utf8');
 const finance=fs.readFileSync(path.join(__dirname,'..','api','finance.js'),'utf8');
-const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260901_fix123_atomic_attendance.sql'),'utf8');
+const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260831213522_fix123_atomic_attendance.sql'),'utf8');
 
 test('attendance writes use a single canonical RPC',()=>{
   assert.match(attendance,/rpc\/pire_record_attendance/);

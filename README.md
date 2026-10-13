@@ -1,20 +1,37 @@
-# Pİ-RE V0 — Kurtarılmış Orijinal
+# Pİ-RE — Mevcut web uygulaması
 
-Bu proje, mevcut chatgpt.site uygulamasından alınan HAR ve tarayıcı bundle'larından oluşturuldu.
+Kurtarılmış HTML ve derlenmiş React/Vinext ön yüzü, ek JavaScript katmanları,
+Vercel API'leri ve kalıcı Supabase veritabanından oluşur. Özgün TSX kaynakları
+bu depoda bulunmaz. Operasyon API'leri eski chatgpt.site proxy'si yerine
+Supabase Auth doğrulaması, PostgREST ve RLS korumalı tabloları kullanır.
 
-## Amaç
-- Orijinal HTML/CSS/JS arayüzünü mümkün olduğunca değiştirmeden korumak.
-- Aynı Supabase oturum açma akışını kullanmak.
-- `/api/*` isteklerini Vercel Function üzerinden mevcut chatgpt.site backend'ine iletmek.
-- Böylece mevcut geliştirmeleri yeniden yazmadan kalıcı bir Vercel adresinde çalıştırmayı denemek.
+## Dizinler
 
-## Hazır olanlar
-- Orijinal HTML
-- Orijinal CSS ve JS bundle'ları
-- Geist font dosyaları
-- Pİ-RE logosu
-- HAR API envanteri
-- Ana uygulama endpoint'leri için Vercel proxy function'ları
+- `index.html`, `assets/`, `pire-*.js`: mevcut ön yüz ve uyumluluk katmanları.
+- `api/`, `lib/`: Vercel API ve iş kuralları.
+- `supabase/migrations/`: kayıtlı migration geçmişi ve hazırlanmış yeni migration'lar.
+- `supabase/functions/`: canlı kaynaklarıyla karşılaştırılmış Edge Function'lar.
+- `supabase/source-inventory.json`: 13 Ekim 2026 kaynak envanteri.
+- `supabase/historical-source-migrations/`: önceki kaynak arşivi; yeniden uygulamayın.
 
-## Not
-Bu ilk kurtarma sürümü hâlâ orijinal backend'e bağlıdır. Backend erişimi ileride kapanırsa proxy katmanını bağımsız backend ile değiştireceğiz.
+## Kontroller
+
+```bash
+node --test tests/*.test.js
+npm ci --prefix tests/sql --ignore-scripts --no-audit --no-fund
+node --test tests/sql/*.test.cjs
+```
+
+Tam tarihsel JavaScript grubunda bilinen eski DOM testi başarısızlıkları vardır.
+Zorunlu CI grubu ve SQL testleri ayrı çalışır. Vercel build komutu
+`node scripts/fix123-strip-legacy-backend.js` ile mevcut çıktı temizlenir;
+bu komut özgün React uygulamasını yeniden derlemez.
+
+## Supabase kaynakları ve yayın
+
+[Fix142 kayıt akışı](docs/FIX142-ATOMIC-STUDENT-REGISTRATION.md) ve
+[Fix143 kaynak eşitlemesi](docs/FIX143-SUPABASE-SOURCE-SYNC.md) yayın sırasını,
+şema testlerini ve kapsam sınırlarını açıklar. Tarihsel bootstrap e-posta
+bilgisi kamuya açık kaynakta şablonla tutulur; yeni ortam kurulumunda özel
+çalışma kopyası hazırlayın. Gizli anahtarları ve kullanıcı/veri yedeklerini
+bu depoya koymayın. Production yayın ve migration uygulaması sahibin onayını gerektirir.

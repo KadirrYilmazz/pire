@@ -5,8 +5,8 @@ const path=require('node:path');
 
 function read(rel){return fs.readFileSync(path.join(__dirname,'..',rel),'utf8')}
 
-const studentGuard=read('supabase/migrations/20260901_fix123_student_access_role_guard.sql');
-const financeGrant=read('supabase/migrations/20260901_fix123_finance_helper_execute_grant.sql');
+const studentGuard=read('supabase/migrations/20260831220850_fix123_student_access_role_guard.sql');
+const financeGrant=read('supabase/migrations/20260831221027_fix123_finance_helper_execute_grant.sql');
 
 test('linked_student_id access is restricted to student or parent roles',()=>{
   assert.match(studentGuard,/linked_student_id = target_student_id/);

@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 
 const source=fs.readFileSync(path.join(__dirname,'..','api','catalog.js'),'utf8');
-const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260901_fix123_safe_teacher_directory.sql'),'utf8');
+const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260831215349_fix123_safe_teacher_directory.sql'),'utf8');
 
 test('non-admin catalog uses safe teacher directory instead of sensitive teacher table',()=>{
   assert.match(source,/identity\.roles\.includes\("Yönetici"\)\?await getAdminCatalog\(token\):await getSafeCatalog\(token\)/);
