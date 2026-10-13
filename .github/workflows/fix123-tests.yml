@@ -36,9 +36,23 @@ jobs:
           tests/canonical-rls-role-guard.test.js
           tests/canonical-student-access.test.js
           tests/student-partial-update.test.js
+          tests/student-registration.test.js
           tests/canonical-sync.test.js
           tests/fix123-deploy-guard.test.js
           tests/notification-canonical-state.test.js
+
+  atomic-registration-sql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned local PostgreSQL test engine
+        run: npm ci --prefix tests/sql --ignore-scripts --no-audit --no-fund
+      - name: Verify atomic rollback, retry and permissions in isolated PostgreSQL
+        run: node --test tests/sql/student-registration.test.cjs
 
   legacy-baseline:
     runs-on: ubuntu-latest

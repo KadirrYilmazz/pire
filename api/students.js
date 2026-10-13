@@ -1,6 +1,7 @@
 "use strict";
 
 const {send,rest,authenticate,asNumber,dateOnly,timeOnly}=require("./_canonical");
+const {registrationPayload}=require('../lib/student-registration');
 
 function studentRow(row){return {
   id:Number(row.id),name:row.full_name,birthDate:dateOnly(row.birth_date),bloodGroup:row.blood_group,phone:row.phone,photoKey:null,
@@ -62,6 +63,28 @@ module.exports=async function handler(req,res){
     if(req.method==="GET")return send(res,200,await readAll(token,identity));
     if(!admin(identity))return send(res,403,{error:"Bu işlem yalnızca Yönetici tarafından yapılabilir."});
     if(req.method==="POST"){
+      if(req.body?.registrationPlan!==undefined){
+        const row=normalize(req.body||{});
+        if(!row.full_name)return send(res,400,{error:"Öğrenci adı zorunludur."});
+        const payload=registrationPayload(req.body,row);
+        let result;
+        try{result=await rest(token,'rpc/pire_register_student',{method:'POST',body:JSON.stringify(payload)})}
+        catch(error){
+          let detail;try{detail=JSON.parse(error.detail||'{}')}catch(_){detail={}}
+          const messages={
+            registration_request_conflict:'Bu formun kayıt isteği daha önce tamamlandı. Bilgileri değiştirmeden yeniden deneyin veya öğrenci listesini kontrol edin.',
+            registration_course_not_found:'Seçilen branş aktif değil veya bulunamadı.',
+            registration_teacher_not_found:'Seçilen eğitmen aktif değil veya bulunamadı.',
+            invalid_registration_lesson:'İlk dersin tarih ve saat bilgilerini kontrol edin.',
+            invalid_registration_package:'Paketin ders hakkını ve tarihlerini kontrol edin.'
+          };
+          if(messages[detail.message])throw Object.assign(new Error(messages[detail.message]),{status:detail.message==='registration_request_conflict'?409:400});
+          if(detail.code==='PGRST202')throw Object.assign(new Error('Birleşik kayıt servisi henüz hazır değil. Hiçbir ayrı kayıt isteği gönderilmedi.'),{status:503});
+          throw error;
+        }
+        if(!result?.student?.id)throw Object.assign(new Error('Kayıt sonucu doğrulanamadı. Aynı form üzerinden tekrar deneyin.'),{status:502});
+        return send(res,result.replayed?200:201,{student:studentRow(result.student),lessonId:result.lesson_id,packageId:result.package_id,replayed:!!result.replayed});
+      }
       const row=normalize(req.body||{});if(!row.full_name)return send(res,400,{error:"Öğrenci adı zorunludur."});const created=await rest(token,"pire_students?select=*",{method:"POST",body:JSON.stringify(row),headers:{Prefer:"return=representation"}});return send(res,201,{student:studentRow(created?.[0]||{})});
     }
     if(req.method==="PATCH"||req.method==="PUT"){
