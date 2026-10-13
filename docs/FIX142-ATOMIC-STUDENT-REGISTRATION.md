@@ -11,7 +11,7 @@ Yeni `pire_student_registrations` tablosu yalnızca işlem kimliği, içerik öz
 ## Yayın sırası
 
 1. Kullanıcıdan Fix142 kodu ve additive veritabanı migration'ı için onay alın.
-2. `supabase/migrations/20261013163633_fix142_atomic_student_registration.sql` migration'ını uygulayın. Bu migration mevcut öğrenci/ders/paket kayıtlarını değiştirmez.
+2. `supabase/migrations/20261013165023_fix142_atomic_student_registration.sql` migration'ını uygulayın. Bu migration mevcut öğrenci/ders/paket kayıtlarını değiştirmez.
 3. RPC, RLS ve grant metadatasını kontrol edin; güvenlik advisor'ını çalıştırın.
 4. Yeni kodu yayınlayın; GitHub zorunlu JS ve SQL testlerini ve Vercel READY durumunu doğrulayın.
 5. Authenticated preview/test ortamında gerçek form akışını ayrıca doğrulayın. Yerel PGlite testleri tüm Supabase Auth/PostgREST/üretim trigger akışının kanıtı değildir.
