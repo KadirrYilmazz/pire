@@ -1,18 +1,23 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const fs=require('node:fs');
-const path=require('node:path');
-
-const source=fs.readFileSync(path.join(__dirname,'..','pire-dashboard-calendar.js'),'utf8');
-
-test('admin preview restores moved React actions before changing panel',()=>{
-  assert.match(source,/previewStart=event\.target\.closest\?\.\('\.admin-preview-actions \.start'\)/);
-  assert.match(source,/lessonCalendarCard\|\|previewStart\)restoreNewActions\(\)/);
-  assert.match(source,/document\.addEventListener\('click',[\s\S]*?,true\);/);
-});
-
-test('direct role view switch restores moved React actions before changing identity',()=>{
-  assert.match(source,/document\.addEventListener\('change',event=>\{/);
-  assert.match(source,/event\.target\.closest\?\.\('\.role-view-switch'\)\)restoreNewActions\(\)/);
-  assert.match(source,/document\.addEventListener\('change',[\s\S]*?,true\);/);
+const {fixture}=require('./ui/dom-fixture.cjs');
+const html=`<div class="app-shell"><aside class="sidebar"></aside><main class="content"><header><div>Title</div><div class="top-actions"><div class="pire-new-menu"></div></div></header><section class="premium-dashboard"></section><div class="admin-preview-actions"><button class="start">Preview</button></div><select class="role-view-switch"><option>Admin</option></select></main></div>`;
+for(const [selector,type] of [['.admin-preview-actions .start','click'],['.role-view-switch','change']]){
+  test(`${type} panel transition leaves dashboard actions in place before the app handler`,t=>{
+    const ui=fixture(html,'pire-dashboard-calendar.js');t.after(()=>ui.close());
+    const actions=ui.document.querySelector('.top-actions'),sidebar=ui.document.querySelector('.sidebar');
+    assert.equal(actions.parentElement,sidebar);
+    let handled=false;ui.document.querySelector(selector).addEventListener(type,()=>{handled=true;assert.equal(actions.parentElement,sidebar)});
+    ui.document.querySelector(selector).dispatchEvent(new ui.window.Event(type,{bubbles:true}));
+    assert.equal(handled,true);assert.equal(actions.parentElement,sidebar);
+  });
+}
+test('route exit leaves the replacement React header intact and disables dashboard enhancement',t=>{
+  const ui=fixture(html,'pire-dashboard-calendar.js');t.after(()=>ui.close());
+  const content=ui.document.querySelector('.content');
+  content.innerHTML='<header><div>Students</div><div class="top-actions"><div class="pire-new-menu"></div></div></header><section class="students-page"></section>';
+  const actions=content.querySelector('.top-actions'),header=actions.parentElement;
+  ui.mutate();assert.equal(actions.parentElement,header);
+  assert.equal(ui.document.querySelector('.app-shell').classList.contains('pire-persistent-header'),false);
+  assert.equal(content.querySelector('.pire-dashboard-calendar'),null);
 });

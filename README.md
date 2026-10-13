@@ -17,13 +17,16 @@ Supabase Auth doğrulaması, PostgREST ve RLS korumalı tabloları kullanır.
 ## Kontroller
 
 ```bash
+npm ci --prefix tests/ui --ignore-scripts --no-audit --no-fund
 node --test tests/*.test.js
 npm ci --prefix tests/sql --ignore-scripts --no-audit --no-fund
 node --test tests/sql/*.test.cjs
 ```
 
-Tam tarihsel JavaScript grubunda bilinen eski DOM testi başarısızlıkları vardır.
-Zorunlu CI grubu ve SQL testleri ayrı çalışır. Vercel build komutu
+Tam JavaScript grubu ve SQL testleri CI tarafından zorunlu çalıştırılır.
+`ci-required` iki grubun da başarılı olmasını gerektirir. Bu kontrolün branch
+protection veya Vercel yayın engeline bağlanması ayrıca platform ayarı gerektirir.
+Vercel build komutu
 `node scripts/fix123-strip-legacy-backend.js` ile mevcut çıktı temizlenir;
 bu komut özgün React uygulamasını yeniden derlemez.
 

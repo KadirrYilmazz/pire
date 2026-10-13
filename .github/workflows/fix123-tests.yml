@@ -1,6 +1,8 @@
-name: Fix123 canonical tests
+name: PIRE regression tests
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -13,41 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
       - name: Check serverless and canonical JS syntax
         run: >-
           find api lib -type f -name '*.js' -print0 | xargs -0 -n1 node --check
-      - name: Run Fix123 required regression tests
-        run: >-
-          node --test
-          tests/account-honorific.test.js
-          tests/canonical-ai-sync.test.js
-          tests/canonical-attendance-atomic.test.js
-          tests/canonical-backup.test.js
-          tests/canonical-bridge-failclosed.test.js
-          tests/canonical-catalog-safe.test.js
-          tests/canonical-legacy-read-compat.test.js
-          tests/canonical-localstorage-guard.test.js
-          tests/canonical-makeups.test.js
-          tests/canonical-role-data-safety.test.js
-          tests/canonical-rls-role-guard.test.js
-          tests/canonical-student-access.test.js
-          tests/student-partial-update.test.js
-          tests/student-registration.test.js
-          tests/supabase-source-sync.test.js
-          tests/canonical-sync.test.js
-          tests/fix123-deploy-guard.test.js
-          tests/notification-canonical-state.test.js
+      - name: Install pinned DOM test environment
+        run: npm ci --prefix tests/ui --ignore-scripts --no-audit --no-fund
+      - name: Run complete JavaScript regression suite
+        run: node --test tests/*.test.js
 
   atomic-registration-sql:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
       - name: Install pinned local PostgreSQL test engine
@@ -55,14 +40,14 @@ jobs:
       - name: Verify atomic rollback, retry and permissions in isolated PostgreSQL
         run: node --test tests/sql/*.test.cjs
 
-  legacy-baseline:
+  ci-required:
+    if: always()
+    needs: [fix123-required, atomic-registration-sql]
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: true
+    timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Run full historical suite as non-blocking baseline diagnostic
-        run: node --test tests/*.test.js
+      - name: Require both regression suites to pass
+        env:
+          JS_RESULT: ${{ needs.fix123-required.result }}
+          SQL_RESULT: ${{ needs.atomic-registration-sql.result }}
+        run: test "$JS_RESULT" = success && test "$SQL_RESULT" = success
