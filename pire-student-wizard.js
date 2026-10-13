@@ -140,7 +140,9 @@
         setTimeout(()=>{first.focus();first.reportValidity()},0);
         return;
       }
+      if(!form.dataset.registrationRequestId)form.dataset.registrationRequestId=crypto.randomUUID();
       window[PENDING]={
+        form,requestId:form.dataset.registrationRequestId,
         course:value(form,'wizardCourse'),createLesson:checked(form,'wizardCreateLesson'),createPackage:checked(form,'wizardCreatePackage'),
         teacher:value(form,'wizardTeacher'),room:value(form,'wizardRoom'),lessonDate:value(form,'wizardLessonDate'),startTime:value(form,'wizardStartTime'),endTime:value(form,'wizardEndTime'),recurrence:value(form,'wizardRecurrence'),
         totalLessons:value(form,'wizardTotalLessons'),packageStart:value(form,'wizardPackageStart'),packageEnd:value(form,'wizardPackageEnd')
@@ -154,26 +156,20 @@
   window.fetch=async function(input,init={}){
     const url=typeof input==='string'?input:input?.url||'',method=String(init?.method||'GET').toUpperCase();
     if(!url.includes('/api/students')||method!=='POST'||!window[PENDING])return baseFetch(input,init);
-    const plan=window[PENDING];delete window[PENDING];
-    const studentResponse=await baseFetch(input,init);
-    if(!studentResponse.ok)return studentResponse;
-    const studentData=await studentResponse.clone().json().catch(()=>({})),student=studentData.student;
-    if(!student?.id)return new Response(JSON.stringify({error:'Öğrenci kimliği alınamadı'}),{status:500,headers:{'content-type':'application/json'}});
-    let lessonId=null;
+    const pending=window[PENDING];delete window[PENDING];
+    const {form,requestId,...plan}=pending;
+    const reset=()=>{
+      const submit=form.querySelector('.pire-wizard-submit');
+      if(submit){submit.disabled=false;submit.textContent='Kaydı tamamla'}
+    };
     try{
-      if(plan.createLesson){
-        const lessonRes=await baseFetch('/api/lessons',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({course:plan.course,lessonType:'Birebir ders',studentIds:[String(student.id)],teacher:plan.teacher,lessonDate:plan.lessonDate,startTime:plan.startTime,endTime:plan.endTime,room:plan.room,recurrence:plan.recurrence,pricingType:plan.createPackage?'Ders paketi':'Ders başına',status:'Planlandı'})});
-        const lesson=await lessonRes.json();if(!lessonRes.ok)throw new Error(lesson.error||'İlk ders oluşturulamadı');lessonId=lesson.lesson?.id;
-      }
-      if(plan.createPackage){
-        const packageRes=await baseFetch('/api/packages',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({studentId:student.id,course:plan.course,totalLessons:Number(plan.totalLessons),startDate:plan.packageStart,endDate:plan.packageEnd,makeupRights:0,frozenLessons:0})});
-        const pkg=await packageRes.json();if(!packageRes.ok)throw new Error(pkg.error||'Paket oluşturulamadı');
-      }
-      return studentResponse;
+      const body=JSON.parse(init.body||'{}');
+      const response=await baseFetch(input,{...init,body:JSON.stringify({...body,registrationPlan:plan,registrationRequestId:requestId})});
+      if(!response.ok)reset();
+      return response;
     }catch(error){
-      if(lessonId)await baseFetch('/api/lessons',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({lessonId})}).catch(()=>{});
-      await baseFetch('/api/students',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({studentId:student.id,permanent:true})}).catch(()=>{});
-      return new Response(JSON.stringify({error:error.message+'; yarım kayıt geri alındı.'}),{status:400,headers:{'content-type':'application/json'}});
+      reset();
+      return new Response(JSON.stringify({error:'Kayıt sonucu alınamadı. Aynı formu kapatmadan tekrar deneyin; aynı işlem ikinci kayıt oluşturmaz.'}),{status:503,headers:{'content-type':'application/json'}});
     }
   };
 
