@@ -5,7 +5,7 @@ const path=require('node:path');
 
 const students=fs.readFileSync(path.join(__dirname,'..','api','students.js'),'utf8');
 const notifications=fs.readFileSync(path.join(__dirname,'..','lib','canonical-notifications.js'),'utf8');
-const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260901_fix123_student_directory_finance_rls.sql'),'utf8');
+const migration=fs.readFileSync(path.join(__dirname,'..','supabase','migrations','20260831215730_fix123_student_directory_finance_rls.sql'),'utf8');
 
 test('non-admin student GET uses safe directory and omits private profile fields',()=>{
   assert.match(students,/pire_student_directory\?select=student_id,full_name,birth_date,status/);

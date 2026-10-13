@@ -1,0 +1,299 @@
+{
+  "project_ref": "qhdedxtspyyuziqzxkxu",
+  "captured_at": "2026-10-13",
+  "migrations": [
+    {
+      "version": "20260815143958",
+      "name": "create_pire_auth_profiles",
+      "file": "20260815143958_create_pire_auth_profiles.sql",
+      "source_sha256": "c22952a94828e08d3aecf92946223405684543083e184bc1d38e216822c58426",
+      "export_sha256": "1101bd2d5b4ec1164b0a22e8e5e5b3f4337277daf1521df8f0637896803ea667",
+      "redactions": [
+        "bootstrap_admin_email"
+      ]
+    },
+    {
+      "version": "20260815144146",
+      "name": "index_pire_profile_creator",
+      "file": "20260815144146_index_pire_profile_creator.sql",
+      "source_sha256": "6682969c2abc0671a10962d9be2817fcb2dcbceec8d90c604f872f19dedfcec0",
+      "export_sha256": "8ebf1ed699df944f43c84a9a24f60605d3d53ffa5436985db4297c6f9afa712d",
+      "redactions": []
+    },
+    {
+      "version": "20260815192649",
+      "name": "add_multi_role_profiles",
+      "file": "20260815192649_add_multi_role_profiles.sql",
+      "source_sha256": "0da8b12b9beb4d39dbdbfc582514d8d9f475934ebce6b75b1e06abccd1000b89",
+      "export_sha256": "20bbbdbc3bae7553c2293092412c990391e69eab9f82b7f2b03ed0ff1f127576",
+      "redactions": [
+        "bootstrap_admin_email"
+      ]
+    },
+    {
+      "version": "20260815192737",
+      "name": "sync_profile_role_defaults",
+      "file": "20260815192737_sync_profile_role_defaults.sql",
+      "source_sha256": "2e65179ef9d5f7ab1e85b9e47f7e86a3c0103cfede39fe506b4e2395eafea839",
+      "export_sha256": "2e65179ef9d5f7ab1e85b9e47f7e86a3c0103cfede39fe506b4e2395eafea839",
+      "redactions": []
+    },
+    {
+      "version": "20260815195755",
+      "name": "add_phone_login_to_pire_profiles",
+      "file": "20260815195755_add_phone_login_to_pire_profiles.sql",
+      "source_sha256": "dff32a07e387bb8183e27916cee0b9c1ae360e9ec64e9c9db38e52e9ac714900",
+      "export_sha256": "afe672e0fd347fd5a57ed621524ef9bae0a225c0386a960519aaed12c2663095",
+      "redactions": [
+        "bootstrap_admin_email"
+      ]
+    },
+    {
+      "version": "20260823190647",
+      "name": "create_secure_ai_student_context",
+      "file": "20260823190647_create_secure_ai_student_context.sql",
+      "source_sha256": "17b8d4647bbe55615e05e69d41e83fb7b9cf9766d5afd71cb3dae3b9eb0d66e6",
+      "export_sha256": "17b8d4647bbe55615e05e69d41e83fb7b9cf9766d5afd71cb3dae3b9eb0d66e6",
+      "redactions": []
+    },
+    {
+      "version": "20260831181804",
+      "name": "fix123_students_catalog",
+      "file": "20260831181804_fix123_students_catalog.sql",
+      "source_sha256": "ca3f59c02404ddb0667430a1f82039bab1ca9631528b1b94f3c664a385e2d82f",
+      "export_sha256": "dde54493f2493fada53cbab1dbc0541f454619b4d45b1154c79e72b22a67a79c",
+      "redactions": []
+    },
+    {
+      "version": "20260831185900",
+      "name": "fix123_operations_finance",
+      "file": "20260831185900_fix123_operations_finance.sql",
+      "source_sha256": "d2611987e620dd3ba1d67cc38b92fd9496f5e5ba7fb5d9e0e80715bd6bc3e0c1",
+      "export_sha256": "20c1ba76e1d545f4d2f132f280aeef6b41d41963a2700485d446d683d348fcaf",
+      "redactions": []
+    },
+    {
+      "version": "20260831190407",
+      "name": "fix123_settings_announcements_audit",
+      "file": "20260831190407_fix123_settings_announcements_audit.sql",
+      "source_sha256": "d6c7f93b1b886b778295c695f83fcd0eab96e18e496471c7eb54d8b4f340f176",
+      "export_sha256": "5f5e4f6456fd7ad89de09ac6560a2ecfa4a9ee78548bda455ac69f76007801b6",
+      "redactions": []
+    },
+    {
+      "version": "20260831191952",
+      "name": "fix123_sync_identity_sequences",
+      "file": "20260831191952_fix123_sync_identity_sequences.sql",
+      "source_sha256": "30dc6714a771c711ab643e4a4a637fc39df5748a0d6afc0002fca96438f6b1f1",
+      "export_sha256": "2abbe69350423356e653ac939a1e507758d8013f777f1f55d6457e05f7cd99b5",
+      "redactions": []
+    },
+    {
+      "version": "20260831192143",
+      "name": "fix123_operational_identity_ids",
+      "file": "20260831192143_fix123_operational_identity_ids.sql",
+      "source_sha256": "ead7dca9aa83a9b5af9a5d5265c0f133fd718599c8f207abdacec61356e5a19d",
+      "export_sha256": "2c8ac69d6ce8c23583230060d968f2bc1f2d6448cdb457356ec21d105aca3b92",
+      "redactions": []
+    },
+    {
+      "version": "20260831193434",
+      "name": "fix123_atomic_payment_recording",
+      "file": "20260831193434_fix123_atomic_payment_recording.sql",
+      "source_sha256": "c0f40a9d59adaca09b2c0c19c357af803fec04d25387c9c69a8b0b5e8de07979",
+      "export_sha256": "0a9d4d020232c59bc273f0a0a971d2e588d1df1c6f0dff549bae6b24872c3719",
+      "redactions": []
+    },
+    {
+      "version": "20260831193749",
+      "name": "fix123_payment_rpc_security",
+      "file": "20260831193749_fix123_payment_rpc_security.sql",
+      "source_sha256": "c5e081bf0ebdd5a66b583c82d16c13ee055b4bcfeaad401ee210f42429acba64",
+      "export_sha256": "f29b20e6d5f5632c70a530c84ae9fbca242796982893188706279871e9e9c7d8",
+      "redactions": []
+    },
+    {
+      "version": "20260831194359",
+      "name": "fix123_multirole_and_announcements",
+      "file": "20260831194359_fix123_multirole_and_announcements.sql",
+      "source_sha256": "855d36b8baeee9d76fb147f97aed995c7eb262e8fc9b7854c52c6bb115963d03",
+      "export_sha256": "e52253ca6cba325c7fd8fb2d8c3a4fc57470429250367e450ae65b8e70edbe0a",
+      "redactions": []
+    },
+    {
+      "version": "20260831202028",
+      "name": "fix123_atomic_relation_sync",
+      "file": "20260831202028_fix123_atomic_relation_sync.sql",
+      "source_sha256": "f74ebd624fa2764c7cbffdcec3f377e012449c6b26703fe6d868b871c9062731",
+      "export_sha256": "2f23e7d7781c6bd45152e648c19e6fbb322b460ace25516c8c5cb26786082a59",
+      "redactions": []
+    },
+    {
+      "version": "20260831202424",
+      "name": "fix123_notification_preferences",
+      "file": "20260831202424_fix123_notification_preferences.sql",
+      "source_sha256": "afa0b8c425c61843a3220f4a4339b9836aed954031799baa4e77c13bf6c3e043",
+      "export_sha256": "b130ffb727e9429c76800b6f44c7576f14347c7fb3c787ffd46ddacba8ae417b",
+      "redactions": []
+    },
+    {
+      "version": "20260831202446",
+      "name": "fix123_notification_reads",
+      "file": "20260831202446_fix123_notification_reads.sql",
+      "source_sha256": "18d29ad935ccbd0079c61e97d1419989652cc2e05ec297b3c9576e340f56597f",
+      "export_sha256": "ea2491f2b2e6707fba31d7adf93d187771d8cff21c30caf7cd1602e718a6bebf",
+      "redactions": []
+    },
+    {
+      "version": "20260831202653",
+      "name": "fix123_notification_upsert_support",
+      "file": "20260831202653_fix123_notification_upsert_support.sql",
+      "source_sha256": "c0f752c501ce2ffa6f52f34dd9f00afea4a2b0b881a7222afcf78ef95d4404a6",
+      "export_sha256": "cbd5315f2f2f958df07fa5542ae37f17d527b5aa6fa4c01225b878df610e4e7d",
+      "redactions": []
+    },
+    {
+      "version": "20260831202723",
+      "name": "fix123_notification_policy_hardening",
+      "file": "20260831202723_fix123_notification_policy_hardening.sql",
+      "source_sha256": "3553153a4833bd1de29b6f0f5d79532f7c0075aeab4b6ad06ab042d0d954f55d",
+      "export_sha256": "31f1273622bee45f9539525fd0fab430da0249a56676f84fa78923d45bad5046",
+      "redactions": []
+    },
+    {
+      "version": "20260831202742",
+      "name": "fix123_notification_reads_insert_conflict",
+      "file": "20260831202742_fix123_notification_reads_insert_conflict.sql",
+      "source_sha256": "a56658ade477279dede0331303981c9a2e9fa7bb076aa9bde435c4d0145e2910",
+      "export_sha256": "07e7a42ab0de1112eabcad6a0d1c15c550cc3f58ea075797a475c83a56a5c925",
+      "redactions": []
+    },
+    {
+      "version": "20260831202800",
+      "name": "fix123_notification_preferences_upsert",
+      "file": "20260831202800_fix123_notification_preferences_upsert.sql",
+      "source_sha256": "5093cb864c798a6990293940344b07715e0cced1b14d86ed1e9a25f3687ef6ac",
+      "export_sha256": "78e0a71f9f490b5293574f73a23aaf8b35deabf6534451b118ca15de46667cb7",
+      "redactions": []
+    },
+    {
+      "version": "20260831202824",
+      "name": "fix123_notification_index_cleanup",
+      "file": "20260831202824_fix123_notification_index_cleanup.sql",
+      "source_sha256": "43d76a4bec4afc5ddf0ff82270e2da22b879c8951a0a8433ea32a2317ba9ef74",
+      "export_sha256": "a343a1d6d9f1ce133c3c9243d907b8dea0fb3231e306034700777bb4b348c949",
+      "redactions": []
+    },
+    {
+      "version": "20260831205157",
+      "name": "fix123_customers_canonical",
+      "file": "20260831205157_fix123_customers_canonical.sql",
+      "source_sha256": "8e68144819f55d2b44c21c1750bf2ede140a8cf0af3a7496ac6339f6a8302f9b",
+      "export_sha256": "8e68144819f55d2b44c21c1750bf2ede140a8cf0af3a7496ac6339f6a8302f9b",
+      "redactions": []
+    },
+    {
+      "version": "20260831213522",
+      "name": "fix123_atomic_attendance",
+      "file": "20260831213522_fix123_atomic_attendance.sql",
+      "source_sha256": "8c152c0f513e454328bb5af10ca786d2e3b18744fe1a9a39c291c7bc787de42e",
+      "export_sha256": "bddba4f8f191f69cea44947de7fbe637a61d9240da51198bf9e966f526db65df",
+      "redactions": []
+    },
+    {
+      "version": "20260831215221",
+      "name": "fix123_safe_catalog_rpc",
+      "file": "20260831215221_fix123_safe_catalog_rpc.sql",
+      "source_sha256": "70b00aab13bf9672536177d91cce67d60ae873c7e74cd74e0bbaada0911e8990",
+      "export_sha256": "9540b526e0e10bcf3366f01febc67a6b9166b0bedef12a16d9d195e281902298",
+      "redactions": []
+    },
+    {
+      "version": "20260831215349",
+      "name": "fix123_safe_teacher_directory",
+      "file": "20260831215349_fix123_safe_teacher_directory.sql",
+      "source_sha256": "9cfa76279f94fd4903ea5e9b2767eab4dc2b8ea140b51578c7998ff612277f05",
+      "export_sha256": "2d5a76c550c162034b1f3dcaef563cbdeab8244f2e044436dc813989bf3c3e85",
+      "redactions": []
+    },
+    {
+      "version": "20260831215730",
+      "name": "fix123_student_directory_finance_rls",
+      "file": "20260831215730_fix123_student_directory_finance_rls.sql",
+      "source_sha256": "a0dd39200f723ab19f5f65e438a6af3fe00af49a0a2a6dc06596b1c8e3fe4230",
+      "export_sha256": "9935c7e88961db8cbaa359fcbd818b34a21b13fe13e82b0f5c6a622b1f07c65c",
+      "redactions": []
+    },
+    {
+      "version": "20260831220850",
+      "name": "fix123_student_access_role_guard",
+      "file": "20260831220850_fix123_student_access_role_guard.sql",
+      "source_sha256": "49d4decabc016aac076cd0c9eea5e5e353259e74adbfdf7872b579ca25704378",
+      "export_sha256": "786ffba824cfe64deb97b2d9a0b28f8842fe543be490eed674245da392816d9e",
+      "redactions": []
+    },
+    {
+      "version": "20260831221027",
+      "name": "fix123_finance_helper_execute_grant",
+      "file": "20260831221027_fix123_finance_helper_execute_grant.sql",
+      "source_sha256": "58ad711ea5eddb371ad28ff6d1e9a4cd48cf902b02fe5be9f86d1c67fc1b6126",
+      "export_sha256": "c520ceef681a1631b5e56d7b9f565a093b85482842c16e1047a46b5fed2bd0c6",
+      "redactions": []
+    },
+    {
+      "version": "20260904192142",
+      "name": "fix125_restrict_pire_rpc_execute",
+      "file": "20260904192142_fix125_restrict_pire_rpc_execute.sql",
+      "source_sha256": "53ea4c987a027361d8c79df0247332fc1d9861aa1fbc2e6e7273494fcbd5da5b",
+      "export_sha256": "53ea4c987a027361d8c79df0247332fc1d9861aa1fbc2e6e7273494fcbd5da5b",
+      "redactions": []
+    },
+    {
+      "version": "20261003193254",
+      "name": "fix124_canonical_profile_student_fk",
+      "file": "20261003193254_fix124_canonical_profile_student_fk.sql",
+      "source_sha256": "61c8fb996304fb87edbc406101968f96b74ebf97ca75156a1ce530bd9408aba3",
+      "export_sha256": "72ec107de4cf1c937ad05e16d5189d5b0e1604bd0bc8722be67d98c5b76a5682",
+      "redactions": []
+    },
+    {
+      "version": "20261003193358",
+      "name": "fix124_sync_student_ai_snapshot",
+      "file": "20261003193358_fix124_sync_student_ai_snapshot.sql",
+      "source_sha256": "506092162bf98868808fd4eeb18424f47a834f9ca5cf3a1593e3da3be6a13959",
+      "export_sha256": "254661420df5cb1d3de1a32df6264be3197f9f7e2271f9b7c052b15b4f1d082a",
+      "redactions": []
+    },
+    {
+      "version": "20261013165023",
+      "name": "fix142_atomic_student_registration",
+      "file": "20261013165023_fix142_atomic_student_registration.sql",
+      "source_sha256": "abdac46bea4441bfca26824c954b46926c13beda8c3ca792ebf9e908975a6ea4",
+      "export_sha256": "abdac46bea4441bfca26824c954b46926c13beda8c3ca792ebf9e908975a6ea4",
+      "redactions": []
+    },
+    {
+      "version": "20261013173610",
+      "name": "fix143_schema_reconciliation",
+      "file": "20261013173610_fix143_schema_reconciliation.sql",
+      "source_sha256": "0d8a08d09c38b195913aa944d7f076cde69ed446aa24a46b468ed546be5b930b",
+      "export_sha256": "0d8a08d09c38b195913aa944d7f076cde69ed446aa24a46b468ed546be5b930b",
+      "redactions": []
+    }
+  ],
+  "edge_functions": [
+    {
+      "slug": "pire-manage-users",
+      "version": 11,
+      "verify_jwt": true,
+      "normalized_source_sha256": "bd5641a61e7ecad301421c3d4d497a37cb2d214a986b611af07780d4545deaf2"
+    },
+    {
+      "slug": "pire-phone-login",
+      "version": 1,
+      "verify_jwt": false,
+      "normalized_source_sha256": "96e802229ac63d371789a06b9b3b7d33c0c80109a8a62280bafcb51faa1276b2"
+    }
+  ],
+  "pending_migrations": []
+}

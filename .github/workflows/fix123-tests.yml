@@ -37,6 +37,7 @@ jobs:
           tests/canonical-student-access.test.js
           tests/student-partial-update.test.js
           tests/student-registration.test.js
+          tests/supabase-source-sync.test.js
           tests/canonical-sync.test.js
           tests/fix123-deploy-guard.test.js
           tests/notification-canonical-state.test.js
@@ -52,7 +53,7 @@ jobs:
       - name: Install pinned local PostgreSQL test engine
         run: npm ci --prefix tests/sql --ignore-scripts --no-audit --no-fund
       - name: Verify atomic rollback, retry and permissions in isolated PostgreSQL
-        run: node --test tests/sql/student-registration.test.cjs
+        run: node --test tests/sql/*.test.cjs
 
   legacy-baseline:
     runs-on: ubuntu-latest
