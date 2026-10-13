@@ -49,7 +49,7 @@ test.before(async()=>{
     await db.exec(`alter table public.${table} enable row level security;
       create policy test_admin on public.${table} to authenticated using(private.current_user_is_pire_admin()) with check(private.current_user_is_pire_admin());`);
   }
-  const migration=fs.readFileSync(path.join(root,'supabase/migrations/20261013163633_fix142_atomic_student_registration.sql'),'utf8');
+  const migration=fs.readFileSync(path.join(root,'supabase/migrations/20261013165023_fix142_atomic_student_registration.sql'),'utf8');
   await db.exec(migration);
   await db.exec(`select set_config('test.uid','${adminId}',false); select set_config('test.admin','true',false); set role authenticated;`);
 });
