@@ -19,12 +19,32 @@ function text(value,max=200){const v=String(value??"").replace(/[\u0000-\u001f\u
 function date(value){const v=String(value??"").slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(v)?v:null}
 function number(value,max=1_000_000_000){const n=Number(value);return Number.isFinite(n)&&n>=0&&n<=max?Math.round(n*100)/100:0}
 function normalize(body,partial=false){
-  const row={};const put=(key,value)=>{if(!partial||value!==undefined)row[key]=value};
-  put("full_name",text(body?.name??body?.full_name,160));put("birth_date",date(body?.birthDate??body?.birth_date));put("blood_group",text(body?.bloodGroup??body?.blood_group,20));put("phone",text(body?.phone,40));
-  put("address",text(body?.address,500));put("national_id",text(body?.nationalId??body?.national_id,40));put("heard_from",text(body?.heardFrom??body?.heard_from,120));put("registration_date",date(body?.registrationDate??body?.registration_date)||(!partial?new Date().toISOString().slice(0,10):undefined));
-  put("guardian_name",text(body?.guardianName??body?.guardian_name,160));put("guardian_relation",text(body?.guardianRelation??body?.guardian_relation,60));put("guardian_phone",text(body?.guardianPhone??body?.guardian_phone,40));put("guardian_phone_2",text(body?.guardianPhone2??body?.guardian_phone_2,40));put("guardian_national_id",text(body?.guardianNationalId??body?.guardian_national_id,40));put("emergency_contact",text(body?.emergencyContact??body?.emergency_contact,240));
-  put("monthly_fee",number(body?.fee??body?.monthly_fee));const pd=Number(body?.paymentDay??body?.payment_day);put("payment_day",Number.isInteger(pd)&&pd>=1&&pd<=31?pd:(!partial?1:undefined));
-  const st=String(body?.status??"");put("status",["Aktif","Kayıt dondurmuş","Ayrılmış"].includes(st)?st:(!partial?"Aktif":undefined));put("notes",text(body?.notes,2000));Object.keys(row).forEach(k=>row[k]===undefined&&delete row[k]);return row;
+  const row={};
+  const put=(key,keys,convert)=>{
+    const source=keys.find(name=>Object.prototype.hasOwnProperty.call(body||{},name)&&body[name]!==undefined);
+    if(partial&&source===undefined)return;
+    const value=convert(source===undefined?undefined:body[source]);
+    if(value!==undefined)row[key]=value;
+  };
+  put("full_name",["name","full_name"],v=>text(v,160));
+  put("birth_date",["birthDate","birth_date"],date);
+  put("blood_group",["bloodGroup","blood_group"],v=>text(v,20));
+  put("phone",["phone"],v=>text(v,40));
+  put("address",["address"],v=>text(v,500));
+  put("national_id",["nationalId","national_id"],v=>text(v,40));
+  put("heard_from",["heardFrom","heard_from"],v=>text(v,120));
+  put("registration_date",["registrationDate","registration_date"],v=>date(v)||(!partial?new Date().toISOString().slice(0,10):undefined));
+  put("guardian_name",["guardianName","guardian_name"],v=>text(v,160));
+  put("guardian_relation",["guardianRelation","guardian_relation"],v=>text(v,60));
+  put("guardian_phone",["guardianPhone","guardian_phone"],v=>text(v,40));
+  put("guardian_phone_2",["guardianPhone2","guardian_phone_2"],v=>text(v,40));
+  put("guardian_national_id",["guardianNationalId","guardian_national_id"],v=>text(v,40));
+  put("emergency_contact",["emergencyContact","emergency_contact"],v=>text(v,240));
+  put("monthly_fee",["fee","monthly_fee"],v=>number(v));
+  put("payment_day",["paymentDay","payment_day"],v=>{const n=Number(v);return Number.isInteger(n)&&n>=1&&n<=31?n:(!partial?1:undefined)});
+  put("status",["status"],v=>["Aktif","Kayıt dondurmuş","Ayrılmış"].includes(String(v))?String(v):(!partial?"Aktif":undefined));
+  put("notes",["notes"],v=>text(v,2000));
+  return row;
 }
 function admin(identity){return identity?.roles?.includes("Yönetici")}
 async function readAll(token,identity){
