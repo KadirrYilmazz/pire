@@ -13,33 +13,27 @@
     padding: 10px clamp(16px, 1.8vw, 32px) 18px !important;
   }
 
-  /* “+ Yeni” JS tarafından İletişim öğesinin arkasına taşınır; boş başlık satırı kapanır. */
-  .app-shell.dashboard-mode .content > .dashboard-page-header {
-    display: none !important;
-  }
-
+  /* Keep the original React header and its actions together. */
   .app-shell.dashboard-mode .content > header.pire-dashboard-actions-home {
+    display: flex !important;
+    justify-content: flex-end !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    margin: 0 0 10px !important;
+  }
+
+  .app-shell.dashboard-mode .content > header.pire-dashboard-actions-home > :not(.top-actions) {
     display: none !important;
   }
 
-  .app-shell.pire-persistent-header .sidebar {
-    position: relative !important;
-  }
-
-  .app-shell.pire-persistent-header .sidebar > .pire-nav-new-actions {
-    z-index: 12 !important;
-    position: absolute !important;
-    top: 140px !important;
-    right: clamp(36px, 3.8vw, 72px) !important;
-    bottom: auto !important;
-    transform: none !important;
-    width: auto !important;
-    margin: 0 !important;
+  .app-shell.dashboard-mode .content > header.pire-dashboard-actions-home > .top-actions {
     display: flex !important;
-    align-items: center !important;
+    position: relative !important;
+    margin: 0 !important;
+    z-index: 12;
   }
 
-  .app-shell.pire-persistent-header .sidebar > .pire-nav-new-actions .pire-new-trigger {
+  .app-shell.dashboard-mode .content > header.pire-dashboard-actions-home .pire-new-trigger {
     min-height: 46px !important;
     padding-inline: 17px !important;
   }

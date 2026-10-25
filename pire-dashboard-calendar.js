@@ -3,7 +3,7 @@
   const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const DAYS=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
   let viewDate=new Date(),selected='';
-  let movedActions=null,actionsHome=null,syncQueued=false,smartAlertCount='',openSmartAlertsAfterNavigation=false;
+  let syncQueued=false,smartAlertCount='',openSmartAlertsAfterNavigation=false;
   const boundPanels=new WeakSet();
   const iso=(year,month,day)=>`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
   const data=()=>{try{return window.__PIRE_RECOVERED_BACKEND__?.exportData?.()||{}}catch(_){return {}}};
@@ -16,20 +16,17 @@
   function showDayDetails(panel,key,items){const popover=panel.querySelector('[data-calendar-popover]'),date=new Date(`${key}T12:00:00`).toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});popover.innerHTML=`<header><div><div><small>${esc(date)}</small><h4>${items.length} ders planlandı</h4></div><button type="button" data-close-calendar-details aria-label="Ders ayrıntılarını kapat">×</button></header><div class="pire-calendar-detail-list">${items.map(item=>`<article><time>${esc(trTime(item.startTime))}</time><div><b>${esc(item.course||'Ders')}</b><small>${esc(item.teacher||'Eğitmen belirtilmemiş')}${item.room?` · ${esc(item.room)}`:''}</small></div></article>`).join('')}</div><footer><button type="button" data-open-full-calendar>Tam takvimde aç →</button></footer>`;popover.hidden=false;popover.querySelector('[data-close-calendar-details]').onclick=()=>{popover.hidden=true};popover.querySelector('[data-open-full-calendar]').onclick=openFullCalendar}
   function makePanel(dashboard){let panel=dashboard.querySelector(':scope > .pire-dashboard-calendar');if(panel){bindPanel(panel,dashboard);return panel}panel=document.createElement('section');panel.className='pire-dashboard-calendar';panel.setAttribute('aria-label','Aylık ders takvimi');panel.innerHTML=`<header><div><small>DERS PROGRAMI</small><h3 data-calendar-title></h3></div><div class="pire-calendar-actions"><button type="button" data-calendar-prev aria-label="Önceki ay">←</button><button type="button" data-calendar-today>Bugün</button><button type="button" data-calendar-next aria-label="Sonraki ay">→</button></div></header><div class="pire-calendar-grid" data-calendar-grid></div><footer data-calendar-selected></footer><aside class="pire-calendar-popover" data-calendar-popover hidden></aside>`;dashboard.appendChild(panel);bindPanel(panel,dashboard);render(panel);return panel}
   function bindPanel(panel,dashboard){if(boundPanels.has(panel))return;boundPanels.add(panel);panel.addEventListener('click',event=>{const target=event.target.closest('button');if(!target||!panel.contains(target))return;if(target.matches('[data-calendar-prev]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);selected='';render(panel);return}if(target.matches('[data-calendar-next]')){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);selected='';render(panel);return}if(target.matches('[data-calendar-today]')){viewDate=new Date();selected='';render(panel);return}const day=target.closest('.pire-calendar-day');if(day){const key=day.dataset.date,items=lessons().filter(item=>item?.lessonDate===key);selected=key;render(panel);if(items.length)showDayDetails(panel,key,items)}})}
-  // React/Vinext owns the header. It must never receive a DOM node back during
-  // transient route changes; doing so can race the RSC navigation tree.
-  function restoreNewActions(){/* intentionally disabled; React owns this node */}
+  // Keep React-owned actions under their original header throughout navigation.
+  // Reparenting them makes React's next removeChild fail and unmounts the app.
   function placeNewActions(){
     const shell=document.querySelector('.app-shell'),dashboard=document.querySelector('.premium-dashboard');
-    // This is dashboard-only enhancement. Never reparent the shared React header
-    // on Students/Customers/Reports/etc. pages.
-    if(!shell||!dashboard){shell?.classList.remove('pire-persistent-header');return false}
-    const sidebar=shell.querySelector('.sidebar'),header=shell.querySelector('.content > header'),actions=header?.querySelector(':scope > .top-actions')||sidebar?.querySelector(':scope > .pire-nav-new-actions');
-    if(!sidebar||!header||!actions?.querySelector('.pire-new-menu')){shell.classList.remove('pire-persistent-header');return false}
-    if(!movedActions||movedActions!==actions){movedActions=actions;actionsHome=actions.parentElement}
-    shell.classList.add('pire-persistent-header');header.classList.add('pire-dashboard-actions-home');
-    if(actions.parentElement!==sidebar)sidebar.appendChild(actions);
-    actions.classList.add('pire-nav-new-actions');return true
+    if(!shell)return false;
+    const header=shell.querySelector('.content > header');
+    const actions=header?.querySelector(':scope > .top-actions');
+    const active=Boolean(dashboard&&actions?.querySelector('.pire-new-menu'));
+    if(shell.classList.contains('pire-persistent-header')!==active)shell.classList.toggle('pire-persistent-header',active);
+    if(header&&header.classList.contains('pire-dashboard-actions-home')!==active)header.classList.toggle('pire-dashboard-actions-home',active);
+    return active
   }
   function sync(){const hasPersistentHeader=placeNewActions();let dashboard=null;document.querySelectorAll('.premium-dashboard').forEach(dashboard=>{makePanel(dashboard);const badge=dashboard.querySelector('.dashboard-alerts .dashboard-section-head > span');smartAlertCount=badge?.textContent||'';if(openSmartAlertsAfterNavigation){dashboard.classList.add('compact-alerts-open');openSmartAlertsAfterNavigation=false}});dashboard=document.querySelector('.premium-dashboard');if(hasPersistentHeader)placeSmartAlertButton(dashboard,smartAlertCount);else document.querySelectorAll('.pire-smart-alert-button,.pire-alert-chooser').forEach(button=>button.remove())}
   const SMART_READ_KEY='pire-smart-alert-read-v2';
