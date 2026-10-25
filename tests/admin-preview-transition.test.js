@@ -5,11 +5,11 @@ const html=`<div class="app-shell"><aside class="sidebar"></aside><main class="c
 for(const [selector,type] of [['.admin-preview-actions .start','click'],['.role-view-switch','change']]){
   test(`${type} panel transition leaves dashboard actions in place before the app handler`,t=>{
     const ui=fixture(html,'pire-dashboard-calendar.js');t.after(()=>ui.close());
-    const actions=ui.document.querySelector('.top-actions'),sidebar=ui.document.querySelector('.sidebar');
-    assert.equal(actions.parentElement,sidebar);
-    let handled=false;ui.document.querySelector(selector).addEventListener(type,()=>{handled=true;assert.equal(actions.parentElement,sidebar)});
+    const actions=ui.document.querySelector('.top-actions'),header=ui.document.querySelector('.content > header');
+    assert.equal(actions.parentElement,header);
+    let handled=false;ui.document.querySelector(selector).addEventListener(type,()=>{handled=true;assert.equal(actions.parentElement,header)});
     ui.document.querySelector(selector).dispatchEvent(new ui.window.Event(type,{bubbles:true}));
-    assert.equal(handled,true);assert.equal(actions.parentElement,sidebar);
+    assert.equal(handled,true);assert.equal(actions.parentElement,header);
   });
 }
 test('route exit leaves the replacement React header intact and disables dashboard enhancement',t=>{
