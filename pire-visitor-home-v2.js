@@ -24,7 +24,9 @@
     return false;
   }
   function isVisitorHome(){
-    const signIn=findClickableByText('Giriş Yap')||findClickableByText('Sign In');
+    const shell=document.querySelector('.app-shell');
+    if(!shell?.querySelector('.sidebar .visitor-login-trigger'))return false;
+    const signIn=shell.querySelector('.visitor-login-trigger');
     const h1=[...document.querySelectorAll('h1')].find(x=>/Matematik ve müziğin|mathematics and music/i.test(norm(x.textContent)));
     const home=findClickableByText('Ana Sayfa')||findClickableByText('Home');
     return Boolean(signIn&&h1&&home);
@@ -62,9 +64,10 @@
     <section class="pvh-section"><div class="pvh-wrap pvh-reveal"><div class="pvh-kicker">Nasıl ilerliyoruz?</div><h2 class="pvh-title">İlk görüşmeden <em>gelişim takibine.</em></h2><div class="pvh-process"><div class="pvh-step"><b>01</b><h4>Tanışma</h4><p>Hedefi, ihtiyacı ve beklentiyi birlikte netleştiriyoruz.</p></div><div class="pvh-step"><b>02</b><h4>Program</h4><p>Kişiye uygun eğitim veya üretim planını oluşturuyoruz.</p></div><div class="pvh-step"><b>03</b><h4>Uygulama</h4><p>Ders, prova, proje veya kayıt süreci düzenli ilerliyor.</p></div><div class="pvh-step"><b>04</b><h4>Takip</h4><p>Gelişimi izliyor, ihtiyaç oldukça programı güncelliyoruz.</p></div></div></div></section>
     <div class="pvh-wrap pvh-reveal"><section class="pvh-cta"><div><div class="pvh-kicker">Birlikte başlayalım</div><h3>Hangi alanda ilerlemek istiyorsun?</h3></div><div class="pvh-actions"><button class="pvh-btn primary" data-go="contact">Bize ulaşın ↗</button><button class="pvh-btn" data-go="instrument">Eğitimleri incele</button></div></section></div>
   `}
+  let revealObserver=null;
   function mount(){
     const current=document.getElementById('pire-vh2');
-    if(!isVisitorHome()){if(current)current.style.display='none';return}
+    if(!isVisitorHome()){revealObserver?.disconnect();revealObserver=null;current?.remove();return}
     css();
     if(current){current.style.display='block';return}
     const heroTitle=[...document.querySelectorAll('h1')].find(x=>/Matematik ve müziğin|mathematics and music/i.test(norm(x.textContent)));
@@ -75,7 +78,7 @@
     if(hero&&hero.parentNode)hero.insertAdjacentElement('afterend',root);else (document.querySelector('main')||document.body).appendChild(root);
     root.addEventListener('click',e=>{const hit=e.target.closest('[data-go]');if(hit)go(hit.dataset.go)});
     root.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-go]')){e.preventDefault();go(e.target.dataset.go)}});
-    const io=new IntersectionObserver(entries=>entries.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in')}),{threshold:.12});root.querySelectorAll('.pvh-reveal').forEach(x=>io.observe(x));
+    const io=revealObserver=new IntersectionObserver(entries=>entries.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in')}),{threshold:.12});root.querySelectorAll('.pvh-reveal').forEach(x=>io.observe(x));
   }
   let queued=false;function scan(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;mount()})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan,{once:true});else scan();
