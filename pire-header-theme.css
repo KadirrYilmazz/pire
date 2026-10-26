@@ -1,0 +1,119 @@
+/* Fix147: authenticated navigation only; keep layout and React DOM unchanged. */
+html[data-theme="light"] .app-shell:not(.visitor-mode) .sidebar {
+  --pire-header-surface: #fcfbf7;
+  --pire-header-text: #3e3a32;
+  --pire-header-muted: #625b4e;
+  --pire-header-hover: #ede7d8;
+  --pire-header-hover-text: #25231e;
+  --pire-header-active: #30352c;
+  --pire-header-active-hover: #414737;
+  --pire-header-active-text: #fff9ee;
+  --pire-header-border: #b1a589;
+  --pire-header-focus: #82621f;
+  --pire-header-badge: #e7e0d1;
+  --pire-header-income: #106335;
+  --pire-header-expense: #a52d31;
+}
+html[data-theme="dark"] .app-shell:not(.visitor-mode) .sidebar {
+  --pire-header-surface: #151715;
+  --pire-header-text: #dcd8ce;
+  --pire-header-muted: #bbb5a8;
+  --pire-header-hover: #30352c;
+  --pire-header-hover-text: #fff9ee;
+  --pire-header-active: #d8bb76;
+  --pire-header-active-hover: #e9cd8d;
+  --pire-header-active-text: #15180f;
+  --pire-header-border: #77725f;
+  --pire-header-focus: #e2be65;
+  --pire-header-badge: #34382e;
+  --pire-header-income: #72e4a0;
+  --pire-header-expense: #ffacac;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button, summary) {
+  color: var(--pire-header-text) !important;
+  background: var(--pire-header-surface) !important;
+  text-shadow: none !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button, summary):is(:hover, :focus-visible) {
+  color: var(--pire-header-hover-text) !important;
+  background: var(--pire-header-hover) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button.active, .nav-dropdown.active > summary) {
+  color: var(--pire-header-active-text) !important;
+  background: var(--pire-header-active) !important;
+  border-color: var(--pire-header-border) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button.active, .nav-dropdown.active > summary):is(:hover, :focus-visible) {
+  color: var(--pire-header-active-text) !important;
+  background: var(--pire-header-active-hover) !important;
+}
+/* Nested finance labels must follow the selected state, including hover. */
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button, summary) :is(span, i) {
+  color: inherit !important;
+  text-shadow: none !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button, summary) b {
+  color: var(--pire-header-text) !important;
+  background: var(--pire-header-badge) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button.active, .nav-dropdown.active > summary) b {
+  color: var(--pire-header-active) !important;
+  background: var(--pire-header-active-text) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav .nav-dropdown > .nav-dropdown-menu {
+  background: var(--pire-header-surface) !important;
+  border-color: var(--pire-header-border) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav :is(button.pire-finance-income:not(.active), .nav-dropdown:not(.active) > summary.pire-finance-income, .nav-dropdown:not(.active) > summary:has(.pire-finance-income)) {
+  color: var(--pire-header-income) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .primary-nav button.pire-finance-expense:not(.active) {
+  color: var(--pire-header-expense) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-tools :is(.navbar-icon-button, .notification-bell, .theme-toggle, .admin-preview-trigger, .session-logout-trigger),
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .role-view-switch,
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-search {
+  color: var(--pire-header-text) !important;
+  background: var(--pire-header-surface) !important;
+  border-color: var(--pire-header-border) !important;
+  text-shadow: none !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-tools :is(.navbar-icon-button, .notification-bell, .theme-toggle, .admin-preview-trigger, .session-logout-trigger):is(:hover, :focus-visible) {
+  color: var(--pire-header-hover-text) !important;
+  background: var(--pire-header-hover) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-tools .navbar-icon-button:is(.filter-active, [aria-pressed="true"]) {
+  color: var(--pire-header-active-text) !important;
+  background: var(--pire-header-active) !important;
+  border-color: var(--pire-header-focus) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar :is(.admin-preview-trigger, .session-logout-trigger) :is(span, i),
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .role-view-switch select {
+  color: inherit !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .role-view-switch option {
+  color: var(--pire-header-text) !important;
+  background: var(--pire-header-surface) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .role-view-switch > span,
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .authenticated-user-chip small {
+  color: var(--pire-header-muted) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .authenticated-user-chip > span,
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-search input {
+  color: var(--pire-header-text) !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-search input::placeholder {
+  color: var(--pire-header-muted) !important;
+  opacity: 1;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar :is(.primary-nav button, .primary-nav summary, .navbar-tools button, .role-view-switch select):focus-visible,
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-search:focus-within {
+  outline: 2px solid var(--pire-header-focus) !important;
+  outline-offset: 3px !important;
+}
+html[data-theme] .app-shell:not(.visitor-mode) .sidebar .navbar-tools :is(.notification-bell, .navbar-icon-button) > b {
+  color: #ffffff !important;
+  background: #9b2733 !important;
+  border-color: var(--pire-header-surface) !important;
+}

@@ -60,6 +60,7 @@ for(const [id,code] of __PIRE_INLINE_PATCHES__){
 for(const [href,attribute] of ${serializedStyles}){
   const link=document.createElement("link");link.rel="stylesheet";link.href=href;link.setAttribute(attribute,"true");document.head.appendChild(link);
 }
+const headerTheme=document.createElement("link");headerTheme.rel="stylesheet";headerTheme.href="/pire-header-theme.css?v=1";headerTheme.dataset.pireHeaderTheme="true";document.head.appendChild(headerTheme);
 for(const src of ${serializedScripts}) await import(src);
 </script>`;
 if(!html.includes(reactBootstrap))throw new Error('Fix134 React module başlangıcı bulunamadı.');
